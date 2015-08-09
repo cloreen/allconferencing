@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class LoginPageObject {
     private WebDriver driver;
+    private LoginType accountType;
 
     private WebElement getElementWithIndex(By by, int pos) {
         return driver.findElements(by).get(pos);
@@ -42,6 +43,8 @@ public class LoginPageObject {
 
 
     public void selectLogin(LoginType loginType) {
+        // Opens new page in a new window (contextClick() + sendKeys("w") = open in new window)
+        accountType = loginType;
         Actions actions = new Actions(driver);
         actions.contextClick(getElementWithIndex(By.cssSelector("ul[id='MenuBar3']>li>a"), loginType.value())).perform();
         actions.sendKeys(new String("w")).perform();
@@ -52,7 +55,7 @@ public class LoginPageObject {
         }
     }
 
-    public ExpectedCondition<Boolean> loginPageDisplays(LoginType loginType) {
+    private static ExpectedCondition<Boolean> loginPageDisplays(LoginType loginType) {
         ExpectedCondition<Boolean> expectedCondition = null;
 
         switch(loginType) {
@@ -70,6 +73,8 @@ public class LoginPageObject {
     }
 
     public void login(String clientID, String pwd) {
+
+
         WebElement element = driver.findElement(By.cssSelector("form[id='login']>fieldset>input[type='text']"));
         element.click();
         element.sendKeys(new String(clientID));
@@ -85,8 +90,8 @@ public class LoginPageObject {
         element.sendKeys(new String(pwd));
         element.submit();
 
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
+        WebDriverWait waitForMyAccount = new WebDriverWait(driver, 10);
+        waitForMyAccount.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
     }
 
 }

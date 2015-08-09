@@ -1,16 +1,11 @@
 package com.lotus.allconferencing.meeting_controller;
 
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
-import com.sun.jna.StringArray;
-import com.sun.xml.internal.fastinfoset.util.CharArray;
-import net.sourceforge.htmlunit.corejs.javascript.regexp.SubString;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -18,11 +13,8 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -36,6 +28,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
     private static String myAccountWindow = "";
     private static String projectManagerWindow = "";
     private static String meetingControllerWindow = "";
+    private static Integer inviteFromMeetingFlag = 0;
 
     public static WebElement getElementWithIndex(By by, int pos) {
         return driver.findElements(by).get(pos);
@@ -63,7 +56,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
         System.out.println("Base window handle is: " + baseWindow);
 
         loginPage = new LoginPageObject(driver);
-        loginPage.get();
+        //loginPage.get();
         loginPage.selectLogin(LoginPageObject.LoginType.STANDARD);
 
 /*
@@ -76,8 +69,10 @@ public class InstantMeetingEmailInviteFromSetupTest {
                 e.printStackTrace();
             }
 */
-        loginPage.login("25784", "lotus456");
         myAccountWindow = getWindow();
+        loginPage.login("25784", "lotus456");
+        //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
+        //waitForLoginPage.until();
         System.out.println("My Account window handle is: " + myAccountWindow);
 
         /*
@@ -114,23 +109,30 @@ public class InstantMeetingEmailInviteFromSetupTest {
 //        System.out.println(loginPageTitle);
     }
 
-    public void instantMeetingQuickSetup() {
+    public void instantMeetingQuickSetup(Integer inviteType) {
+        // Sets up an Instant Meeting from Account Landing page and sends an invite based on argument
+        // Arguments -
+        //      1. Invite from Instant Meeting Setup interface in Project Manager
+        //      2. Invite from within Meeting Controller after meeting has started
+
         WebElement instMtgLink = driver.findElement(By.cssSelector("a[id='lnkDialIn']"));
         instMtgLink.click();
 
         try {
-            Thread.sleep(6000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        // Switch to newly opened window
+        projectManagerWindow = getWindow();
+        System.out.println("Project Manager window handle is: " + projectManagerWindow);
 
         WebElement baseElement = driver.findElement(By.cssSelector("html"));
         baseElement.click();
 
 
-        // Switch to newly opened window
-        projectManagerWindow = getWindow();
-        System.out.println("Project Manager window handle is: " + projectManagerWindow);
+
 /*
         for (String item : set) {
             i++;
@@ -162,27 +164,36 @@ public class InstantMeetingEmailInviteFromSetupTest {
         WebElement newBaseElement = driver.findElement(By.cssSelector("html"));
         newBaseElement.click();
 
-        WebElement partName = driver.findElement(By.cssSelector("input[id='new_meet_part_name']"));
-        partName.sendKeys(new String("AutoTest-Gmail"));
-        WebElement partEmail = driver.findElement(By.cssSelector("input[id='new_meet_part_email']"));
-        partEmail.sendKeys(new String("bgactest03@gmail.com"));
-        WebElement addButton = driver.findElement(By.cssSelector("button[id='addmeetpart-button']"));
-        addButton.click();
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(
-                ExpectedConditions.textToBePresentInElement(driver.findElement(By.cssSelector("table tbody:nth-of-type(2) tr td:nth-of-type(3) div div")), "bgactest03@gmail.com")
-        );
+        if ((inviteType < 1) || (inviteType > 2)) {
+            System.out.println("instantMeetingQuickSetup() was called with an improper argument.\nThe only allowed " +
+            "arguments are 1 and 2.");
+            System.exit(-1);
+        }
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (inviteType == 1) {
+            WebElement partName = driver.findElement(By.cssSelector("input[id='new_meet_part_name']"));
+            partName.sendKeys(new String("AutoTest-Gmail"));
+            WebElement partEmail = driver.findElement(By.cssSelector("input[id='new_meet_part_email']"));
+            partEmail.sendKeys(new String("bgactest03@gmail.com"));
+            WebElement addButton = driver.findElement(By.cssSelector("button[id='addmeetpart-button']"));
+            addButton.click();
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(
+                    ExpectedConditions.textToBePresentInElement(driver.findElement(By.cssSelector("table tbody:nth-of-type(2) tr td:nth-of-type(3) div div")), "bgactest03@gmail.com")
+            );
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         WebElement confirmButton = driver.findElement(By.cssSelector("button[id='amndstart-button']"));
         confirmButton.click();
         confirmButton.click();
 
+        WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(
                 ExpectedConditions.textToBePresentInElement(confirmButton, "Start Meeting Now")
         );
@@ -192,6 +203,26 @@ public class InstantMeetingEmailInviteFromSetupTest {
         // Switch to newly opened window
         meetingControllerWindow = getWindow();
         System.out.println("Meeting Controller window handle is: " + meetingControllerWindow);
+
+        WebDriverWait waitForMtgCntrlr = new WebDriverWait(driver, 10);
+        waitForMtgCntrlr.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")));
+
+        if (inviteType == 2) {
+            WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
+            Actions action = new Actions(driver);
+            action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 32).clickAndHold().perform();
+            action.release().perform();
+
+            WebElement invitePartName = driver.findElement(By.cssSelector("input[id='new_invite_part_name'"));
+            invitePartName.sendKeys(new String("AutoTest-Gmail"));
+            WebElement invitePartEmail = driver.findElement(By.cssSelector("input[id='new_invite_part_email'"));
+            invitePartEmail.sendKeys(new String("bgactest03@gmail.com"));
+            WebElement addPartButton = driver.findElement(By.cssSelector("button[id='addinvitepart-button']"));
+            addPartButton.click();
+
+            WebElement sendInvitesButton = driver.findElement(By.cssSelector("button[id='sendinvites-button']"));
+            sendInvitesButton.click();
+        }
     }
 
     public String checkInviteEmail() {
@@ -266,8 +297,8 @@ public class InstantMeetingEmailInviteFromSetupTest {
             System.exit(-1);
         }
 
-        WebDriverWait waitForEmail = new WebDriverWait(driver, 30);
-        waitForEmail.until(ExpectedConditions.textToBePresentInElement(emailSubject, emailText));
+        //WebDriverWait waitForEmail = new WebDriverWait(driver, 30);
+        //waitForEmail.until(ExpectedConditions.textToBePresentInElement(emailSubject, emailText));
 
         System.out.println("The subject of the email found is: " + emailSubject.getText());
         return(emailSubject.getText());
@@ -278,31 +309,55 @@ public class InstantMeetingEmailInviteFromSetupTest {
         driver = new FirefoxDriver();
         driver.get("http://www.allconferencing.com/");
         baseWindow = driver.getWindowHandle();
-        getLoginPage(By.cssSelector("ul[id='MenuBar3']>li>a"), 2);
+        getLoginPage(By.cssSelector("ul[id='MenuBar3']>li>a"), 0);
         //standardLogin("25784", "lotus456");
     }
 
     @Test
     public void inviteFromSetup() {
-        instantMeetingQuickSetup();
+        instantMeetingQuickSetup(1);
         String emailReceived = checkInviteEmail();
         assertEquals("Email was received", "AllConferencing Meeting Invite", emailReceived);
+    }
+
+    @Test
+    public void inviteFromMeeting() {
+        inviteFromMeetingFlag = 1;
+        instantMeetingQuickSetup(2);
+        String emailReceived1 = checkInviteEmail();
+        assertEquals("Email was received", "AllConferencing Meeting Invite", emailReceived1);
     }
 
     @After
     public void tearDown() {
         driver.switchTo().window(meetingControllerWindow);
-        WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
-        Actions action = new Actions(driver);
-        action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
-        action.release().perform();
-        WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
-        endMtgButton.click();
+
+        WebElement htmlElement = driver.findElement(By.tagName("html"));
+        htmlElement.click();
+        //WebDriverWait waitForMtgCntrlsMenu = new WebDriverWait(driver, 10);
+        //waitForMtgCntrlsMenu.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")));
+
+        if (inviteFromMeetingFlag == 0) {
+            WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
+            Actions action = new Actions(driver);
+            action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
+            action.release().perform();
+            WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
+            endMtgButton.click();
+        } else if (inviteFromMeetingFlag == 1) {
+            WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[10]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
+            Actions action = new Actions(driver);
+            action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
+            action.release().perform();
+            WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
+            endMtgButton.click();
+        }
+
 
         closeWindow(projectManagerWindow);
         closeWindow(myAccountWindow);
         driver.switchTo().window(baseWindow);
 
-        //driver.quit();
+        driver.quit();
     }
 }

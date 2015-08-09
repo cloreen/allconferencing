@@ -1,8 +1,8 @@
 package com.lotus.allconferencing.meeting_controller.refactored;
 
-import com.lotus.allconferencing.meeting_controller.pages.GmailPageObject;
-import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
-import com.lotus.allconferencing.meeting_controller.pages.WindowManager;
+import com.lotus.allconferencing.meeting_controller.refactored.GmailPageObject;
+import com.lotus.allconferencing.meeting_controller.refactored.LoginPageObject;
+import com.lotus.allconferencing.meeting_controller.refactored.WindowManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
