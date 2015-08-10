@@ -51,13 +51,13 @@ public class InstantMeetingEmailInviteFromSetupTest {
         driver.close();
     }
 
-    public void getLoginPage(By by, int pos) {
+    public void getLoginPage(LoginPageObject.LoginType loginType) {
 
         System.out.println("Base window handle is: " + baseWindow);
 
         loginPage = new LoginPageObject(driver);
         //loginPage.get();
-        loginPage.selectLogin(LoginPageObject.LoginType.STANDARD);
+        loginPage.selectLogin(loginType);
 
 /*
         Actions actions = new Actions(driver);
@@ -309,7 +309,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
         driver = new FirefoxDriver();
         driver.get("http://www.allconferencing.com/");
         baseWindow = driver.getWindowHandle();
-        getLoginPage(By.cssSelector("ul[id='MenuBar3']>li>a"), 0);
+        getLoginPage(LoginPageObject.LoginType.STANDARD);
         //standardLogin("25784", "lotus456");
     }
 
