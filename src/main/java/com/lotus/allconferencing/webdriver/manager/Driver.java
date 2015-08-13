@@ -17,6 +17,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A singleton style manager to maintain Drivers to prevent
@@ -285,6 +288,7 @@ public class Driver extends Thread {
     public static WebDriver get(String aURL){
         return get(aURL,true);
     }
+
 
     public static void quit(){
         if(aDriver!=null){

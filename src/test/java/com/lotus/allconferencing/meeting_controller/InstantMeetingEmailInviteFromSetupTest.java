@@ -1,6 +1,9 @@
 package com.lotus.allconferencing.meeting_controller;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
+import com.lotus.allconferencing.webdriver.manager.Driver;
+import com.lotus.allconferencing.webdriver.manager.WindowManager;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 public class InstantMeetingEmailInviteFromSetupTest {
     private static WebDriver driver, driver2;
     private LoginPageObject loginPage;
+    private static WindowManager windowManager;
     private static String baseWindow = "";
     private static String loginWindow = "";
     private static String myAccountWindow = "";
@@ -45,6 +49,8 @@ public class InstantMeetingEmailInviteFromSetupTest {
         windowHandle = driver.getWindowHandle();
         return windowHandle;
     }
+
+
 
     public static void closeWindow(String window) {
         driver.switchTo().window(window);
@@ -69,6 +75,8 @@ public class InstantMeetingEmailInviteFromSetupTest {
                 e.printStackTrace();
             }
 */
+//        Set<String> set = driver.getWindowHandles();
+//        WindowManager winMgr = new WindowManager(driver);
         myAccountWindow = getWindow();
         loginPage.login("25784", "lotus456");
         //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
@@ -127,7 +135,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
         // Switch to newly opened window
         projectManagerWindow = getWindow();
         System.out.println("Project Manager window handle is: " + projectManagerWindow);
-
+ /*
         WebElement baseElement = driver.findElement(By.cssSelector("html"));
         baseElement.click();
 
@@ -242,60 +250,73 @@ public class InstantMeetingEmailInviteFromSetupTest {
 
         String emailText = "AllConferencing Meeting Invite";
         WebElement refreshButton = driver.findElement(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div")); // div[role='button']   // div[class='asa']
-        refreshButton.click();
+        WebElement emailSubject = null;
         try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        WebElement emailSubject = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
-        String emailSubjectString = emailSubject.getText();
-        WebElement emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
-        String emailTime = emailArrivalTime.getText();
-        System.out.println("Email time retrieved from Gmail was: " + emailTime);
-        String[] emailTimeParts = emailTime.split(":");
-        String emailHourStr = emailTimeParts[0];
-        String emailMinuteStr = emailTimeParts[1];
-        String[] minuteParts = emailMinuteStr.split("\\s");
-        emailMinuteStr = minuteParts[0];
-        Integer emailHour = (Integer.parseInt(emailHourStr));
-        System.out.println("Email hour is: " + emailHour);
-        Integer emailMinute = (Integer.parseInt(emailMinuteStr));
-        System.out.println("Email minute is: " + emailMinute);
-        Integer emailMinuteThreshold = emailMinute + 1;
-        System.out.println("Email Minute Threshold is: " + emailMinuteThreshold);
+            emailSubject = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
+            String emailSubjectString = emailSubject.getText();
+            WebElement emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
+            String emailTime = emailArrivalTime.getText();
+            System.out.println("Email time retrieved from Gmail was: " + emailTime);
+            String[] emailTimeParts = emailTime.split(":");
+            String emailHourStr = emailTimeParts[0];
+            String emailMinuteStr = emailTimeParts[1];
+            String[] minuteParts = emailMinuteStr.split("\\s");
+            emailMinuteStr = minuteParts[0];
+            Integer emailHour = (Integer.parseInt(emailHourStr));
+            System.out.println("Email hour is: " + emailHour);
+            Integer emailMinute = (Integer.parseInt(emailMinuteStr));
+            System.out.println("Email minute is: " + emailMinute);
+            Integer emailMinuteThreshold = emailMinute + 1;
+            System.out.println("Email Minute Threshold is: " + emailMinuteThreshold);
 
-        DateTime dt = new DateTime();
-        System.out.println("Current DateTime is: " + dt);
-        Integer currentHour = dt.getHourOfDay();
-        System.out.println("Current Hour is: " + currentHour);
-        Integer currentMinutes = dt.getMinuteOfHour();
-        System.out.println("Current Minute is: " + currentMinutes);
-        if(currentHour > 12) {
-            currentHour -= 12;
-        }
-
-        wait.until(ExpectedConditions.textToBePresentInElement(emailArrivalTime, String.valueOf(currentHour)));
-        Boolean thresholdReached = false;
-        for(int i = 0; i < 10; i++) {
-            if (currentMinutes <= emailMinuteThreshold) {
-                thresholdReached = true;
-                break;
+            DateTime dt = new DateTime();
+            System.out.println("Current DateTime is: " + dt);
+            Integer currentHour = dt.getHourOfDay();
+            System.out.println("Current Hour is: " + currentHour);
+            Integer currentMinutes = dt.getMinuteOfHour();
+            System.out.println("Current Minute is: " + currentMinutes);
+            if(currentHour > 12) {
+                currentHour -= 12;
             }
+
+            wait.until(ExpectedConditions.textToBePresentInElement(emailArrivalTime, String.valueOf(currentHour)));
+            Boolean thresholdReached = false;
+            for(int i = 0; i < 10; i++) {
+                if (currentMinutes <= emailMinuteThreshold) {
+                    thresholdReached = true;
+                    i = 10;
+                    break;
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (i == 6) {
+                    refreshButton.click();
+                }
+            }
+
+            if (thresholdReached == false) {
+                System.out.println("Email time synchronization failed. The time threshold was not reached.");
+                System.exit(-1);
+            }
+        } catch (NoSuchElementException nsee) {
+            refreshButton.click();
             try {
-                Thread.sleep(500);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (i == 6) {
-                refreshButton.click();
+        } catch (ElementNotFoundException enfe) {
+            refreshButton.click();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
-        if (thresholdReached == false) {
-            System.out.println("Email time synchronization failed. The time threshold was not reached.");
-            System.exit(-1);
-        }
 
         //WebDriverWait waitForEmail = new WebDriverWait(driver, 30);
         //waitForEmail.until(ExpectedConditions.textToBePresentInElement(emailSubject, emailText));
@@ -330,34 +351,36 @@ public class InstantMeetingEmailInviteFromSetupTest {
 
     @After
     public void tearDown() {
-        driver.switchTo().window(meetingControllerWindow);
+        if (meetingControllerWindow != "") {
 
-        WebElement htmlElement = driver.findElement(By.tagName("html"));
-        htmlElement.click();
-        //WebDriverWait waitForMtgCntrlsMenu = new WebDriverWait(driver, 10);
-        //waitForMtgCntrlsMenu.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")));
+            driver.switchTo().window(meetingControllerWindow);
 
-        if (inviteFromMeetingFlag == 0) {
-            WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
-            Actions action = new Actions(driver);
-            action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
-            action.release().perform();
-            WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
-            endMtgButton.click();
-        } else if (inviteFromMeetingFlag == 1) {
-            WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[10]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
-            Actions action = new Actions(driver);
-            action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
-            action.release().perform();
-            WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
-            endMtgButton.click();
+            WebElement htmlElement = driver.findElement(By.tagName("html"));
+            htmlElement.click();
+            //WebDriverWait waitForMtgCntrlsMenu = new WebDriverWait(driver, 10);
+            //waitForMtgCntrlsMenu.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")));
+
+            if (inviteFromMeetingFlag == 0) {
+                WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
+                Actions action = new Actions(driver);
+                action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
+                action.release().perform();
+                WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
+                endMtgButton.click();
+            } else if (inviteFromMeetingFlag == 1) {
+                WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[10]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
+                Actions action = new Actions(driver);
+                action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
+                action.release().perform();
+                WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
+                endMtgButton.click();
+            }
         }
-
-
+/*
         closeWindow(projectManagerWindow);
         closeWindow(myAccountWindow);
         driver.switchTo().window(baseWindow);
-
+*/
         driver.quit();
     }
 }
