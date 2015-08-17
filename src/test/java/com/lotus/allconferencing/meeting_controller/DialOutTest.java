@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -22,6 +23,7 @@ public class DialOutTest {
     private WebDriver driver;
     private String baseWindow, myAccountWindow, projectManagerWindow, meetingControllerWindow;
     private LoginPageObject loginPage;
+    private Integer inviteFromMeetingFlag = 0;
 
     public String getWindow() {
         int i = 0;
@@ -93,6 +95,37 @@ public class DialOutTest {
 
     }
 
+    public void endMeeting() {
+        if (meetingControllerWindow != "") {
+
+            driver.switchTo().window(meetingControllerWindow);
+
+            WebElement htmlElement = driver.findElement(By.tagName("html"));
+            htmlElement.click();
+            //WebDriverWait waitForMtgCntrlsMenu = new WebDriverWait(driver, 10);
+            //waitForMtgCntrlsMenu.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")));
+
+            if (inviteFromMeetingFlag == 0) {
+                WebElement mtgCtrlsMenu = driver.findElement(By.xpath(".//*[@id='yui-gen37']/a")/*("/html/body/div[8]/div/div[2]/div[2]/div/div/div/ul/li")*/); // .//*[@id='yui-gen37']/a
+                Actions action = new Actions(driver);
+                action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
+                action.release().perform();
+                WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
+                endMtgButton.click();
+            } else if (inviteFromMeetingFlag == 1) {
+                WebElement mtgCtrlsMenu = driver.findElement(By.xpath("/html/body/div[10]/div/div[2]/div[2]/div/div/div/ul/li")); // .//*[@id='yui-gen37']/a
+                Actions action = new Actions(driver);
+                action.moveToElement(mtgCtrlsMenu).click().moveByOffset(0, 105).clickAndHold().perform();
+                action.release().perform();
+                WebElement endMtgButton = driver.findElement(By.cssSelector("button[id='genericdualoptdialogopt1-button']"));
+                endMtgButton.click();
+            }
+
+            //WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        }
+    }
+
 
     @Before
     public void setup() {
@@ -123,15 +156,19 @@ public class DialOutTest {
 
         WebElement dialOutDialogButton = driver.findElement(By.cssSelector("button[id='simpleerrordialogok-button']"));
         dialOutDialogButton.click();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("button[id='simpleerrordialogok-button']")));
 
-        /***************************************************************************************************************
-        * Manually check for call to be received.
-        */
-
+        // Manually check for call to be received.
+        try {
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @After
     public void tearDown() {
-        //driver.quit();
+        endMeeting();
+        driver.quit();
     }
 }
