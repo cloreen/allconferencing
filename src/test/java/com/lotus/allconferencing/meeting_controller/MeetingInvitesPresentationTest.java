@@ -89,7 +89,7 @@ public class MeetingInvitesPresentationTest {
         WebElement newBaseElement = driver.findElement(By.cssSelector("html"));
         newBaseElement.click();
         WebDriverWait waitForInstantMeetingSetup = new WebDriverWait(driver, 5);
-        waitForInstantMeetingSetup.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".hd")));
+        waitForInstantMeetingSetup.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[id='new_meet_part_name']")));
 
         WebElement partName = driver.findElement(By.cssSelector("input[id='new_meet_part_name']"));
         partName.sendKeys(new String("AutoTest-Gmail"));
