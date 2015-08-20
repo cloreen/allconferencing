@@ -128,7 +128,7 @@ public class MeetingInvitesPresentationTest {
 
     }
 
-    public String checkInviteGmail() {
+    public String checkInviteGmail(String user, String pass) {
         Set<String> windows = driver.getWindowHandles();
         String adminToolHandle = driver.getWindowHandle();
         ((JavascriptExecutor)driver).executeScript("window.open();");
@@ -141,11 +141,11 @@ public class MeetingInvitesPresentationTest {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
         wait.until(ExpectedConditions.titleIs("Gmail"));
         WebElement emailAddress = driver.findElement(By.cssSelector("input[id='Email']"));
-        emailAddress.sendKeys(new String("bgactest03@gmail.com"));
+        emailAddress.sendKeys(new String(user));
         emailAddress.submit();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[id='Passwd']")));
         WebElement password = driver.findElement(By.cssSelector("input[id='Passwd']"));
-        password.sendKeys(new String("lotus12345"));
+        password.sendKeys(new String(pass));
         password.submit();
         wait.until(ExpectedConditions.titleContains("Inbox"));
 
@@ -363,7 +363,7 @@ public class MeetingInvitesPresentationTest {
     public void sendInviteFromSetup() {
         participantNumber = 1;
         instantMeetingQuickSetupInviteOnePart();
-        String emailReceived = checkInviteGmail();
+        String emailReceived = checkInviteGmail("bgactest03@gmail.com", "lotus12345");
         assertEquals("Email was received", "AllConferencing Meeting Invite", emailReceived);
     }
 
