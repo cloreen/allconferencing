@@ -1,6 +1,7 @@
 package com.lotus.allconferencing.meeting_controller;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
 import com.lotus.allconferencing.webdriver.manager.Driver;
 import com.lotus.allconferencing.webdriver.manager.WindowManager;
@@ -33,6 +34,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
     private static String projectManagerWindow = "";
     private static String meetingControllerWindow = "";
     private static Integer inviteFromMeetingFlag = 0;
+    private ReadPropertyFile readProps = null;
 
     public static WebElement getElementWithIndex(By by, int pos) {
         return driver.findElements(by).get(pos);
@@ -78,7 +80,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
 //        Set<String> set = driver.getWindowHandles();
 //        WindowManager winMgr = new WindowManager(driver);
         myAccountWindow = getWindow();
-        loginPage.login("25784", "lotus456");
+        loginPage.login(readProps.getOwnerClientID(), readProps.getOwnerPassword());
         //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
         //waitForLoginPage.until();
         System.out.println("My Account window handle is: " + myAccountWindow);
@@ -185,7 +187,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
             WebElement partName = driver.findElement(By.cssSelector("input[id='new_meet_part_name']"));
             partName.sendKeys(new String("AutoTest-Gmail"));
             WebElement partEmail = driver.findElement(By.cssSelector("input[id='new_meet_part_email']"));
-            partEmail.sendKeys(new String("bgactest03@gmail.com"));
+            partEmail.sendKeys(new String(readProps.getParticipantEmail()));
             WebElement addButton = driver.findElement(By.cssSelector("button[id='addmeetpart-button']"));
             addButton.click();
             WebDriverWait wait = new WebDriverWait(driver, 10);
@@ -229,7 +231,7 @@ public class InstantMeetingEmailInviteFromSetupTest {
             WebElement invitePartName = driver.findElement(By.cssSelector("input[id='new_invite_part_name'"));
             invitePartName.sendKeys(new String("AutoTest-Gmail"));
             WebElement invitePartEmail = driver.findElement(By.cssSelector("input[id='new_invite_part_email'"));
-            invitePartEmail.sendKeys(new String("bgactest03@gmail.com"));
+            invitePartEmail.sendKeys(new String(readProps.getParticipantEmail()));
             WebElement addPartButton = driver.findElement(By.cssSelector("button[id='addinvitepart-button']"));
             addPartButton.click();
 
@@ -245,11 +247,11 @@ public class InstantMeetingEmailInviteFromSetupTest {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
         wait.until(ExpectedConditions.titleIs("Gmail"));
         WebElement emailAddress = driver.findElement(By.cssSelector("input[id='Email']"));
-        emailAddress.sendKeys(new String("bgactest03@gmail.com"));
+        emailAddress.sendKeys(new String(readProps.getParticipantEmail()));
         emailAddress.submit();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[id='Passwd']")));
         WebElement password = driver.findElement(By.cssSelector("input[id='Passwd']"));
-        password.sendKeys(new String("lotus12345"));
+        password.sendKeys(new String(readProps.getParticipantEmailPwd()));
         password.submit();
         wait.until(ExpectedConditions.titleContains("Inbox"));
 
@@ -347,8 +349,13 @@ public class InstantMeetingEmailInviteFromSetupTest {
 
     @Before
     public void setup() {
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         driver = new FirefoxDriver();
-        driver.get("http://www.allconferencing.com/");
+        driver.get(readProps.getUrl());
         baseWindow = driver.getWindowHandle();
         getLoginPage(LoginPageObject.LoginType.STANDARD);
         //standardLogin("25784", "lotus456");
