@@ -1,5 +1,6 @@
 package com.lotus.allconferencing.meeting_controller.pages;
 
+import com.lotus.allconferencing.ReadPropertyFile;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class LoginPageObject {
     private WebDriver driver;
     private LoginType accountType;
+    private ReadPropertyFile readProps = null;
 
     private WebElement getElementWithIndex(By by, int pos) {
         return driver.findElements(by).get(pos);
@@ -33,11 +35,17 @@ public class LoginPageObject {
 
         driver = newDriver;
 
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void get() {
 
-        driver.get("http://www.allconferencing.com/");
+        driver.get(readProps.getUrl());
 
     }
 
