@@ -90,7 +90,7 @@ public class SetupInstantMeetingTest extends BaseSeleniumTest {
         partEmail.sendKeys(new String(readProps.getParticipantEmail()));
         WebElement addButton = driver.findElement(By.cssSelector("button[id='addmeetpart-button']"));
         addButton.click();
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, 15);
         wait.until(
                 ExpectedConditions.textToBePresentInElement(driver.findElement(By.cssSelector("table tbody:nth-of-type(2) tr td:nth-of-type(3) div div")), "bgactest03@gmail.com")
         );
