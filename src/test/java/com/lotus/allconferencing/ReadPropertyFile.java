@@ -21,6 +21,8 @@ public class ReadPropertyFile {
     public String getUrl() {
         return props.getProperty("url");
     }
+    public String getBrowser() { return props.getProperty("browser"); }
+
     // Main test account -------------------------------------------------------
     public String getOwnerClientID() {
         return props.getProperty("owner1_clientid");
@@ -71,5 +73,21 @@ public class ReadPropertyFile {
     }
     public String getOwner2Password() {
         return props.getProperty("owner2_password");
+    } //----------------------------------------------------------------------------
+
+    // Very old test account----------------------------------------------------
+    public String getOlderAcctClientID() {
+        return props.getProperty("oldacct1_clientid");
+    }
+    public String getOlderAcctPassword() {
+        return props.getProperty("oldacct1_password");
+    } //----------------------------------------------------------------------------
+
+    // Old test account----------------------------------------------------
+    public String getOldAcctClientID() {
+        return props.getProperty("oldacct2_clientid");
+    }
+    public String getOldAcctPassword() {
+        return props.getProperty("oldacct2_password");
     } //----------------------------------------------------------------------------
 }
