@@ -101,12 +101,32 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 
         // Open Meeting Manager
         WebElement meetingMgrLink = driver.findElement(By.xpath(".//*[@id='lnkMM']"));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         meetingMgrLink.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Transfer driver to new window, bring Meeting Manager window to the foreground,
         // get its handle.
         meetingManagerWindow = getWindow();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         driver.manage().window().maximize();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         WebDriverWait waitForMeetingManager = new WebDriverWait(driver, 10);
         waitForMeetingManager.until(
                 ExpectedConditions.presenceOfElementLocated(By.xpath(".//*[@id='zb__App__Calendar_title']"))
@@ -466,6 +486,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         System.out.println(mtgSvcsElementList.size());
         for (WebElement element : mtgSvcsElementList) {
             elementCounter += 1;
+            /*
             System.out.println("Element number: " + elementCounter);
             System.out.println(element.getAttribute("innerHTML"));
             System.out.println(element.getText());
@@ -473,7 +494,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
                 System.out.println("This element is visible");
             }
             System.out.println("");
-
+            */
             if(elementCounter == 232) {
                 WebElement modName = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]/following-sibling::td[1]/div/input"));
                 modName.sendKeys("Moderator 1");
@@ -598,13 +619,72 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         }
 
         // Check that passcodes and dial-in numbers have been generated
-        actions.contextClick(testAppt).perform();
-        actions.click(driver.findElement(By.xpath(".//*[@id='AllConferencing_Services_Zimlet_ActionMenu_title']"))).perform();
+        Integer elementListIterationAfterMtgSvcs = 0;
+        WebElement testApptAfterMtgSvcs = null;
+        List<WebElement> apptListAfterMtgSvcs = driver.findElements(By.xpath(".//td[@class='appt_time']/table/tbody/tr/td"));
+        for (WebElement appt : apptListAfterMtgSvcs) {
+            elementListIterationAfterMtgSvcs += 1;
+            //System.out.println("This is iteration " + elementListIteration);
+
+            String apptText = appt.getText();
+
+            //System.out.println("AppointmentStartTime is: " + apptStartTime);
+            //System.out.println("Time of appt is: " + apptText);
+            if (apptText.equals(apptStartTime)) {
+                testApptExists = true;
+                testApptAfterMtgSvcs = appt;
+                break;
+                //System.out.println("This is the test appt you created");
+            } else {
+                //System.out.println("This is not the test appt you created");
+            }
+        }
+
+        Actions finalActions = new Actions(driver);
+        finalActions.contextClick(testApptAfterMtgSvcs).perform();
+        finalActions.click(driver.findElement(By.xpath(".//*[@id='AllConferencing_Services_Zimlet_ActionMenu_title']"))).perform();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        WebElement mtgSvcsLeftPanel = driver.findElement(By.xpath("./html/body/div[@id='z_shell']/div[33]/div[10]/div/div/div[2]/div[2]/div/table"));
+        WebElement mtgSvcsTag = mtgSvcsLeftPanel.findElement(By.xpath(".//td[contains(@id, '_textCell')]"));
+        mtgSvcsTag.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        WebElement mtgSvcsTableAfterMtgSvcs = driver.findElement(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']/table/tbody/tr[2]/td/div/div/div[2]/div/table[2]/tbody/tr[11]/td[2]/div/table"));
+        List<WebElement> mtgSvcsElementListAfterMtgSvcs = mtgSvcsTableAfterMtgSvcs.findElements(By.tagName("td"));
+        Integer elementCounterAfterMtgSvcs = 0;
+        System.out.println(mtgSvcsElementListAfterMtgSvcs.size());
+        for (WebElement element : mtgSvcsElementListAfterMtgSvcs) {
+            elementCounterAfterMtgSvcs += 1;
+
+            System.out.println("Element number: " + elementCounterAfterMtgSvcs);
+            System.out.println(element.getAttribute("innerHTML"));
+            System.out.println(element.getText());
+            if(element.isDisplayed()) {
+                System.out.println("This element is visible");
+            }
+            System.out.println("");
+            if (elementCounterAfterMtgSvcs == 2) {
+                System.out.println(element.getAttribute("value"));
+            }
+            /*
+            if(elementCounter == 232) {
+                WebElement modName = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]/following-sibling::td[1]/div/input"));
+                modName.sendKeys("Moderator 1");
+
+                Actions clickOK = new Actions(driver);
+                clickOK.clickAndHold(element).release().perform();
+            }
+            */
+        }
     }
 }
