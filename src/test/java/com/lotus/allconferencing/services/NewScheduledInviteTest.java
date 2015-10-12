@@ -4,7 +4,9 @@ import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.AddDocPageObject;
+import com.lotus.allconferencing.meeting_controller.pages.GmailObject;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
+import com.lotus.allconferencing.services.meetingmanager.MeetingManagerPageObject;
 import com.lotus.allconferencing.suites.MeetingControllerSuiteTest;
 import jdk.nashorn.internal.runtime.linker.JavaAdapterFactory;
 import junit.framework.Assert;
@@ -37,10 +39,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created by Ben on 9/1/2015.
  */
+//TODO - Refactor Gmail test into page object
 public class NewScheduledInviteTest extends BaseSeleniumTest {
-    private static WebDriver driver; // = getDriver();
+    private static WebDriver driver;
     private static WebDriver driver2;
     private LoginPageObject loginPage;
+    private MeetingManagerPageObject meetingManagerPage;
     private ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
@@ -50,8 +54,8 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 
 
     public WebDriver getBrowser(String browserType) {
-        if(driver == null) {
-            if(browserType.equals("firefox")) {
+        if (driver == null) {
+            if (browserType.equals("firefox")) {
                 driver = new FirefoxDriver();
             } else if (browserType.equals("chrome")) {
             }
@@ -83,15 +87,51 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         System.out.println("My Account window handle is: " + myAccountWindow);
     }
 
-    public void startNextMonth (Integer month, Integer day) {
-        month += 1;
-        day = 1;
-    }
+    public void getMeetingManager() {
 
-    public void startNextDay (Integer day) {
-        day += 1;
-    }
+        // Open Meeting Manager
+        WebElement meetingMgrLink = driver.findElement(By.xpath(".//*[@id='lnkMM']"));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        meetingMgrLink.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
+        // Transfer driver to new window, bring Meeting Manager window to the foreground,
+        // get its handle.
+        meetingManagerWindow = getWindow();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        driver.manage().window().maximize();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        WebDriverWait waitForMeetingManager = new WebDriverWait(driver, 10);
+        waitForMeetingManager.until(
+                ExpectedConditions.presenceOfElementLocated(By.xpath(".//*[@id='zb__App__Calendar_title']"))
+        );
+
+        meetingManagerPage = new MeetingManagerPageObject(driver);
+        meetingManagerPage.scheduleMeeting();
+
+    }
+/*
+    public void getGmailInbox () {
+        driver2 = new FirefoxDriver();
+        gmail.checkInviteEmail();
+    }
+*/
     public String checkInviteEmail() {
         driver2 = new FirefoxDriver();
         driver2.get("http://www.gmail.com/");
@@ -149,13 +189,13 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             System.out.println("Current Hour is: " + currentHour);
             Integer currentMinutes = dt.getMinuteOfHour();
             System.out.println("Current Minute is: " + currentMinutes);
-            if(currentHour > 12) {
+            if (currentHour > 12) {
                 currentHour -= 12;
             }
 
             wait.until(ExpectedConditions.textToBePresentInElement(emailArrivalTime, String.valueOf(currentHour)));
             Boolean thresholdReached = false;
-            for(int i = 0; i < 15; i++) {
+            for (int i = 0; i < 15; i++) {
                 if (currentMinutes <= emailMinuteThreshold) {
                     thresholdReached = true;
                     i = 15;
@@ -196,8 +236,22 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         //waitForEmail.until(ExpectedConditions.textToBePresentInElement(emailSubject, emailText));
 
         System.out.println("The subject of the email found is: " + emailSubject.getText());
-        return(emailSubject.getText());
+        return (emailSubject.getText());
     }
+
+    public void verifyEmailReceived(String emailSubject) {
+        assertThat("Appropriate email is received", emailSubject.contentEquals("Your conference invitation"));
+    }
+
+    public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {
+        assertTrue("Toll-Free Number has been generated", tollFreeNum.matches("^?[0-9, -]{1,14}"));
+    }
+
+    public void verifyPasscodesAreGenerated(String participantPasscode) {
+        assertTrue("Passcodes have been generated", participantPasscode.matches("^?[0-9]{1,6}"));
+    }
+
+    public MeetingManagerPageObject meetingManager = new MeetingManagerPageObject(driver);
 
 
     @Test
@@ -207,6 +261,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         driver = new FirefoxDriver();
         driver.get(readProps.getUrl());
 
@@ -221,42 +276,10 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         // get its handle.
         getLoginPage(LoginPageObject.LoginType.STANDARD);
 
-        // Open Meeting Manager
-        WebElement meetingMgrLink = driver.findElement(By.xpath(".//*[@id='lnkMM']"));
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        meetingMgrLink.click();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // Transfer driver to new window, bring Meeting Manager window to the foreground,
-        // get its handle.
-        meetingManagerWindow = getWindow();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        driver.manage().window().maximize();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        WebDriverWait waitForMeetingManager = new WebDriverWait(driver, 10);
-        waitForMeetingManager.until(
-                ExpectedConditions.presenceOfElementLocated(By.xpath(".//*[@id='zb__App__Calendar_title']"))
-        );
-
-
+        getMeetingManager();
+/*
         // Open calendar
-        WebElement calendarTab = driver.findElement(By.xpath(".//*[@id='zb__App__Calendar_title']"));
+        WebElement calendarTab = driver.findElement(By.xpath("./*//*[@id='zb__App__Calendar_title']"));
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
@@ -265,7 +288,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         calendarTab.click();
 
         // Change Calendar view to current day and wait for display
-        WebElement calDayViewButton = driver.findElement(By.xpath(".//*[@id='zb__CLD__DAY_VIEW_title']"));
+        WebElement calDayViewButton = driver.findElement(By.xpath("./*//*[@id='zb__CLD__DAY_VIEW_title']"));
         calDayViewButton.click();
         try {
             Thread.sleep(2000);
@@ -274,19 +297,19 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         }
 
         // Open New Appointment Interface
-        WebElement newAppointmentButton = driver.findElement(By.xpath(".//*[@id='zb__NEW_MENU_title']"));
+        WebElement newAppointmentButton = driver.findElement(By.xpath("./*//*[@id='zb__NEW_MENU_title']"));
         newAppointmentButton.click();
 
         // Enter Appointment Name (Subject) --------------------------------------------
-        WebElement appointmentLabel = driver.findElement(By.xpath(".//*[@id='zb__App__tab_APPT-1']/table"));
+        WebElement appointmentLabel = driver.findElement(By.xpath("./*//*[@id='zb__App__tab_APPT-1']/table"));
         System.out.println("Text found in element: " + appointmentLabel.getText());
         WebElement saveAndCloseButton = driver.findElement(By.id("zb__APPT-1__SAVE_title"));
         System.out.println("Text found in Save Button: " + saveAndCloseButton.getText());
-        WebElement attendeesButton = driver.findElement(By.xpath(".//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[5]/td/div/table/tbody/tr/td[2]"));
+        WebElement attendeesButton = driver.findElement(By.xpath("./*//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[5]/td/div/table/tbody/tr/td[2]"));
         System.out.println("Text found in Attendees Button: " + attendeesButton.getText());
-        WebElement fromLabel = driver.findElement(By.xpath(".//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[3]/td[1]"));
+        WebElement fromLabel = driver.findElement(By.xpath("./*//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[3]/td[1]"));
         System.out.println("Text found in From Label: " + fromLabel.getText());
-        WebElement subjectField = driver.findElement(By.xpath(".//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[4]/td[2]/div/input"));
+        WebElement subjectField = driver.findElement(By.xpath("./*//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[4]/td[2]/div/input"));
         subjectField.sendKeys("Test Meeting");
 
         // Add an Attendee --------------------------------------------------------------
@@ -376,7 +399,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 
         // If appointment is at Midnight, make it the following day.
         if (apptAtMidnight) {
-            WebElement startDateElement = driver.findElement(By.xpath(".//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[10]/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/input"));
+            WebElement startDateElement = driver.findElement(By.xpath("./*//*[@id='APPT_COMPOSE_1']/div/div/table/tbody/tr/td/table/tbody/tr[10]/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/input"));
             String startDate = startDateElement.getAttribute("value").toString();
             String[] startDateParts = startDate.split("/");
             System.out.println("StartDate is: " + startDate);
@@ -503,7 +526,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 
 
         // Save Appointment and Send Appointment Invite
-        WebElement sendInviteButton = driver.findElement(By.xpath(".//*[@id='zb__APPT-1__SEND_INVITE_title']"));
+        WebElement sendInviteButton = driver.findElement(By.xpath("./*//*[@id='zb__APPT-1__SEND_INVITE_title']"));
         sendInviteButton.click();
 
         WebDriverWait waitForCalendar = new WebDriverWait(driver, 10);
@@ -515,7 +538,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        /*
+        *//*
         if(apptAtMidnight) {
             WebElement pageForwardButton = driver.findElement(By.xpath(".//td[contains('CAL_Nav_PAGE_FORWARD')]"));
             pageForwardButton.click();
@@ -523,7 +546,8 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
                     ExpectedConditions.presenceOfElementLocated(By.id("zb__CLD__DAY_VIEW_title"))
             );
         }
-        */
+        *//*
+        *//*
         // Find Appointment in Calendar to add Meeting Services
         Boolean testApptExists = false;
         Integer elementListIteration = 0;
@@ -561,7 +585,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         // Open Meeting Services for Test Appointment
         Actions actions = new Actions(driver);
         actions.contextClick(testAppt).perform();
-        actions.click(driver.findElement(By.xpath(".//*[@id='AllConferencing_Services_Zimlet_ActionMenu_title']"))).perform();
+        actions.click(driver.findElement(By.xpath("./*//*[@id='AllConferencing_Services_Zimlet_ActionMenu_title']"))).perform();
 
         try {
             Thread.sleep(2000);
@@ -569,8 +593,8 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             e.printStackTrace();
         }
         // Add Moderator Name
-        /*
-        List<WebElement> mtgSvcsElementList = driver.findElements(By.xpath("./html/body/div[@id='z_shell']/*"));
+        *//*
+        List<WebElement> mtgSvcsElementList = driver.findElements(By.xpath("./html/body/div[@id='z_shell']*//*"));
         Integer elementCounter = 0;
         System.out.println(mtgSvcsElementList.size());
         for (WebElement element : mtgSvcsElementList) {
@@ -583,9 +607,9 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             }
             System.out.println("");
         }
-        */
-        /*
-        List<WebElement> mtgSvcsElementList = driver.findElements(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']/*"));
+        *//*
+        *//*
+        List<WebElement> mtgSvcsElementList = driver.findElements(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']*//*"));
         Integer elementCounter = 0;
         System.out.println(mtgSvcsElementList.size());
         for (WebElement element : mtgSvcsElementList) {
@@ -598,14 +622,14 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             }
             System.out.println("");
         }
-        */
+        *//*
         WebElement mtgSvcsTable = driver.findElement(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']/table"));
         List<WebElement> mtgSvcsElementList = mtgSvcsTable.findElements(By.tagName("td"));
         Integer elementCounter = 0;
         System.out.println(mtgSvcsElementList.size());
         for (WebElement element : mtgSvcsElementList) {
             elementCounter += 1;
-            /*
+            *//*
             System.out.println("Element number: " + elementCounter);
             System.out.println(element.getAttribute("innerHTML"));
             System.out.println(element.getText());
@@ -613,7 +637,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
                 System.out.println("This element is visible");
             }
             System.out.println("");
-            */
+            *//*
             if (elementCounter == 232) {
                 WebElement modName = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]/following-sibling::td[1]/div/input"));
                 modName.sendKeys("Moderator 1");
@@ -623,7 +647,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             }
         }
 
-        /*
+        *//*
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -693,7 +717,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         //builder.moveToElement(cancelButton).perform();
 
 
-        WebElement meetingAgendaLabel = driver.findElement(By.xpath(".//*[contains(text(), 'Meeting Agenda')]"));
+        WebElement meetingAgendaLabel = driver.findElement(By.xpath("./*//*[contains(text(), 'Meeting Agenda')]"));
         meetingAgendaLabel.click();
         WebElement okButtonContainer = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]"));
         WebElement okButton = driver.findElement(By.xpath(".//td[contains(@id, 'button2_title')]"/div/table/tbody/tr/td[2]"));
@@ -706,7 +730,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             e.printStackTrace();
         }
         Actions actions1 = new Actions(driver);
-        actions1.moveToElement(okButtonContainer)./*moveToElement(driver.findElement(By.xpath(".//td[contains(@id, 'button2_title')]"))).build().perform();
+        actions1.moveToElement(okButtonContainer).*//*moveToElement(driver.findElement(By.xpath(".//td[contains(@id, 'button2_title')]"))).build().perform();
 
         try {
             Thread.sleep(1000);
@@ -725,7 +749,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         //((JavascriptExecutor) driver).executeScript(js, okButton);
         //okButton.click();
         //actions1.release(okButton).perform();
-        */
+        *//*
 
         // Click Refresh Button to refresh Calendar
         WebElement refreshButton = driver.findElement(By.xpath(".//td[@id='skin_spacing_global_buttons']"));
@@ -735,21 +759,8 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
     }
-
-    public void verifyEmailReceived(String emailSubject) {
-        assertThat("Appropriate email is received", emailSubject.contentEquals("Your conference invitation"));
-    }
-
-    public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {
-        assertTrue("Toll-Free Number has been generated", tollFreeNum.matches("^?[0-9, -]{1,14}"));
-    }
-
-    public void verifyPasscodesAreGenerated(String participantPasscode) {
-        assertTrue("Passcodes have been generated", participantPasscode.matches("^?[0-9]{1,6}"));
-    }
-
 
 
     @Test
@@ -761,6 +772,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         }
 
         // Check invite email, passcodes and dial-in numbers have been generated
+//        getGmailInbox();
         String inviteEmailSubject = checkInviteEmail();
         verifyEmailReceived(inviteEmailSubject);
 
@@ -774,27 +786,6 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         }
 
         List<WebElement> emailBodyTable = driver2.findElements(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*"));
-        //WebElement emailBody = emailBodyTable.findElement(By.xpath("/table/tr/td/div[2]/div[2]/div/div[3]/div/div/div/div/div/div/div[7]/div"));
-        //String emailContent = emailBody.getText();
-        /*
-        String filename = "inviteEmailContent.txt";
-        try {
-            FileWriter fw = new FileWriter(filename, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            String lineSep = System.getProperty("line.separator");
-            String[] output = emailContent.split("\n");
-
-            for (int i = 0; i < output.length; i++) {
-                bw.write(output[i]);
-                bw.write(lineSep);
-            }
-
-            bw.flush();
-            bw.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        */
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
@@ -879,18 +870,8 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
                 System.out.println("The new email was not found.");
                 System.exit(-1);
             }
-
-            /*
-            System.out.println("Element number: " + elementCounter);
-            System.out.println(element.getAttribute("innerHTML"));
-            System.out.println(element.getText());
-            if(element.isDisplayed()) {
-                System.out.println("This element is visible");
-            }
-            System.out.println("");
-            */
         }
+    }
+}
 
-    }
-    }
 
