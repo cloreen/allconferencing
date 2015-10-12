@@ -1,24 +1,36 @@
 package com.lotus.allconferencing.services;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.AddDocPageObject;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
 import com.lotus.allconferencing.suites.MeetingControllerSuiteTest;
 import jdk.nashorn.internal.runtime.linker.JavaAdapterFactory;
+import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.chrono.Chronology;
 import java.util.*;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -27,11 +39,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class NewScheduledInviteTest extends BaseSeleniumTest {
     private static WebDriver driver; // = getDriver();
+    private static WebDriver driver2;
     private LoginPageObject loginPage;
     private ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
     private static String meetingManagerWindow;
+    private static Boolean isNewEmail = false;
+    private static Pattern pattern = null;
 
 
     public WebDriver getBrowser(String browserType) {
@@ -75,6 +90,113 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 
     public void startNextDay (Integer day) {
         day += 1;
+    }
+
+    public String checkInviteEmail() {
+        driver2 = new FirefoxDriver();
+        driver2.get("http://www.gmail.com/");
+        WebDriverWait wait = new WebDriverWait(driver2, 10);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
+        wait.until(ExpectedConditions.titleIs("Gmail"));
+        WebElement emailAddress = driver2.findElement(By.cssSelector("input[id='Email']"));
+        emailAddress.sendKeys(new String(readProps.getParticipantEmail()));
+        emailAddress.submit();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[id='Passwd']")));
+        WebElement password = driver2.findElement(By.cssSelector("input[id='Passwd']"));
+        password.sendKeys(new String(readProps.getParticipantEmailPwd()));
+        password.submit();
+        wait.until(ExpectedConditions.titleContains("Inbox"));
+
+        String emailText = "AllConferencing Meeting Invite";
+        WebElement refreshButton = driver2.findElement(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div")); // div[role='button']   // div[class='asa']
+        WebElement emailSubject = null;
+        try {
+            emailSubject = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
+            String emailSubjectString = emailSubject.getText();
+            WebElement emailArrivalTime = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
+            String emailTime = emailArrivalTime.getText();
+            for (int i = 0; i < 3; i++) {
+                if (!emailTime.contains("am")) {
+                    if (!emailTime.contains("pm")) {
+                        refreshButton.click();
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        emailArrivalTime = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
+                        emailTime = emailArrivalTime.getText();
+                    }
+                }
+            }
+
+            System.out.println("Email time retrieved from Gmail was: " + emailTime);
+            String[] emailTimeParts = emailTime.split(":");
+            String emailHourStr = emailTimeParts[0];
+            String emailMinuteStr = emailTimeParts[1];
+            String[] minuteParts = emailMinuteStr.split("\\s");
+            emailMinuteStr = minuteParts[0];
+            Integer emailHour = (Integer.parseInt(emailHourStr));
+            System.out.println("Email hour is: " + emailHour);
+            Integer emailMinute = (Integer.parseInt(emailMinuteStr));
+            System.out.println("Email minute is: " + emailMinute);
+            Integer emailMinuteThreshold = emailMinute + 1;
+            System.out.println("Email Minute Threshold is: " + emailMinuteThreshold);
+
+            DateTime dt = new DateTime();
+            System.out.println("Current DateTime is: " + dt);
+            Integer currentHour = dt.getHourOfDay();
+            System.out.println("Current Hour is: " + currentHour);
+            Integer currentMinutes = dt.getMinuteOfHour();
+            System.out.println("Current Minute is: " + currentMinutes);
+            if(currentHour > 12) {
+                currentHour -= 12;
+            }
+
+            wait.until(ExpectedConditions.textToBePresentInElement(emailArrivalTime, String.valueOf(currentHour)));
+            Boolean thresholdReached = false;
+            for(int i = 0; i < 15; i++) {
+                if (currentMinutes <= emailMinuteThreshold) {
+                    thresholdReached = true;
+                    i = 15;
+                    break;
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (i == 6 || i == 12) {
+                    refreshButton.click();
+                }
+            }
+
+            if (thresholdReached == false) {
+                System.out.println("Email time synchronization failed. The time threshold was not reached.");
+                System.exit(-1);
+            }
+        } catch (NoSuchElementException nsee) {
+            refreshButton.click();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } catch (ElementNotFoundException enfe) {
+            refreshButton.click();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        //WebDriverWait waitForEmail = new WebDriverWait(driver, 30);
+        //waitForEmail.until(ExpectedConditions.textToBePresentInElement(emailSubject, emailText));
+
+        System.out.println("The subject of the email found is: " + emailSubject.getText());
+        return(emailSubject.getText());
     }
 
 
@@ -237,17 +359,16 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             apptHour -= 12;
 
 
-
         // Input the appointment time in the Start Time field
         String apptStartTime = "";
         WebElement startTimeField = driver.findElement(By.id("ZmTimeInputSelect_1_startTimeInput"));
         startTimeField.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         if (apptMinutes == 0) {
-            if(apptAtMidnight)
+            if (apptAtMidnight)
                 apptTimeofDay = "AM";
             apptStartTime = apptHour.toString() + ":" + apptMinutes.toString() + "0" + " " + apptTimeofDay;
         } else {
-            if(apptAtMidnight)
+            if (apptAtMidnight)
                 apptTimeofDay = "AM";
             apptStartTime = apptHour + ":" + apptMinutes + " " + apptTimeofDay;
         }
@@ -415,7 +536,6 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         }
 
 
-
         for (WebElement appt : apptList) {
             elementListIteration += 1;
             //System.out.println("This is iteration " + elementListIteration);
@@ -433,7 +553,6 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
                 //System.out.println("This is not the test appt you created");
             }
         }
-
 
 
         assert (testApptExists);
@@ -495,7 +614,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
             }
             System.out.println("");
             */
-            if(elementCounter == 232) {
+            if (elementCounter == 232) {
                 WebElement modName = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]/following-sibling::td[1]/div/input"));
                 modName.sendKeys("Moderator 1");
 
@@ -617,74 +736,152 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
-        // Check that passcodes and dial-in numbers have been generated
-        Integer elementListIterationAfterMtgSvcs = 0;
-        WebElement testApptAfterMtgSvcs = null;
-        List<WebElement> apptListAfterMtgSvcs = driver.findElements(By.xpath(".//td[@class='appt_time']/table/tbody/tr/td"));
-        for (WebElement appt : apptListAfterMtgSvcs) {
-            elementListIterationAfterMtgSvcs += 1;
-            //System.out.println("This is iteration " + elementListIteration);
 
-            String apptText = appt.getText();
 
-            //System.out.println("AppointmentStartTime is: " + apptStartTime);
-            //System.out.println("Time of appt is: " + apptText);
-            if (apptText.equals(apptStartTime)) {
-                testApptExists = true;
-                testApptAfterMtgSvcs = appt;
-                break;
-                //System.out.println("This is the test appt you created");
-            } else {
-                //System.out.println("This is not the test appt you created");
+
+
+    @Test
+    public void checkEmailAndPasscodes() {
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Check invite email, passcodes and dial-in numbers have been generated
+        String inviteEmailSubject = checkInviteEmail();
+        assertThat("Appropriate email is received", inviteEmailSubject.contentEquals("Your conference invitation"));
+
+        WebElement emailSubject = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
+        emailSubject.click();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<WebElement> emailBodyTable = driver2.findElements(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*"));
+        //WebElement emailBody = emailBodyTable.findElement(By.xpath("/table/tr/td/div[2]/div[2]/div/div[3]/div/div/div/div/div/div/div[7]/div"));
+        //String emailContent = emailBody.getText();
+        /*
+        String filename = "inviteEmailContent.txt";
+        try {
+            FileWriter fw = new FileWriter(filename, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            String lineSep = System.getProperty("line.separator");
+            String[] output = emailContent.split("\n");
+
+            for (int i = 0; i < output.length; i++) {
+                bw.write(output[i]);
+                bw.write(lineSep);
+            }
+
+            bw.flush();
+            bw.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        */
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (emailBodyTable.size() != 1) {
+            System.out.println("Through first wait - table not populated");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (emailBodyTable.size() != 1) {
+            System.out.println("Through second wait - table still not populated");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
-        Actions finalActions = new Actions(driver);
-        finalActions.contextClick(testApptAfterMtgSvcs).perform();
-        finalActions.click(driver.findElement(By.xpath(".//*[@id='AllConferencing_Services_Zimlet_ActionMenu_title']"))).perform();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (emailBodyTable.size() != 1) {
+            System.out.println("Through third wait (15 seconds) - table still not populated");
         }
 
-        WebElement mtgSvcsLeftPanel = driver.findElement(By.xpath("./html/body/div[@id='z_shell']/div[33]/div[10]/div/div/div[2]/div[2]/div/table"));
-        WebElement mtgSvcsTag = mtgSvcsLeftPanel.findElement(By.xpath(".//td[contains(@id, '_textCell')]"));
-        mtgSvcsTag.click();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        Integer elementCounter = 0;
+        String[] emailContent = null;
+        System.out.println(emailBodyTable.size());
+        DateTime dateTime = new DateTime();
+        Integer mins = dateTime.getMinuteOfHour();
+        System.out.println("Minute of Hour using DateTime: " + mins);
+        Integer minThreshold = null;
+        if (mins != 0) {
+            minThreshold = mins - 1;
+        } else {
+            minThreshold = 59;
         }
+        System.out.println("Minutes threshold = " + minThreshold);
+        String tollFreeNum = null;
+        String modPasscode = null;
+        for (WebElement element : emailBodyTable) {
+            if (element.isDisplayed()) {
+                emailContent = element.getText().split("\n");
+            }
+            for (String line : emailContent) {
+                elementCounter += 1;
+                System.out.println("Line " + elementCounter + ":");
+                System.out.println(line);
+                if (line.contains("(0 minutes ago)")) {
+                    System.out.println("Found newest email");
+                    isNewEmail = true;
+                }
+                if (isNewEmail == true) {
+                    if (line.contains("Toll-free phone number")) {
+                        System.out.println("Toll-free number found!");
+                        tollFreeNum = line;
+                    } else if (line.contains("Participant Passcode")) {
+                        System.out.println("Passcode found!");
+                        modPasscode = line;
+                    }
+                }
+                System.out.println("");
+            }
 
+            if (isNewEmail == true) {
+                String tollFreeNumArr[] = tollFreeNum.split(" ");
+                String passcodeArr[] = modPasscode.split(" ");
+                System.out.println("Toll Free Number line:");
+                for (String item : tollFreeNumArr) {
+                    System.out.println(item);
+                }
+                System.out.println("");
+                System.out.println("Passcode line:");
+                for (String item : passcodeArr) {
+                    System.out.println(item);
+                }
+                pattern = Pattern.compile("\\d+");
+                System.out.println("This is index (3) in tollFreeNumArr: " + tollFreeNumArr[3]);
+                assertTrue("Toll-Free Number has been generated", tollFreeNumArr[3].matches("^?[0-9, -]{1,14}"));
+                assertTrue("Passcodes have been generated", passcodeArr[2].matches("^?[0-9]{1,6}"));
+            } else {
+                System.out.println("The new email was not found.");
+                System.exit(-1);
+            }
 
-        WebElement mtgSvcsTableAfterMtgSvcs = driver.findElement(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']/table/tbody/tr[2]/td/div/div/div[2]/div/table[2]/tbody/tr[11]/td[2]/div/table"));
-        List<WebElement> mtgSvcsElementListAfterMtgSvcs = mtgSvcsTableAfterMtgSvcs.findElements(By.tagName("td"));
-        Integer elementCounterAfterMtgSvcs = 0;
-        System.out.println(mtgSvcsElementListAfterMtgSvcs.size());
-        for (WebElement element : mtgSvcsElementListAfterMtgSvcs) {
-            elementCounterAfterMtgSvcs += 1;
-
-            System.out.println("Element number: " + elementCounterAfterMtgSvcs);
+            /*
+            System.out.println("Element number: " + elementCounter);
             System.out.println(element.getAttribute("innerHTML"));
             System.out.println(element.getText());
             if(element.isDisplayed()) {
                 System.out.println("This element is visible");
             }
             System.out.println("");
-            if (elementCounterAfterMtgSvcs == 2) {
-                System.out.println(element.getAttribute("value"));
-            }
-            /*
-            if(elementCounter == 232) {
-                WebElement modName = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]/following-sibling::td[1]/div/input"));
-                modName.sendKeys("Moderator 1");
-
-                Actions clickOK = new Actions(driver);
-                clickOK.clickAndHold(element).release().perform();
-            }
             */
         }
+
     }
-}
+    }
+
