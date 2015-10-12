@@ -738,7 +738,17 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         }
     }
 
+    public void verifyEmailReceived(String emailSubject) {
+        assertThat("Appropriate email is received", emailSubject.contentEquals("Your conference invitation"));
+    }
 
+    public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {
+        assertTrue("Toll-Free Number has been generated", tollFreeNum.matches("^?[0-9, -]{1,14}"));
+    }
+
+    public void verifyPasscodesAreGenerated(String participantPasscode) {
+        assertTrue("Passcodes have been generated", participantPasscode.matches("^?[0-9]{1,6}"));
+    }
 
 
 
@@ -752,7 +762,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 
         // Check invite email, passcodes and dial-in numbers have been generated
         String inviteEmailSubject = checkInviteEmail();
-        assertThat("Appropriate email is received", inviteEmailSubject.contentEquals("Your conference invitation"));
+        verifyEmailReceived(inviteEmailSubject);
 
         WebElement emailSubject = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
         emailSubject.click();
@@ -864,8 +874,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
                 }
                 pattern = Pattern.compile("\\d+");
                 System.out.println("This is index (3) in tollFreeNumArr: " + tollFreeNumArr[3]);
-                assertTrue("Toll-Free Number has been generated", tollFreeNumArr[3].matches("^?[0-9, -]{1,14}"));
-                assertTrue("Passcodes have been generated", passcodeArr[2].matches("^?[0-9]{1,6}"));
+                verifyTollFreeNumberIsGenerated(tollFreeNumArr[3]);
             } else {
                 System.out.println("The new email was not found.");
                 System.exit(-1);
