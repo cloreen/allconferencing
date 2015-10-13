@@ -17,10 +17,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created by Ben on 7/20/2015.
  */
-//TODO - Refactor into functions
+
 public class MeetingManagerPageObject {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
+    private static String apptStartTime = "";
+    private static WebElement testAppt = null;
 
     public static WebDriver getBrowser(String browserType) {
         if(driver == null) {
@@ -64,7 +66,15 @@ public class MeetingManagerPageObject {
     }
 
     public void scheduleMeeting() {
-       // Open calendar
+
+        openMeetingManager();
+        createNewAppointment();
+        addMeetingServices();
+
+    }
+
+    private void openMeetingManager() {
+        // Open calendar
         WebElement calendarTab = driver.findElement(By.xpath(".//*[@id='zb__App__Calendar_title']"));
         try {
             Thread.sleep(1500);
@@ -81,7 +91,90 @@ public class MeetingManagerPageObject {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
+    private void addMeetingServices() {
+        // Add Meeting Services-----------------------------------------------------------------
+        // Open Meeting Services for Test Appointment
+        Actions actions = new Actions(driver);
+        actions.contextClick(testAppt).perform();
+        actions.click(driver.findElement(By.xpath(".//*[@id='AllConferencing_Services_Zimlet_ActionMenu_title']"))).perform();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Add Moderator Name
+        WebElement mtgSvcsTable = driver.findElement(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']/table"));
+        List<WebElement> mtgSvcsElementList = mtgSvcsTable.findElements(By.tagName("td"));
+        Integer elementCounter = 0;
+        System.out.println(mtgSvcsElementList.size());
+        for (WebElement element : mtgSvcsElementList) {
+            elementCounter += 1;
+            if (elementCounter == 232) {
+                WebElement modName = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]/following-sibling::td[1]/div/input"));
+                modName.sendKeys("Moderator 1");
+
+                Actions clickOK = new Actions(driver);
+                clickOK.clickAndHold(element).release().perform();
+            }
+        }
+
+        // Click Refresh Button to refresh Calendar
+        WebElement refreshButton = driver.findElement(By.xpath(".//td[@id='skin_spacing_global_buttons']"));
+        Actions actions2 = new Actions(driver);
+        actions2.clickAndHold(refreshButton).release().perform();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void createNewAppointment() {
+        createAppointment();
+        checkAppointmentExists();
+    }
+
+    private void checkAppointmentExists() {
+        // Find Appointment in Calendar to add Meeting Services
+        Boolean testApptExists = false;
+        Integer elementListIteration = 0;
+        List<WebElement> apptList = driver.findElements(By.xpath(".//td[@class='appt_time']/table/tbody/tr/td"));
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        for (WebElement appt : apptList) {
+            elementListIteration += 1;
+            //System.out.println("This is iteration " + elementListIteration);
+
+            String apptText = appt.getText();
+
+            //System.out.println("AppointmentStartTime is: " + apptStartTime);
+            //System.out.println("Time of appt is: " + apptText);
+            if (apptText.equals(apptStartTime)) {
+                testApptExists = true;
+                testAppt = appt;
+                break;
+                //System.out.println("This is the test appt you created");
+            } else {
+                //System.out.println("This is not the test appt you created");
+            }
+        }
+
+
+        assert (testApptExists);
+
+    }
+
+    private void createAppointment() {
         // Open New Appointment Interface
         WebElement newAppointmentButton = driver.findElement(By.xpath(".//*[@id='zb__NEW_MENU_title']"));
         newAppointmentButton.click();
@@ -174,7 +267,6 @@ public class MeetingManagerPageObject {
 
 
         // Input the appointment time in the Start Time field
-        String apptStartTime = "";
         WebElement startTimeField = driver.findElement(By.id("ZmTimeInputSelect_1_startTimeInput"));
         startTimeField.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         if (apptMinutes == 0) {
@@ -329,227 +421,5 @@ public class MeetingManagerPageObject {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        /*
-        if(apptAtMidnight) {
-            WebElement pageForwardButton = driver.findElement(By.xpath(".//td[contains('CAL_Nav_PAGE_FORWARD')]"));
-            pageForwardButton.click();
-            waitForCalendar.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("zb__CLD__DAY_VIEW_title"))
-            );
-        }
-        */
-        // Find Appointment in Calendar to add Meeting Services
-        Boolean testApptExists = false;
-        Integer elementListIteration = 0;
-        WebElement testAppt = null;
-        List<WebElement> apptList = driver.findElements(By.xpath(".//td[@class='appt_time']/table/tbody/tr/td"));
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        for (WebElement appt : apptList) {
-            elementListIteration += 1;
-            //System.out.println("This is iteration " + elementListIteration);
-
-            String apptText = appt.getText();
-
-            //System.out.println("AppointmentStartTime is: " + apptStartTime);
-            //System.out.println("Time of appt is: " + apptText);
-            if (apptText.equals(apptStartTime)) {
-                testApptExists = true;
-                testAppt = appt;
-                break;
-                //System.out.println("This is the test appt you created");
-            } else {
-                //System.out.println("This is not the test appt you created");
-            }
-        }
-
-
-        assert (testApptExists);
-
-        // Add Meeting Services-----------------------------------------------------------------
-        // Open Meeting Services for Test Appointment
-        Actions actions = new Actions(driver);
-        actions.contextClick(testAppt).perform();
-        actions.click(driver.findElement(By.xpath(".//*[@id='AllConferencing_Services_Zimlet_ActionMenu_title']"))).perform();
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        // Add Moderator Name
-        /*
-        List<WebElement> mtgSvcsElementList = driver.findElements(By.xpath("./html/body/div[@id='z_shell']/*"));
-        Integer elementCounter = 0;
-        System.out.println(mtgSvcsElementList.size());
-        for (WebElement element : mtgSvcsElementList) {
-            elementCounter += 1;
-            System.out.println("Element number: " + elementCounter);
-            System.out.println(element.getAttribute("innerHTML"));
-            System.out.println(element.getText());
-            if(element.isDisplayed()) {
-                System.out.println("This element is visible");
-            }
-            System.out.println("");
-        }
-        */
-        /*
-        List<WebElement> mtgSvcsElementList = driver.findElements(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']/*"));
-        Integer elementCounter = 0;
-        System.out.println(mtgSvcsElementList.size());
-        for (WebElement element : mtgSvcsElementList) {
-            elementCounter += 1;
-            System.out.println("Element number: " + elementCounter);
-            System.out.println(element.getAttribute("innerHTML"));
-            System.out.println(element.getText());
-            if(element.isDisplayed()) {
-                System.out.println("This element is visible");
-            }
-            System.out.println("");
-        }
-        */
-        WebElement mtgSvcsTable = driver.findElement(By.xpath("./html/body/div[@id='z_shell']/div[60]/div[@class='DwtDialog WindowOuterContainer']/table"));
-        List<WebElement> mtgSvcsElementList = mtgSvcsTable.findElements(By.tagName("td"));
-        Integer elementCounter = 0;
-        System.out.println(mtgSvcsElementList.size());
-        for (WebElement element : mtgSvcsElementList) {
-            elementCounter += 1;
-            /*
-            System.out.println("Element number: " + elementCounter);
-            System.out.println(element.getAttribute("innerHTML"));
-            System.out.println(element.getText());
-            if(element.isDisplayed()) {
-                System.out.println("This element is visible");
-            }
-            System.out.println("");
-            */
-            if (elementCounter == 232) {
-                WebElement modName = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]/following-sibling::td[1]/div/input"));
-                modName.sendKeys("Moderator 1");
-
-                Actions clickOK = new Actions(driver);
-                clickOK.clickAndHold(element).release().perform();
-            }
-        }
-
-        /*
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // Click OK Button to save as Meeting
-        //WebElement meetingOptionsTab = driver.findElement(By.xpath(".//td[contains(text(), 'Meeting Options')]"));
-        //meetingOptionsTab.click();
-        //WebElement modNameLabel = driver.findElement(By.xpath(".//td[contains(.,'Moderator Name*:')]"));
-        boolean elementWorks = false;
-        WebElement okFirstDirectElement = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]"));
-        WebElement okSecondDirectElement = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]/div"));
-        WebElement okThirdDirectElement = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]/div/table"));
-        WebElement okFourthDirectElement = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]/div/table/tbody/tr/td"));
-        WebElement okFifthDirectElement = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]/div/table/tbody/tr/td[2]"));
-        WebElement okSixthDirectElement = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]/div/table/tbody/tr/td[3]"));
-        WebElement[] okElementArray = {okFirstDirectElement, okSecondDirectElement, okThirdDirectElement, okFourthDirectElement, okFifthDirectElement, okSixthDirectElement};
-        WebElement buttonContainer = driver.findElement(By.xpath(".//td[@class='WindowInnerContainer]/div[2]"));
-        Actions actions4 = new Actions(driver);
-        System.out.println("Element Interaction Attempt 1: Using Actions to click on elements\n");
-        for (WebElement element : okElementArray) {
-            try {
-                actions4.click(element).perform();
-            } catch (MoveTargetOutOfBoundsException mtoobe) {
-                System.out.println("Exception occurred on " + element);
-                continue;
-            }
-
-            try {
-//                modName.click();
-            } catch (ElementNotVisibleException enve) {
-                elementWorks = true;
-            } catch (NoSuchElementException nsee) {
-                elementWorks = true;
-            }
-            if (elementWorks == true) {
-                System.out.println("This element works = " + element.getAttribute("innerHTML"));
-                break;
-            } else {
-                System.out.println("Element didn't work.");
-            }
-
-        }
-
-        if(elementWorks == false) {
-            System.out.println("Element Interaction Attempt 2: Using Actions to move to lower part of inner container\n");
-            try {
-                actions4.moveToElement(buttonContainer);
-                System.out.println("Moving to container worked!");
-            } catch (MoveTargetOutOfBoundsException mtoobe) {
-                System.out.println("Target Out of Bounds exception occurred.");
-            }
-        }
-
-
-
-
-
-        Actions builder = new Actions(driver);
-        //builder.moveToElement(modNameLabel).moveByOffset(606, 355).clickAndHold().release().build().perform();
-        //builder.moveToElement(modNameLabel).moveByOffset(344, 348).clickAndHold().release().build().perform();
-        //WebDriverWait waitToBeClickable = new WebDriverWait(driver, 10);
-        //waitToBeClickable.until(ExpectedConditions.elementToBeClickable(cancelButton));
-        //modNameLabel.click();
-
-        //builder.moveToElement(cancelButton).perform();
-
-
-        WebElement meetingAgendaLabel = driver.findElement(By.xpath(".//*[contains(text(), 'Meeting Agenda')]"));
-        meetingAgendaLabel.click();
-        WebElement okButtonContainer = driver.findElement(By.xpath(".//td[contains(@id, 'OK_')]"));
-        WebElement okButton = driver.findElement(By.xpath(".//td[contains(@id, 'button2_title')]"/div/table/tbody/tr/td[2]"));
-        String scrollPageDown = "scroll(0, 300)";
-        ((JavascriptExecutor) driver).executeScript(scrollPageDown);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Actions actions1 = new Actions(driver);
-        actions1.moveToElement(okButtonContainer)./*moveToElement(driver.findElement(By.xpath(".//td[contains(@id, 'button2_title')]"))).build().perform();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        builder.clickAndHold().release().perform();
-
-//        actions1.clickAndHold(okButton).release();
-
-        //Actions actions1 = new Actions(driver);
-        //actions1.clickAndHold(okButton).build().perform();
-        //System.out.println(okButton.getAttribute("innerHTML"));
-        //String js = "arguments[0].style.visibility='visible'; arguments[0].mousedown(); arguments[0].mouseup()";
-        //((JavascriptExecutor) driver).executeScript(js, okButton);
-        //okButton.click();
-        //actions1.release(okButton).perform();
-        */
-
-        // Click Refresh Button to refresh Calendar
-        WebElement refreshButton = driver.findElement(By.xpath(".//td[@id='skin_spacing_global_buttons']"));
-        Actions actions2 = new Actions(driver);
-        actions2.clickAndHold(refreshButton).release().perform();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
     }
 }
