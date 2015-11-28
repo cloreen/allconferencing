@@ -56,35 +56,19 @@ public class GmailObject extends BaseSeleniumTest {
 
     public String checkInviteEmail() {
         // Wait for title
-
-        //gmailComponent.waitForGmailLoginPage();
-        /*
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
-        wait.until(ExpectedConditions.titleIs("Gmail"));
-        */
         loginToGmail(gmail);
 
         // Inbox - get most recent email, evaluate time received and email subject
         String emailText = "AllConferencing Meeting Invite";
-        WebElement refreshButton = driver.findElement(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div")); // div[role='button']   // div[class='asa']
-//        WebElement emailSubject = null;
         try {
             subject = getSubject(gmailInbox);
-//            subject = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
             String emailSubjectString = getSubjectText(gmailInbox);;
             WebElement emailArrivalTime = getEmailArrivalTime(gmailInbox);
-//            WebElement emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
             String emailTime = emailArrivalTime.getText();
             for (int i = 0; i < 3; i++) {
                 if (!emailTime.contains("am")) {
                     if (!emailTime.contains("pm")) {
-                        refreshButton.click();
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        refreshInbox(gmailInbox);
                         emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
                         emailTime = emailArrivalTime.getText();
                     }
@@ -132,7 +116,7 @@ public class GmailObject extends BaseSeleniumTest {
                     e.printStackTrace();
                 }
                 if (i == 6 || i == 12) {
-                    refreshButton.click();
+                    refreshInbox(gmailInbox);
                 }
             }
 
@@ -141,19 +125,9 @@ public class GmailObject extends BaseSeleniumTest {
                 System.exit(-1);
             }
         } catch (NoSuchElementException nsee) {
-            refreshButton.click();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            refreshInbox(gmailInbox);
         } catch (ElementNotFoundException enfe) {
-            refreshButton.click();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            refreshInbox(gmailInbox);
         }
 
 
@@ -167,23 +141,9 @@ public class GmailObject extends BaseSeleniumTest {
 
     private void loginToGmail(GmailLoginPageObject gmail) {
         gmail = new GmailLoginPageObject(driver);
-//        driver.get("http://www.gmail.com/");
         gmail.goToGmail();
         gmail.enterGmailUsername();
         gmail.enterGmailPassword();
-/*        WebDriverWait waitForGmailLoginPage = new WebDriverWait(driver, 10);
-        waitForGmailLoginPage.until(
-                ExpectedConditions.titleIs("Gmail")
-        );
-        WebElement emailAddress = driver.findElement(By.cssSelector("input[id='Email']"));
-        emailAddress.sendKeys(new String(readProps.getParticipantEmail()));
-        emailAddress.submit();
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[id='Passwd']")));
-        WebElement password = driver.findElement(By.cssSelector("input[id='Passwd']"));
-        password.sendKeys(new String(readProps.getParticipantEmailPwd()));
-        password.submit();
-        wait.until(ExpectedConditions.titleContains("Inbox"));*/
     }
 
     public void getEmail() {
@@ -208,5 +168,10 @@ public class GmailObject extends BaseSeleniumTest {
     public WebElement getEmailArrivalTime (GmailInboxComponentsObject gmailInbox) {
         gmailInbox = new GmailInboxComponentsObject(driver);
         return gmailInbox.emailArrivalTime();
+    }
+
+    public void refreshInbox (GmailInboxComponentsObject gmailInbox) {
+        gmailInbox = new GmailInboxComponentsObject(driver);
+        gmailInbox.refreshInbox();
     }
 }
