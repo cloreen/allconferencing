@@ -5,10 +5,9 @@ import com.lotus.allconferencing.meeting_controller.pages.GmailObject;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -24,11 +23,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created by Ben on 10/13/2015.
  */
+/*******************************
+ * TODO - Clean up past conferences in list
+ * TODO - Create Old Scheduler 1 Page Object
+ * TODO - Create Type 3 account My Services Page Object
+ */
+
 public class OldScheduler1_v2_Invite_Test {
     private static WebDriver driver;
     private static WebDriver driver2;
     private LoginPageObject loginPage;
-    private GmailObject gmail;
     private ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
@@ -40,6 +44,7 @@ public class OldScheduler1_v2_Invite_Test {
     private static String partPasscode = "";
     private static String timeOfDay = "";
 
+    GmailObject gmail = new GmailObject(driver2);
 
     @Test
     public void scheduleV2Meeting() {
@@ -74,11 +79,11 @@ public class OldScheduler1_v2_Invite_Test {
 
         // Enter Meeting Name
         WebElement conferenceNameTextBox = driver.findElement(By.cssSelector("input[name='Conference_Name']"));
-        conferenceNameTextBox.sendKeys("Test Meeting - Old Scheduler 1");
+        conferenceNameTextBox.sendKeys(readProps.getv2ScheduledConfName());
 
         // Enter Moderator Name
         WebElement moderatorNameTextBox = driver.findElement(By.cssSelector("input[name='Moderator_Name']"));
-        moderatorNameTextBox.sendKeys("Test Moderator");
+        moderatorNameTextBox.sendKeys(readProps.getModeratorName());
 
         // Check specific meeting time (rather than immediate
         WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
@@ -89,9 +94,10 @@ public class OldScheduler1_v2_Invite_Test {
         List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();
         DateTime currentTime = new DateTime();
         Integer currentHour = currentTime.getHourOfDay();
+        System.out.println("Current Hour is: " + currentHour);
         Integer meetingHour = 0;
         timeOfDay = "";
-        if (currentHour <= 10 || currentHour == 23) {
+        if (currentHour <= 11 || currentHour == 23) {
             timeOfDay = "AM";
         } else {
             timeOfDay = "PM";
@@ -131,16 +137,12 @@ public class OldScheduler1_v2_Invite_Test {
         int timeOfDaySelectOptionsIteration = 0;
         for (WebElement option : timeOfDaySelectOptions) {
             timeOfDaySelectOptionsIteration++;
-            if (timeOfDay == "AM") {
-                if (option.getAttribute("value") == "AM") {
-                    option.click();
-                    break;
-                }
-            } else if (option.getAttribute("value") == "PM") {
+            if (option.getAttribute("value") == timeOfDay) {
                 option.click();
                 break;
             }
         }
+
 
         // Choose Pacific time zone
         Select timeZoneSelect = new Select(driver.findElement(By.cssSelector("select[name='cboTimeZone']")));
@@ -201,15 +203,16 @@ public class OldScheduler1_v2_Invite_Test {
         String inviteEmailSubject = checkInviteEmail();
         verifyEmailReceived(inviteEmailSubject);
 
-        WebElement emailSubject = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
-        emailSubject.click();
-
+//        WebElement emailSubject = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
+//        WebElement emailSubject;
+/*
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+*/
+        gmail.getEmail();
         List<WebElement> emailBodyTable = driver2.findElements(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*"));
         try {
             Thread.sleep(5000);
@@ -326,7 +329,14 @@ public class OldScheduler1_v2_Invite_Test {
         );
         WebElement newConferencePasscodeElement = driver.findElement(By.xpath("/html/body/form/table[2]/tbody/tr[3]/td[5]/p"));
         newConferencePasscode = newConferencePasscodeElement.getText();
-        verifyNewMeetingDisplaysInConferenceList(newConferencePasscode);
+        //System.out.println("Passcode found in Conference List is: " + newConferencePasscode);
+        Boolean conferenceDisplays = false;
+        conferenceDisplays = verifyNewMeetingDisplaysInConferenceList(newConferencePasscode, conferenceDisplays);
+
+        // Cleanup after test by deleting conference from list
+        if(conferenceDisplays) {
+            removeConferenceFromList();
+        }
     }
 
     public void verifyEmailReceived(String emailSubject) {
@@ -341,8 +351,10 @@ public class OldScheduler1_v2_Invite_Test {
         assertTrue("Passcodes have been generated", participantPasscode.matches("^?[0-9]{1,6}"));
     }
 
-    public void verifyNewMeetingDisplaysInConferenceList(String participantPasscode) {
+    public Boolean verifyNewMeetingDisplaysInConferenceList(String participantPasscode, Boolean conferenceDisplays) {
         assertTrue("Passcodes display in conference list", participantPasscode.contains(partPasscode));
+        conferenceDisplays = true;
+        return conferenceDisplays;
     }
 
 
@@ -373,7 +385,18 @@ public class OldScheduler1_v2_Invite_Test {
     public String checkInviteEmail() {
         driver2 = new FirefoxDriver();
         gmail = new GmailObject(driver2);
-        driver2.get("http://www.gmail.com/");
+        ;//driver2.get("http://www.gmail.com/");
         return gmail.checkInviteEmail();
+    }
+
+    public void removeConferenceFromList() {
+        WebElement deleteButton = driver.findElement(By.cssSelector("input[name='cmdRemove']"));
+        deleteButton.click();
+        Alert confirmAlert = driver.switchTo().alert();
+        confirmAlert.accept();
+        WebDriverWait waitForDeletionConfirmationPage = new WebDriverWait(driver, 10);
+        waitForDeletionConfirmationPage.until(
+                ExpectedConditions.titleIs("All Conferencing - Delete Conference")
+        );
     }
 }
