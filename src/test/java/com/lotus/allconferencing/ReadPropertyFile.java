@@ -75,7 +75,7 @@ public class ReadPropertyFile {
         return props.getProperty("owner2_password");
     } //----------------------------------------------------------------------------
 
-    // Very old test account----------------------------------------------------
+    // Very old test account--------------------------------------------------------
     public String getOlderAcctClientID() {
         return props.getProperty("oldacct1_clientid");
     }
@@ -83,11 +83,19 @@ public class ReadPropertyFile {
         return props.getProperty("oldacct1_password");
     } //----------------------------------------------------------------------------
 
-    // Old test account----------------------------------------------------
+    // Old test account-------------------------------------------------------------
     public String getOldAcctClientID() {
         return props.getProperty("oldacct2_clientid");
     }
     public String getOldAcctPassword() {
         return props.getProperty("oldacct2_password");
     } //----------------------------------------------------------------------------
+
+    // v1 Scheduled Meeting Test Data-----------------------------------------------
+    public String getv2ScheduledConfName() {
+        return props.getProperty("v2_conf_name");
+    }
+    public String getModeratorName() {
+        return props.getProperty("mod_name");
+    }
 }
