@@ -20,15 +20,13 @@ import java.util.NoSuchElementException;
 
 /************
  * TODO - Comment refactor points
- * TODO - Refactor into functions and components
  */
 public class GmailObject extends BaseSeleniumTest {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
     private static WebElement subject;
     private static WebElement emailArrivalTime;
-//    private GmailInboxComponentsObject gmailInbox;
-//    private GmailLoginPageObject gmail;
+    private static Integer currentHour, currentMinutes, emailMinuteThreshold;
 
 
     public GmailObject(WebDriver newDriver) {
@@ -55,7 +53,7 @@ public class GmailObject extends BaseSeleniumTest {
 
 
     public String checkInviteEmail() {
-        // Wait for title
+        // Login to Gmail
         loginToGmail(gmail);
 
         // Inbox - get most recent email, evaluate time received and email subject
@@ -64,66 +62,14 @@ public class GmailObject extends BaseSeleniumTest {
             subject = getSubject(gmailInbox);
             String emailSubjectString = getSubjectText(gmailInbox);;
             WebElement emailArrivalTime = getEmailArrivalTime(gmailInbox);
-            String emailTime = emailArrivalTime.getText();
-            for (int i = 0; i < 3; i++) {
-                if (!emailTime.contains("am")) {
-                    if (!emailTime.contains("pm")) {
-                        refreshInbox(gmailInbox);
-                        emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
-                        emailTime = emailArrivalTime.getText();
-                    }
-                }
-            }
+            String originalTimestamp = emailArrivalTime.getText();
+            String emailTime = waitForEmailTimestamp(gmailInbox, originalTimestamp);
+            //System.out.println("Email time retrieved from Gmail was: " + emailTime);
 
-            System.out.println("Email time retrieved from Gmail was: " + emailTime);
-            String[] emailTimeParts = emailTime.split(":");
-            String emailHourStr = emailTimeParts[0];
-            String emailMinuteStr = emailTimeParts[1];
-            String[] minuteParts = emailMinuteStr.split("\\s");
-            emailMinuteStr = minuteParts[0];
-            Integer emailHour = (Integer.parseInt(emailHourStr));
-            System.out.println("Email hour is: " + emailHour);
-            Integer emailMinute = (Integer.parseInt(emailMinuteStr));
-            System.out.println("Email minute is: " + emailMinute);
-            Integer emailMinuteThreshold = emailMinute + 1;
-            System.out.println("Email Minute Threshold is: " + emailMinuteThreshold);
+            createCheckforNewEmail(emailTime, emailArrivalTime);
 
-            DateTime dt = new DateTime();
-            System.out.println("Current DateTime is: " + dt);
-            Integer currentHour = dt.getHourOfDay();
-            System.out.println("Current Hour is: " + currentHour);
-            Integer currentMinutes = dt.getMinuteOfHour();
-            System.out.println("Current Minute is: " + currentMinutes);
-            if (currentHour > 12) {
-                currentHour -= 12;
-            }
-            if (currentHour == 0) {
-                currentHour = 12;
-            }
+            waitForEmailToBeReceived(emailArrivalTime, currentHour, currentMinutes, emailMinuteThreshold);
 
-            WebDriverWait wait = new WebDriverWait(driver, 10);
-            wait.until(ExpectedConditions.textToBePresentInElement(emailArrivalTime, String.valueOf(currentHour)));
-            Boolean thresholdReached = false;
-            for (int i = 0; i < 15; i++) {
-                if (currentMinutes <= emailMinuteThreshold) {
-                    thresholdReached = true;
-                    i = 15;
-                    break;
-                }
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (i == 6 || i == 12) {
-                    refreshInbox(gmailInbox);
-                }
-            }
-
-            if (thresholdReached == false) {
-                System.out.println("Email time synchronization failed. The time threshold was not reached.");
-                System.exit(-1);
-            }
         } catch (NoSuchElementException nsee) {
             refreshInbox(gmailInbox);
         } catch (ElementNotFoundException enfe) {
@@ -173,5 +119,73 @@ public class GmailObject extends BaseSeleniumTest {
     public void refreshInbox (GmailInboxComponentsObject gmailInbox) {
         gmailInbox = new GmailInboxComponentsObject(driver);
         gmailInbox.refreshInbox();
+    }
+
+    public String waitForEmailTimestamp(GmailInboxComponentsObject gmailInbox, String emailTime) {
+        gmailInbox = new GmailInboxComponentsObject(driver);
+        gmailInbox.waitForEmailTimestamp(emailTime);
+        return emailTime;
+    }
+
+    public void createCheckforNewEmail(String emailTime, WebElement emailArrivalTime) {
+        String[] emailTimeParts = emailTime.split(":");
+        String emailHourStr = emailTimeParts[0];
+        String emailMinuteStr = emailTimeParts[1];
+        String[] minuteParts = emailMinuteStr.split("\\s");
+        emailMinuteStr = minuteParts[0];
+
+        Integer emailHour = (Integer.parseInt(emailHourStr));
+        //System.out.println("Email hour is: " + emailHour);
+
+        Integer emailMinute = (Integer.parseInt(emailMinuteStr));
+        //System.out.println("Email minute is: " + emailMinute);
+
+        emailMinuteThreshold = emailMinute + 1;
+        //System.out.println("Email Minute Threshold is: " + emailMinuteThreshold);
+
+        DateTime dt = new DateTime();
+        //System.out.println("Current DateTime is: " + dt);
+
+        currentHour = getCurrentHour(dt);
+        currentMinutes = dt.getMinuteOfHour();
+        //System.out.println("Current Hour is: " + currentHour);
+        //System.out.println("Current Minute is: " + currentMinutes);
+    }
+
+    public Integer getCurrentHour(DateTime dateTime) {
+        Integer currentHour = dateTime.getHourOfDay();
+        if (currentHour > 12) {
+            currentHour -= 12;
+        }
+        if (currentHour == 0) {
+            currentHour = 12;
+        }
+        return currentHour;
+    }
+
+    public void waitForEmailToBeReceived(WebElement emailArrivalTime, Integer currentHour, Integer currentMinutes, Integer emailMinuteThreshold) {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.textToBePresentInElement(emailArrivalTime, String.valueOf(currentHour)));
+        Boolean thresholdReached = false;
+        for (int i = 0; i < 15; i++) {
+            if (currentMinutes <= emailMinuteThreshold) {
+                thresholdReached = true;
+                i = 15;
+                break;
+            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (i == 6 || i == 12) {
+                refreshInbox(gmailInbox);
+            }
+        }
+
+        if (thresholdReached == false) {
+            //System.out.println("Email time synchronization failed. The time threshold was not reached.");
+            System.exit(-1);
+        }
     }
 }
