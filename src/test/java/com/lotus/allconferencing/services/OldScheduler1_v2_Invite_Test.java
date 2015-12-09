@@ -3,6 +3,7 @@ package com.lotus.allconferencing.services;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.GmailObject;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
+import com.lotus.allconferencing.meeting_controller.pages.V2OldSchedulerPageObject;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openqa.selenium.*;
@@ -45,6 +46,8 @@ public class OldScheduler1_v2_Invite_Test {
     private static String timeOfDay = "";
 
     GmailObject gmail = new GmailObject(driver2);
+    public V2OldSchedulerPageObject v2OldScheduler = new V2OldSchedulerPageObject(driver);
+
 
     @Test
     public void scheduleV2Meeting() {
@@ -79,12 +82,14 @@ public class OldScheduler1_v2_Invite_Test {
 
         // Enter Meeting Name
         WebElement conferenceNameTextBox = driver.findElement(By.cssSelector("input[name='Conference_Name']"));
-        conferenceNameTextBox.sendKeys(readProps.getv2ScheduledConfName());
+        conferenceNameTextBox.sendKeys(new String(readProps.getv2ScheduledConfName()));
 
         // Enter Moderator Name
         WebElement moderatorNameTextBox = driver.findElement(By.cssSelector("input[name='Moderator_Name']"));
-        moderatorNameTextBox.sendKeys(readProps.getModeratorName());
+        moderatorNameTextBox.sendKeys(new String(readProps.getModeratorName()));
 
+        inputTime(v2OldScheduler);
+        /*
         // Check specific meeting time (rather than immediate
         WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
         specifyTimeRadioButton.click();
@@ -142,51 +147,22 @@ public class OldScheduler1_v2_Invite_Test {
                 break;
             }
         }
-
+        */
 
         // Choose Pacific time zone
-        Select timeZoneSelect = new Select(driver.findElement(By.cssSelector("select[name='cboTimeZone']")));
-        List<WebElement> timeZoneOptions = timeZoneSelect.getOptions();
-        int timeZoneOptionsIteration = 0;
-        for (WebElement option : timeZoneOptions) {
-            timeZoneOptionsIteration++;
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (timeZoneOptionsIteration == 4) { // Option evaluation as String does not work here, so click on option in 4th iteration of loop.
-                option.click();
-                break;
-            } else if (timeZoneOptionsIteration == timeZoneOptions.size()) {
-                System.out.println("System never found correct option.");
-                break;
-            } else {
-                continue;
-            }
-        }
+        selectTimeZone(v2OldScheduler);
 
         // Add a participant
-        WebElement participantEmail = driver.findElement(By.cssSelector("#txtEmail"));
-        WebElement addToMeetingButton = driver.findElement(By.cssSelector("#cmdAdd"));
-        participantEmail.sendKeys("bgactest03@gmail.com");
-        addToMeetingButton.click();
+        addParticipant(v2OldScheduler);
 
         // Enable Reminder Email
-        WebElement sendReminderCheckbox = driver.findElement(By.cssSelector("#Checkbox2"));
-        sendReminderCheckbox.click();
+        enableEmailReminders(v2OldScheduler);
 
         // Submit Form
-        WebElement submitButton = driver.findElement(By.cssSelector("input[name='cmdSubmit']"));
-        submitButton.click();
+        submitForm(v2OldScheduler);
 
         // Go to Account Services
-        WebElement acctSvcsButton = driver.findElement(By.cssSelector("input[name='Submit']"));
-        acctSvcsButton.click();
-        WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
-        waitForAcctSvcs.until(
-                ExpectedConditions.titleIs("All Conferencing - Account Services")
-        );
+        goToAccountServices(v2OldScheduler);
     }
 
 
@@ -339,6 +315,9 @@ public class OldScheduler1_v2_Invite_Test {
         }
     }
 
+
+    // Verifications ---------------------------------------------------------------------------------------------------
+
     public void verifyEmailReceived(String emailSubject) {
         assertThat("Appropriate email is received", emailSubject.contentEquals("Your Conference Invitation"));
     }
@@ -357,6 +336,9 @@ public class OldScheduler1_v2_Invite_Test {
         return conferenceDisplays;
     }
 
+    // End Verifications -----------------------------------------------------------------------------------------------
+
+    // Helper methods --------------------------------------------------------------------------------------------------
 
     public static String getWindow() {
         int i = 0;
@@ -382,6 +364,36 @@ public class OldScheduler1_v2_Invite_Test {
         System.out.println("My Account window handle is: " + myAccountWindow);
     }
 
+    public void inputTime(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.inputTime();
+    }
+
+    public void selectTimeZone(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.choosePacificTimeZone();
+    }
+
+    public void addParticipant(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.addParticipant();
+    }
+
+    public void enableEmailReminders(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.enableEmailReminders();
+    }
+
+    public void submitForm(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.submitForm();
+    }
+
+    public void goToAccountServices(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.goToAccountServices();
+    }
+
     public String checkInviteEmail() {
         driver2 = new FirefoxDriver();
         gmail = new GmailObject(driver2);
@@ -399,4 +411,6 @@ public class OldScheduler1_v2_Invite_Test {
                 ExpectedConditions.titleIs("All Conferencing - Delete Conference")
         );
     }
+
+    // End Helper methods ----------------------------------------------------------------------------------------------
 }
