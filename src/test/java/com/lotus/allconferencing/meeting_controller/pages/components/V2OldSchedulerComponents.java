@@ -6,6 +6,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
+import org.openqa.selenium.support.ui.Select;
+
+import java.util.List;
 
 /**
  * Created by Ben on 12/6/2015.
@@ -15,6 +18,8 @@ public class V2OldSchedulerComponents {
     private ReadPropertyFile readProps = null;
 
     // Selectors for Old Scheduler Components--------------------------------------------
+    private static final By TIME_OF_DAY = By.cssSelector("select[name='Rule_Start_AM']");
+    private static final By TIME_ZONE = By.cssSelector("select[name='cboTimeZone']");
     private static final By PARTICIPANT_EMAIL = By.cssSelector("#txtEmail");
     private static final By ADD_TO_MEETING = By.cssSelector("#cmdAdd");
     private static final By SEND_REMINDER = By.cssSelector("#Checkbox2");
@@ -43,6 +48,13 @@ public class V2OldSchedulerComponents {
     @FindBy(how = How.CSS, using = "#txtEmail")
     private WebElement participantEmail;
     */
+
+    public List<WebElement> getTimeZoneOptions() {
+        WebElement timeZoneElement = driver.findElement(TIME_ZONE);
+        Select timeZoneSelect = new Select(timeZoneElement);
+        List<WebElement> timeZoneSelectOptions = timeZoneSelect.getOptions();
+        return timeZoneSelectOptions;
+    }
 
     public WebElement getParticipantEmailField() {
         WebElement participantEmailField = driver.findElement(PARTICIPANT_EMAIL);

@@ -46,7 +46,10 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
     public void selectTimeOfDay(String timeOfDay) {
-        Select timeOfDaySelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_AM']")));
+        //WebElement timeOfDayOptions = v2OldSchedulerComponents.getTimeOfDaySelect();
+        //Select timeOfDaySelect = new Select(timeOfDayOptions);
+        WebElement timeOfDayElement = driver.findElement(By.cssSelector("select[name='Rule_Start_AM']"));
+        Select timeOfDaySelect = new Select(timeOfDayElement);
         List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
         int timeOfDaySelectOptionsIteration = 0;
         for (WebElement option : timeOfDaySelectOptions) {
@@ -59,10 +62,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     }
 
     public void choosePacificTimeZone() {
-        //Select timeZoneSelect = new Select(driver.findElement(By.cssSelector("select[name='cboTimeZone']")));
-        WebElement timeZoneElement = driver.findElement(By.cssSelector("select[name='cboTimeZone']"));
-        Select timeZoneSelect = new Select(timeZoneElement);
-        List<WebElement> timeZoneOptions = timeZoneSelect.getOptions();
+        List<WebElement> timeZoneOptions = v2OldSchedulerComponents.getTimeZoneOptions();
         int timeZoneOptionsIteration = 0;
         for (WebElement option : timeZoneOptions) {
             timeZoneOptionsIteration++;
