@@ -45,6 +45,19 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
 
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
+    public void selectTimeOfDay(String timeOfDay) {
+        Select timeOfDaySelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_AM']")));
+        List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
+        int timeOfDaySelectOptionsIteration = 0;
+        for (WebElement option : timeOfDaySelectOptions) {
+            timeOfDaySelectOptionsIteration++;
+            if (option.getAttribute("value") == timeOfDay) {
+                option.click();
+                break;
+            }
+        }
+    }
+
     public void choosePacificTimeZone() {
         //Select timeZoneSelect = new Select(driver.findElement(By.cssSelector("select[name='cboTimeZone']")));
         WebElement timeZoneElement = driver.findElement(By.cssSelector("select[name='cboTimeZone']"));
@@ -96,63 +109,4 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
         );
     }
 
-    public void inputTime() {
-        // Check specific meeting time (rather than immediate
-        WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
-        specifyTimeRadioButton.click();
-
-        // Choose proper meeting time
-        Select meetingHourSelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_Hour']")));
-        List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();
-        DateTime currentTime = new DateTime();
-        Integer currentHour = currentTime.getHourOfDay();
-        System.out.println("Current Hour is: " + currentHour);
-        Integer meetingHour = 0;
-        String timeOfDay = "";
-        if (currentHour <= 11 || currentHour == 23) {
-            timeOfDay = "AM";
-        } else {
-            timeOfDay = "PM";
-        }
-        if (currentHour > 12) {
-            currentHour -= 12;
-        }
-        if (currentHour == 12) {
-            meetingHour = 1;
-        } else {
-            meetingHour = currentHour + 1;
-        }
-        int selectOptionsIteration = 0;
-        for (WebElement option : meetingHourOptions) {
-            selectOptionsIteration++;
-            Integer optionValue = Integer.parseInt(option.getAttribute("value"));
-            if (optionValue == meetingHour) {
-                option.click();
-                break;
-            } else if (selectOptionsIteration == meetingHourOptions.size()) {
-                System.out.println("System never found correct option.");
-                break;
-            } else {
-                continue;
-            }
-        }
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // Choose AM or PM
-        Select timeOfDaySelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_AM']")));
-        List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
-        int timeOfDaySelectOptionsIteration = 0;
-        for (WebElement option : timeOfDaySelectOptions) {
-            timeOfDaySelectOptionsIteration++;
-            if (option.getAttribute("value") == timeOfDay) {
-                option.click();
-                break;
-            }
-        }
-    }
 }

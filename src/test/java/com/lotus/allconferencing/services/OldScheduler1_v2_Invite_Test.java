@@ -88,8 +88,6 @@ public class OldScheduler1_v2_Invite_Test {
         WebElement moderatorNameTextBox = driver.findElement(By.cssSelector("input[name='Moderator_Name']"));
         moderatorNameTextBox.sendKeys(new String(readProps.getModeratorName()));
 
-        inputTime(v2OldScheduler);
-        /*
         // Check specific meeting time (rather than immediate
         WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
         specifyTimeRadioButton.click();
@@ -137,6 +135,8 @@ public class OldScheduler1_v2_Invite_Test {
         }
 
         // Choose AM or PM
+        selectTimeOfDay(v2OldScheduler, timeOfDay);
+        /*
         Select timeOfDaySelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_AM']")));
         List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
         int timeOfDaySelectOptionsIteration = 0;
@@ -364,9 +364,9 @@ public class OldScheduler1_v2_Invite_Test {
         System.out.println("My Account window handle is: " + myAccountWindow);
     }
 
-    public void inputTime(V2OldSchedulerPageObject v2OldScheduler) {
+    public void selectTimeOfDay(V2OldSchedulerPageObject v2OldScheduler, String timeOfDay) {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.inputTime();
+        v2OldScheduler.selectTimeOfDay(timeOfDay);
     }
 
     public void selectTimeZone(V2OldSchedulerPageObject v2OldScheduler) {
