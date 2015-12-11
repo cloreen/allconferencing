@@ -1,5 +1,7 @@
 package com.lotus.allconferencing;
 
+import org.openqa.selenium.By;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -91,11 +93,15 @@ public class ReadPropertyFile {
         return props.getProperty("oldacct2_password");
     } //----------------------------------------------------------------------------
 
-    // v1 Scheduled Meeting Test Data-----------------------------------------------
+    // v2 Scheduled Meeting Test Data-----------------------------------------------
     public String getv2ScheduledConfName() {
         return props.getProperty("v2_conf_name");
     }
     public String getModeratorName() {
         return props.getProperty("mod_name");
     }
+    public String getInviteEmailSubject() {
+        return props.getProperty("meeting_invite_subject");
+    }
+
 }
