@@ -85,8 +85,7 @@ public class OldScheduler1_v2_Invite_Test {
         conferenceNameTextBox.sendKeys(new String(readProps.getv2ScheduledConfName()));
 
         // Enter Moderator Name
-        WebElement moderatorNameTextBox = driver.findElement(By.cssSelector("input[name='Moderator_Name']"));
-        moderatorNameTextBox.sendKeys(new String(readProps.getModeratorName()));
+        enterModeratorName(v2OldScheduler);
 
         // Check specific meeting time (rather than immediate
         selectSpecifyTime(v2OldScheduler);
@@ -310,6 +309,11 @@ public class OldScheduler1_v2_Invite_Test {
         //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
         //waitForLoginPage.until();
         System.out.println("My Account window handle is: " + myAccountWindow);
+    }
+
+    public void enterModeratorName(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.enterModeratorName();
     }
 
     public void selectSpecifyTime(V2OldSchedulerPageObject v2OldScheduler) {

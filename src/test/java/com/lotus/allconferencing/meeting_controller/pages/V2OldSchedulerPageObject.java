@@ -45,6 +45,11 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
 
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
+    public void enterModeratorName() {
+        WebElement moderatorNameTextBox = driver.findElement(By.cssSelector("input[name='Moderator_Name']"));
+        moderatorNameTextBox.sendKeys(new String(readProps.getModeratorName()));
+    }
+
     public void selectSpecifyTime() {
         WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector(v2OldSchedulerComponents.selectSpecificMeetingTimeRadioSelector()));
         specifyTimeRadioButton.click();
