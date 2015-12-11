@@ -53,17 +53,18 @@ public class GmailObject extends BaseSeleniumTest {
 
 
     public String checkInviteEmail() {
+        gmailInbox = new GmailInboxComponentsObject(driver);
         // Login to Gmail
         loginToGmail(gmail);
 
         // Inbox - get most recent email, evaluate time received and email subject
         String emailText = "AllConferencing Meeting Invite";
         try {
-            subject = getSubject(gmailInbox);
-            String emailSubjectString = getSubjectText(gmailInbox);;
-            WebElement emailArrivalTime = getEmailArrivalTime(gmailInbox);
+            subject = getSubject();
+            String emailSubjectString = getSubjectText();;
+            WebElement emailArrivalTime = getEmailArrivalTime();
             String originalTimestamp = emailArrivalTime.getText();
-            String emailTime = waitForEmailTimestamp(gmailInbox, originalTimestamp);
+            String emailTime = waitForEmailTimestamp(originalTimestamp);
             //System.out.println("Email time retrieved from Gmail was: " + emailTime);
 
             createCheckforNewEmail(emailTime, emailArrivalTime);
@@ -71,9 +72,9 @@ public class GmailObject extends BaseSeleniumTest {
             waitForEmailToBeReceived(emailArrivalTime, currentHour, currentMinutes, emailMinuteThreshold);
 
         } catch (NoSuchElementException nsee) {
-            refreshInbox(gmailInbox);
+            refreshInbox();
         } catch (ElementNotFoundException enfe) {
-            refreshInbox(gmailInbox);
+            refreshInbox();
         }
 
 
@@ -101,27 +102,37 @@ public class GmailObject extends BaseSeleniumTest {
         }
     }
 
-    public WebElement getSubject(GmailInboxComponentsObject gmailInbox) {
+    public void checkContentForPasscodes() {
+
+    }
+
+    public WebElement getSubject() {
         gmailInbox = new GmailInboxComponentsObject(driver);
         return gmailInbox.getEmailSubject();
     }
 
-    public String getSubjectText(GmailInboxComponentsObject gmailInbox) {
+    public String getSubjectText() {
         gmailInbox = new GmailInboxComponentsObject(driver);
         return gmailInbox.getEmailSubjectText();
     }
 
-    public WebElement getEmailArrivalTime (GmailInboxComponentsObject gmailInbox) {
+    public WebElement getEmailArrivalTime () {
         gmailInbox = new GmailInboxComponentsObject(driver);
         return gmailInbox.emailArrivalTime();
     }
 
-    public void refreshInbox (GmailInboxComponentsObject gmailInbox) {
+    public void refreshInbox () {
         gmailInbox = new GmailInboxComponentsObject(driver);
-        gmailInbox.refreshInbox();
+        WebElement refreshButton = gmailInbox.getRefreshButton();
+        refreshButton.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    public String waitForEmailTimestamp(GmailInboxComponentsObject gmailInbox, String emailTime) {
+    public String waitForEmailTimestamp(String emailTime) {
         gmailInbox = new GmailInboxComponentsObject(driver);
         gmailInbox.waitForEmailTimestamp(emailTime);
         return emailTime;
@@ -179,7 +190,7 @@ public class GmailObject extends BaseSeleniumTest {
                 e.printStackTrace();
             }
             if (i == 6 || i == 12) {
-                refreshInbox(gmailInbox);
+                refreshInbox();
             }
         }
 

@@ -16,6 +16,10 @@ public class GmailInboxComponentsObject {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
 
+    // Selectors for Gmail Inbox Page Components--------------------------------------------
+    private static final By REFRESH = By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div");
+    //-----------------------------------------------------------------------------------------------
+
 
     public GmailInboxComponentsObject(WebDriver newDriver) {
         driver = newDriver;
@@ -42,6 +46,24 @@ public class GmailInboxComponentsObject {
     public WebElement emailArrivalTime() {
         WebElement emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
         return emailArrivalTime;
+    }
+
+    public WebElement getRefreshButton() {
+        WebElement refreshButton = driver.findElement(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div")); // div[role='button'));
+        return refreshButton;
+    }
+
+    public String waitForEmailTimestamp(String emailTime) {
+        for (int i = 0; i < 3; i++) {
+            if (!emailTime.contains("am")) {
+                if (!emailTime.contains("pm")) {
+                    //refreshInbox();
+                    WebElement emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
+                    emailTime = emailArrivalTime.getText();
+                }
+            }
+        }
+        return emailTime;
     }
 
 }
