@@ -136,18 +136,6 @@ public class OldScheduler1_v2_Invite_Test {
 
         // Choose AM or PM
         selectTimeOfDay(v2OldScheduler, timeOfDay);
-        /*
-        Select timeOfDaySelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_AM']")));
-        List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
-        int timeOfDaySelectOptionsIteration = 0;
-        for (WebElement option : timeOfDaySelectOptions) {
-            timeOfDaySelectOptionsIteration++;
-            if (option.getAttribute("value") == timeOfDay) {
-                option.click();
-                break;
-            }
-        }
-        */
 
         // Choose Pacific time zone
         selectTimeZone(v2OldScheduler);
