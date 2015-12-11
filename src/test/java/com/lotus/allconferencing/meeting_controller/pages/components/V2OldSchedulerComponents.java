@@ -19,9 +19,10 @@ public class V2OldSchedulerComponents {
     private ReadPropertyFile readProps = null;
 
     // Selectors for Old Scheduler Components--------------------------------------------
-    private static final String SPECIFIC_MEETING_TIME_RADIO_BY_CSS = "input[name='Rule_Type'][value='adhoc']";
-    private static final String MEETING_HOUR_BY_CSS = "select[name='Rule_Start_Hour']";
-    private static final String TIME_OF_DAY_BY_CSS = "select[name='Rule_Start_AM']";
+    private static final By MODERATOR_NAME = By.cssSelector("input[name='Moderator_Name']");
+    private static final By SPECIFY_MEETING_TIME_RADIO = By.cssSelector("input[name='Rule_Type'][value='adhoc']");
+    private static final By MEETING_HOUR = By.cssSelector("select[name='Rule_Start_Hour']");
+    private static final By TIME_OF_DAY = By.cssSelector("select[name='Rule_Start_AM']");
     private static final By TIME_ZONE = By.cssSelector("select[name='cboTimeZone']");
     private static final By PARTICIPANT_EMAIL = By.cssSelector("#txtEmail");
     private static final By ADD_TO_MEETING = By.cssSelector("#cmdAdd");
@@ -33,6 +34,13 @@ public class V2OldSchedulerComponents {
 
 
     public V2OldSchedulerComponents (WebDriver newDriver) {
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         driver = newDriver;
 
         try {
@@ -52,20 +60,28 @@ public class V2OldSchedulerComponents {
     private WebElement participantEmail;
     */
 
-    public String selectSpecificMeetingTimeRadioSelector() {
-        String specificMeetingTimeRadioSelector = SPECIFIC_MEETING_TIME_RADIO_BY_CSS;
-        return specificMeetingTimeRadioSelector;
+    public WebElement getModeratorNameField() {
+        WebElement moderatorNameField = driver.findElement(MODERATOR_NAME);
+        return moderatorNameField;
     }
 
-    public String getMeetingHourSelector() {
-        String meetingHourSelector = MEETING_HOUR_BY_CSS;
-        return meetingHourSelector;
+    public WebElement getSpecifyMeetingTimeRadioButton() {
+        WebElement specifyMeetingTimeRadioButton = driver.findElement(SPECIFY_MEETING_TIME_RADIO);
+        return specifyMeetingTimeRadioButton;
     }
 
-    // CSS Selector for AM/PM will not work in this class. Passing the selector as a String to the Page Object instead.
-    public String getTimeOfDaySelector() {
-        String timeOfDaySelector = TIME_OF_DAY_BY_CSS;
-        return timeOfDaySelector;
+    public List<WebElement> getMeetingHourOptions() {
+        WebElement meetingHourElement = driver.findElement(MEETING_HOUR);
+        Select meetingHourSelect = new Select(meetingHourElement);
+        List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();
+        return meetingHourOptions;
+    }
+
+    public List<WebElement> getTimeOfDayOptions() {
+        WebElement timeOfDayElement = driver.findElement(TIME_OF_DAY);
+        Select timeOfDaySelect = new Select(timeOfDayElement);
+        List<WebElement> timeOfDayOptions = timeOfDaySelect.getOptions();
+        return timeOfDayOptions;
     }
 
     public List<WebElement> getTimeZoneOptions() {

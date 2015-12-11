@@ -46,24 +46,24 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
     public void enterModeratorName() {
-        WebElement moderatorNameTextBox = driver.findElement(By.cssSelector("input[name='Moderator_Name']"));
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        WebElement moderatorNameTextBox = v2OldSchedulerComponents.getModeratorNameField();
         moderatorNameTextBox.sendKeys(new String(readProps.getModeratorName()));
     }
 
     public void selectSpecifyTime() {
-        WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector(v2OldSchedulerComponents.selectSpecificMeetingTimeRadioSelector()));
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        WebElement specifyTimeRadioButton = v2OldSchedulerComponents.getSpecifyMeetingTimeRadioButton();
         specifyTimeRadioButton.click();
     }
 
     public String selectMeetingHour(String timeOfDay) {
-        Select meetingHourSelect = new Select(driver.findElement(By.cssSelector(v2OldSchedulerComponents.getMeetingHourSelector())));
-        List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();
-        //List<WebElement> meetingHourOptions = v2OldSchedulerComponents.getMeetingHourOptions();
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        List<WebElement> meetingHourOptions = v2OldSchedulerComponents.getMeetingHourOptions();
         DateTime currentTime = new DateTime();
         Integer currentHour = currentTime.getHourOfDay();
         System.out.println("Current Hour is: " + currentHour);
         Integer meetingHour = 0;
-        //timeOfDay = "";
         if (currentHour <= 11 || currentHour == 23) {
             timeOfDay = "AM";
         } else {
@@ -102,11 +102,8 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     }
 
     public void selectTimeOfDay(String timeOfDay) {
-        //Refactoring By to Components class results in Null Pointer Exception. Refactored the selector as an alternative.
-        WebElement timeOfDayElement = driver.findElement(By.cssSelector(v2OldSchedulerComponents.getTimeOfDaySelector()));
-        Select timeOfDaySelect = new Select(timeOfDayElement);
-        List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
-
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        List<WebElement> timeOfDaySelectOptions = v2OldSchedulerComponents.getTimeOfDayOptions();
         int timeOfDaySelectOptionsIteration = 0;
         for (WebElement option : timeOfDaySelectOptions) {
             System.out.println("Option " + timeOfDaySelectOptionsIteration + " is: " + option.getAttribute("value"));
@@ -119,6 +116,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     }
 
     public void choosePacificTimeZone() {
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
         List<WebElement> timeZoneOptions = v2OldSchedulerComponents.getTimeZoneOptions();
         int timeZoneOptionsIteration = 0;
         for (WebElement option : timeZoneOptions) {
@@ -141,6 +139,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     }
 
     public void addParticipant() {
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
         WebElement participantEmailField = v2OldSchedulerComponents.getParticipantEmailField();
         WebElement addToMeetingButton = v2OldSchedulerComponents.getAddToMeetingButton();
         participantEmailField.sendKeys(readProps.getParticipantEmail());
@@ -148,16 +147,19 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     }
 
     public void enableEmailReminders() {
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
         WebElement sendReminderCheckbox = v2OldSchedulerComponents.getSendReminderCheckbox();
         sendReminderCheckbox.click();
     }
 
     public void submitForm() {
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
         WebElement submitButton = v2OldSchedulerComponents.getSubmitButton();
         submitButton.click();
     }
 
     public void goToAccountServices() {
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
         WebElement acctSvcsButton = v2OldSchedulerComponents.getAcctSvcsButton();
         acctSvcsButton.click();
         WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
