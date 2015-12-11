@@ -81,34 +81,34 @@ public class OldScheduler1_v2_Invite_Test {
         );
 
         // Enter Meeting Name
-        enterMeetingName(v2OldScheduler);
+        enterMeetingName();
 
         // Enter Moderator Name
-        enterModeratorName(v2OldScheduler);
+        enterModeratorName();
 
         // Check specific meeting time (rather than immediate
-        selectSpecifyTime(v2OldScheduler);
+        selectSpecifyTime();
 
         // Choose proper meeting time and determine whether AM or PM
-        timeOfDay = selectMeetingHour(v2OldScheduler, timeOfDay);
+        timeOfDay = selectMeetingHour(timeOfDay);
 
         // Choose AM or PM
-        selectTimeOfDay(v2OldScheduler, timeOfDay);
+        selectTimeOfDay(timeOfDay);
 
         // Choose Pacific time zone
-        selectTimeZone(v2OldScheduler);
+        selectTimeZone();
 
         // Add a participant
-        addParticipant(v2OldScheduler);
+        addParticipant();
 
         // Enable Reminder Email
-        enableEmailReminders(v2OldScheduler);
+        enableEmailReminders();
 
         // Submit Form
-        submitForm(v2OldScheduler);
+        submitForm();
 
         // Go to Account Services
-        goToAccountServices(v2OldScheduler);
+        goToAccountServices();
     }
 
 
@@ -310,53 +310,53 @@ public class OldScheduler1_v2_Invite_Test {
         System.out.println("My Account window handle is: " + myAccountWindow);
     }
 
-    public void enterMeetingName(V2OldSchedulerPageObject v2OldScheduler) {
+    public void enterMeetingName() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.enterMeetingName();
     }
 
-    public void enterModeratorName(V2OldSchedulerPageObject v2OldScheduler) {
+    public void enterModeratorName() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.enterModeratorName();
     }
 
-    public void selectSpecifyTime(V2OldSchedulerPageObject v2OldScheduler) {
+    public void selectSpecifyTime() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.selectSpecifyTime();
     }
 
-    public String selectMeetingHour(V2OldSchedulerPageObject v2OldScheduler, String timeOfDay) {
+    public String selectMeetingHour(String timeOfDay) {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         timeOfDay = v2OldScheduler.selectMeetingHour(timeOfDay);
         return timeOfDay;
     }
 
-    public void selectTimeOfDay(V2OldSchedulerPageObject v2OldScheduler, String timeOfDay) {
+    public void selectTimeOfDay(String timeOfDay) {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.selectTimeOfDay(timeOfDay);
     }
 
-    public void selectTimeZone(V2OldSchedulerPageObject v2OldScheduler) {
+    public void selectTimeZone() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.choosePacificTimeZone();
     }
 
-    public void addParticipant(V2OldSchedulerPageObject v2OldScheduler) {
+    public void addParticipant() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.addParticipant();
     }
 
-    public void enableEmailReminders(V2OldSchedulerPageObject v2OldScheduler) {
+    public void enableEmailReminders() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.enableEmailReminders();
     }
 
-    public void submitForm(V2OldSchedulerPageObject v2OldScheduler) {
+    public void submitForm() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.submitForm();
     }
 
-    public void goToAccountServices(V2OldSchedulerPageObject v2OldScheduler) {
+    public void goToAccountServices() {
         v2OldScheduler = new V2OldSchedulerPageObject(driver);
         v2OldScheduler.goToAccountServices();
     }
