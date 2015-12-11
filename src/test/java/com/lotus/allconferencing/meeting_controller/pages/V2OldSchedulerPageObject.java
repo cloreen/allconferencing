@@ -45,6 +45,12 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
 
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
+    public void enterMeetingName() {
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        WebElement conferenceNameTextBox = v2OldSchedulerComponents.getMeetingNameField();
+        conferenceNameTextBox.sendKeys(new String(readProps.getv2ScheduledConfName()));
+    }
+
     public void enterModeratorName() {
         v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
         WebElement moderatorNameTextBox = v2OldSchedulerComponents.getModeratorNameField();

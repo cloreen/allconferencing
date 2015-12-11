@@ -19,6 +19,7 @@ public class V2OldSchedulerComponents {
     private ReadPropertyFile readProps = null;
 
     // Selectors for Old Scheduler Components--------------------------------------------
+    private static final By MEETING_NAME = By.cssSelector("input[name='Conference_Name']");
     private static final By MODERATOR_NAME = By.cssSelector("input[name='Moderator_Name']");
     private static final By SPECIFY_MEETING_TIME_RADIO = By.cssSelector("input[name='Rule_Type'][value='adhoc']");
     private static final By MEETING_HOUR = By.cssSelector("select[name='Rule_Start_Hour']");
@@ -59,6 +60,11 @@ public class V2OldSchedulerComponents {
     @FindBy(how = How.CSS, using = "#txtEmail")
     private WebElement participantEmail;
     */
+
+    public WebElement getMeetingNameField() {
+        WebElement meetingNameField = driver.findElement(MEETING_NAME);
+        return meetingNameField;
+    }
 
     public WebElement getModeratorNameField() {
         WebElement moderatorNameField = driver.findElement(MODERATOR_NAME);
