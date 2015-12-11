@@ -19,6 +19,7 @@ public class V2OldSchedulerComponents {
     private ReadPropertyFile readProps = null;
 
     // Selectors for Old Scheduler Components--------------------------------------------
+    private static final String SPECIFIC_MEETING_TIME_RADIO_BY_CSS = "input[name='Rule_Type'][value='adhoc']";
     private static final String MEETING_HOUR_BY_CSS = "select[name='Rule_Start_Hour']";
     private static final String TIME_OF_DAY_BY_CSS = "select[name='Rule_Start_AM']";
     private static final By TIME_ZONE = By.cssSelector("select[name='cboTimeZone']");
@@ -50,6 +51,11 @@ public class V2OldSchedulerComponents {
     @FindBy(how = How.CSS, using = "#txtEmail")
     private WebElement participantEmail;
     */
+
+    public String selectSpecificMeetingTimeRadioSelector() {
+        String specificMeetingTimeRadioSelector = SPECIFIC_MEETING_TIME_RADIO_BY_CSS;
+        return specificMeetingTimeRadioSelector;
+    }
 
     public String getMeetingHourSelector() {
         String meetingHourSelector = MEETING_HOUR_BY_CSS;

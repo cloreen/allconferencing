@@ -46,7 +46,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
     public void selectSpecifyTime() {
-        WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
+        WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector(v2OldSchedulerComponents.selectSpecificMeetingTimeRadioSelector()));
         specifyTimeRadioButton.click();
     }
 
