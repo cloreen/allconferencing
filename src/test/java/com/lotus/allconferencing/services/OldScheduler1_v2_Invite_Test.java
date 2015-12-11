@@ -3,6 +3,7 @@ package com.lotus.allconferencing.services;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.GmailObject;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
+import com.lotus.allconferencing.meeting_controller.pages.OldAccountServicesPage;
 import com.lotus.allconferencing.meeting_controller.pages.V2OldSchedulerPageObject;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -47,6 +48,7 @@ public class OldScheduler1_v2_Invite_Test {
 
     GmailObject gmail = new GmailObject(driver2);
     public V2OldSchedulerPageObject v2OldScheduler = new V2OldSchedulerPageObject(driver);
+    public OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
 
 
     @Test
@@ -71,43 +73,19 @@ public class OldScheduler1_v2_Invite_Test {
         // get its handle.
         getLoginPage(LoginPageObject.LoginType.STANDARD);
 
-        WebElement v2ScheduleMeetingLink = driver.findElement(By.cssSelector("a[href='schedule_v2.asp?Rights=0']"));
-        v2ScheduleMeetingLink.click();
+        openScheduler();
 
-        WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
-
-        waitForSchedulerToDisplay.until(
-                ExpectedConditions.titleIs("All Conferencing - Schedule a Conference")
-        );
-
-        // Enter Meeting Name
+        // Enter Meeting Info
         enterMeetingName();
-
-        // Enter Moderator Name
         enterModeratorName();
-
-        // Check specific meeting time (rather than immediate
-        selectSpecifyTime();
-
-        // Choose proper meeting time and determine whether AM or PM
+        selectSpecifyTime(); // Check Radio Button to schedule for a specific time
         timeOfDay = selectMeetingHour(timeOfDay);
-
-        // Choose AM or PM
-        selectTimeOfDay(timeOfDay);
-
-        // Choose Pacific time zone
+        selectTimeOfDay(timeOfDay); // Choose AM or PM
         selectTimeZone();
-
-        // Add a participant
         addParticipant();
-
-        // Enable Reminder Email
         enableEmailReminders();
-
-        // Submit Form
         submitForm();
 
-        // Go to Account Services
         goToAccountServices();
     }
 
@@ -308,6 +286,11 @@ public class OldScheduler1_v2_Invite_Test {
         //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
         //waitForLoginPage.until();
         System.out.println("My Account window handle is: " + myAccountWindow);
+    }
+
+    public void openScheduler() {
+        oldAccountServicesPage = new OldAccountServicesPage(driver);
+        oldAccountServicesPage.openV2OldScheduler();
     }
 
     public void enterMeetingName() {
