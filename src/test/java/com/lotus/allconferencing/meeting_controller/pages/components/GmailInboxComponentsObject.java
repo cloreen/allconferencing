@@ -49,7 +49,7 @@ public class GmailInboxComponentsObject {
     }
 
     public WebElement getRefreshButton() {
-        WebElement refreshButton = driver.findElement(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div")); // div[role='button'));
+        WebElement refreshButton = driver.findElement(REFRESH);
         return refreshButton;
     }
 
