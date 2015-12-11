@@ -229,7 +229,7 @@ public class OldScheduler1_v2_Invite_Test {
     // Verifications ---------------------------------------------------------------------------------------------------
 
     public void verifyEmailReceived(String emailSubject) {
-        assertThat("Appropriate email is received", emailSubject.contentEquals("Your Conference Invitation"));
+        assertThat("Appropriate email is received", emailSubject.contentEquals(readProps.getInviteEmailSubject()));
     }
 
     public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {
