@@ -18,6 +18,7 @@ public class GmailInboxComponentsObject {
 
     // Selectors for Gmail Inbox Page Components--------------------------------------------
     private static final By REFRESH = By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div");
+    private static final By TIMESTAMP = By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span");
     //-----------------------------------------------------------------------------------------------
 
 
@@ -43,8 +44,8 @@ public class GmailInboxComponentsObject {
         return emailSubject.getText();
     }
 
-    public WebElement emailArrivalTime() {
-        WebElement emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
+    public WebElement getEmailArrivalTime() {
+        WebElement emailArrivalTime = driver.findElement(TIMESTAMP);
         return emailArrivalTime;
     }
 

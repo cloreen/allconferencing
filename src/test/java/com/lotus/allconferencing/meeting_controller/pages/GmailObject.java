@@ -118,7 +118,8 @@ public class GmailObject extends BaseSeleniumTest {
 
     public WebElement getEmailArrivalTime () {
         gmailInbox = new GmailInboxComponentsObject(driver);
-        return gmailInbox.emailArrivalTime();
+        WebElement emailArrivalTime = gmailInbox.getEmailArrivalTime();
+        return emailArrivalTime;
     }
 
     public void refreshInbox () {
