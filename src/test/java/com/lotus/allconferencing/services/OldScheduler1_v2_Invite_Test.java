@@ -59,22 +59,17 @@ public class OldScheduler1_v2_Invite_Test {
             e.printStackTrace();
         }
 
-        driver = new FirefoxDriver();
-
+        openBrowser();
         goToHomePage();
-
-        // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
-        // get its handle.
         login(LoginPageObject.LoginType.STANDARD);
-
         openScheduler();
 
         // Enter Meeting Info
         enterMeetingName();
         enterModeratorName();
         selectSpecifyTime(); // Check Radio Button to schedule for a specific time
-        timeOfDay = selectMeetingHour(timeOfDay);
-        selectTimeOfDay(timeOfDay); // Choose AM or PM
+        timeOfDay = selectMeetingHour(timeOfDay); // Get hour of the day and select meeting hour
+        selectTimeOfDay(timeOfDay); // Choose AM or PM based on current hour
         selectTimeZone();
         addParticipant();
         enableEmailReminders();
@@ -258,6 +253,13 @@ public class OldScheduler1_v2_Invite_Test {
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
+    public void getAccountSettings() {
+
+    }
+
+    public void openBrowser() {
+        driver = new FirefoxDriver();
+    }
 
     public void goToHomePage() {
         driver.get(readProps.getUrl());
@@ -283,6 +285,8 @@ public class OldScheduler1_v2_Invite_Test {
     }
 
     public void login(LoginPageObject.LoginType loginType) {
+        // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
+        // get its handle.
         System.out.println("Base window handle is: " + baseWindow);
 
         loginPage = new LoginPageObject(driver);
