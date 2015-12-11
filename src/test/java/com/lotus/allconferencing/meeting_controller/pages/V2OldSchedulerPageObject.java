@@ -45,6 +45,11 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
 
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
+    public void selectSpecifyTime() {
+        WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
+        specifyTimeRadioButton.click();
+    }
+
     public String selectMeetingHour(String timeOfDay) {
         Select meetingHourSelect = new Select(driver.findElement(By.cssSelector(v2OldSchedulerComponents.getMeetingHourSelector())));
         List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();

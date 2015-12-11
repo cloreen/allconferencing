@@ -89,10 +89,7 @@ public class OldScheduler1_v2_Invite_Test {
         moderatorNameTextBox.sendKeys(new String(readProps.getModeratorName()));
 
         // Check specific meeting time (rather than immediate
-        WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
-        specifyTimeRadioButton.click();
-
-
+        selectSpecifyTime(v2OldScheduler);
 
         // Choose proper meeting time and determine whether AM or PM
         timeOfDay = selectMeetingHour(v2OldScheduler, timeOfDay);
@@ -313,6 +310,11 @@ public class OldScheduler1_v2_Invite_Test {
         //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
         //waitForLoginPage.until();
         System.out.println("My Account window handle is: " + myAccountWindow);
+    }
+
+    public void selectSpecifyTime(V2OldSchedulerPageObject v2OldScheduler) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        v2OldScheduler.selectSpecifyTime();
     }
 
     public String selectMeetingHour(V2OldSchedulerPageObject v2OldScheduler, String timeOfDay) {
