@@ -53,11 +53,8 @@ public class OldScheduler1_v2_Invite_Test {
 
     @Test
     public void scheduleV2Meeting() {
-        try {
-            readProps = new ReadPropertyFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        getAccountSettings();
 
         openBrowser();
         goToHomePage();
@@ -254,7 +251,11 @@ public class OldScheduler1_v2_Invite_Test {
     // Helper methods --------------------------------------------------------------------------------------------------
 
     public void getAccountSettings() {
-
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void openBrowser() {
