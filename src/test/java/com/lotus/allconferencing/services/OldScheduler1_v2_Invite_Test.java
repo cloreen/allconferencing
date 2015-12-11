@@ -60,18 +60,12 @@ public class OldScheduler1_v2_Invite_Test {
         }
 
         driver = new FirefoxDriver();
-        driver.get(readProps.getUrl());
 
-        // Click on HTML element -- May be necessary to run tests in Firefox.
-        WebElement htmlElement = driver.findElement(By.tagName("html"));
-        htmlElement.click();
-
-        // Get handle for home page
-        baseWindow = driver.getWindowHandle();
+        goToHomePage();
 
         // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
         // get its handle.
-        getLoginPage(LoginPageObject.LoginType.STANDARD);
+        login(LoginPageObject.LoginType.STANDARD);
 
         openScheduler();
 
@@ -264,6 +258,18 @@ public class OldScheduler1_v2_Invite_Test {
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
+
+    public void goToHomePage() {
+        driver.get(readProps.getUrl());
+
+        // Click on HTML element -- May be necessary to run tests in Firefox.
+        WebElement htmlElement = driver.findElement(By.tagName("html"));
+        htmlElement.click();
+
+        // Get handle for home page
+        baseWindow = driver.getWindowHandle();
+    }
+
     public static String getWindow() {
         int i = 0;
         Set<String> set = driver.getWindowHandles();
@@ -276,7 +282,7 @@ public class OldScheduler1_v2_Invite_Test {
         return windowHandle;
     }
 
-    public void getLoginPage(LoginPageObject.LoginType loginType) {
+    public void login(LoginPageObject.LoginType loginType) {
         System.out.println("Base window handle is: " + baseWindow);
 
         loginPage = new LoginPageObject(driver);
