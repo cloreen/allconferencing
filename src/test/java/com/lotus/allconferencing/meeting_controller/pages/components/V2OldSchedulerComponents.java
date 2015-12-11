@@ -10,6 +10,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.util.List;
 
+
 /**
  * Created by Ben on 12/6/2015.
  */
@@ -18,7 +19,8 @@ public class V2OldSchedulerComponents {
     private ReadPropertyFile readProps = null;
 
     // Selectors for Old Scheduler Components--------------------------------------------
-    private static final By TIME_OF_DAY = By.cssSelector("select[name='Rule_Start_AM']");
+    private static final String MEETING_HOUR_BY_CSS = "select[name='Rule_Start_Hour']";
+    private static final String TIME_OF_DAY_BY_CSS = "select[name='Rule_Start_AM']";
     private static final By TIME_ZONE = By.cssSelector("select[name='cboTimeZone']");
     private static final By PARTICIPANT_EMAIL = By.cssSelector("#txtEmail");
     private static final By ADD_TO_MEETING = By.cssSelector("#cmdAdd");
@@ -48,6 +50,17 @@ public class V2OldSchedulerComponents {
     @FindBy(how = How.CSS, using = "#txtEmail")
     private WebElement participantEmail;
     */
+
+    public String getMeetingHourSelector() {
+        String meetingHourSelector = MEETING_HOUR_BY_CSS;
+        return meetingHourSelector;
+    }
+
+    // CSS Selector for AM/PM will not work in this class. Passing the selector as a String to the Page Object instead.
+    public String getTimeOfDaySelector() {
+        String timeOfDaySelector = TIME_OF_DAY_BY_CSS;
+        return timeOfDaySelector;
+    }
 
     public List<WebElement> getTimeZoneOptions() {
         WebElement timeZoneElement = driver.findElement(TIME_ZONE);

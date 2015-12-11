@@ -46,8 +46,9 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
     public String selectMeetingHour(String timeOfDay) {
-        Select meetingHourSelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_Hour']")));
+        Select meetingHourSelect = new Select(driver.findElement(By.cssSelector(v2OldSchedulerComponents.getMeetingHourSelector())));
         List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();
+        //List<WebElement> meetingHourOptions = v2OldSchedulerComponents.getMeetingHourOptions();
         DateTime currentTime = new DateTime();
         Integer currentHour = currentTime.getHourOfDay();
         System.out.println("Current Hour is: " + currentHour);
