@@ -46,11 +46,10 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
     public void selectTimeOfDay(String timeOfDay) {
-        //WebElement timeOfDayOptions = v2OldSchedulerComponents.getTimeOfDaySelect();
-        //Select timeOfDaySelect = new Select(timeOfDayOptions);
-        WebElement timeOfDayElement = driver.findElement(By.cssSelector("select[name='Rule_Start_AM']"));
+        WebElement timeOfDayElement = driver.findElement(By.cssSelector(v2OldSchedulerComponents.getTimeOfDaySelector()));
         Select timeOfDaySelect = new Select(timeOfDayElement);
         List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
+
         int timeOfDaySelectOptionsIteration = 0;
         for (WebElement option : timeOfDaySelectOptions) {
             timeOfDaySelectOptionsIteration++;
