@@ -92,47 +92,10 @@ public class OldScheduler1_v2_Invite_Test {
         WebElement specifyTimeRadioButton = driver.findElement(By.cssSelector("input[name='Rule_Type'][value='adhoc']"));
         specifyTimeRadioButton.click();
 
-        // Choose proper meeting time
-        Select meetingHourSelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_Hour']")));
-        List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();
-        DateTime currentTime = new DateTime();
-        Integer currentHour = currentTime.getHourOfDay();
-        System.out.println("Current Hour is: " + currentHour);
-        Integer meetingHour = 0;
-        timeOfDay = "";
-        if (currentHour <= 11 || currentHour == 23) {
-            timeOfDay = "AM";
-        } else {
-            timeOfDay = "PM";
-        }
-        if (currentHour > 12) {
-            currentHour -= 12;
-        }
-        if (currentHour == 12) {
-            meetingHour = 1;
-        } else {
-            meetingHour = currentHour + 1;
-        }
-        int selectOptionsIteration = 0;
-        for (WebElement option : meetingHourOptions) {
-            selectOptionsIteration++;
-            Integer optionValue = Integer.parseInt(option.getAttribute("value"));
-            if (optionValue == meetingHour) {
-                option.click();
-                break;
-            } else if (selectOptionsIteration == meetingHourOptions.size()) {
-                System.out.println("System never found correct option.");
-                break;
-            } else {
-                continue;
-            }
-        }
 
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        // Choose proper meeting time and determine whether AM or PM
+        timeOfDay = selectMeetingHour(v2OldScheduler, timeOfDay);
 
         // Choose AM or PM
         selectTimeOfDay(v2OldScheduler, timeOfDay);
@@ -350,6 +313,12 @@ public class OldScheduler1_v2_Invite_Test {
         //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
         //waitForLoginPage.until();
         System.out.println("My Account window handle is: " + myAccountWindow);
+    }
+
+    public String selectMeetingHour(V2OldSchedulerPageObject v2OldScheduler, String timeOfDay) {
+        v2OldScheduler = new V2OldSchedulerPageObject(driver);
+        timeOfDay = v2OldScheduler.selectMeetingHour(timeOfDay);
+        return timeOfDay;
     }
 
     public void selectTimeOfDay(V2OldSchedulerPageObject v2OldScheduler, String timeOfDay) {

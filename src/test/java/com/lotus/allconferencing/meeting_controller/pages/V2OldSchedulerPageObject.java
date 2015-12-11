@@ -45,15 +45,62 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
 
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
+    public String selectMeetingHour(String timeOfDay) {
+        Select meetingHourSelect = new Select(driver.findElement(By.cssSelector("select[name='Rule_Start_Hour']")));
+        List<WebElement> meetingHourOptions = meetingHourSelect.getOptions();
+        DateTime currentTime = new DateTime();
+        Integer currentHour = currentTime.getHourOfDay();
+        System.out.println("Current Hour is: " + currentHour);
+        Integer meetingHour = 0;
+        //timeOfDay = "";
+        if (currentHour <= 11 || currentHour == 23) {
+            timeOfDay = "AM";
+        } else {
+            timeOfDay = "PM";
+        }
+        if (currentHour > 12) {
+            currentHour -= 12;
+        }
+        if (currentHour == 12) {
+            meetingHour = 1;
+        } else {
+            meetingHour = currentHour + 1;
+        }
+        int selectOptionsIteration = 0;
+        for (WebElement option : meetingHourOptions) {
+            selectOptionsIteration++;
+            Integer optionValue = Integer.parseInt(option.getAttribute("value"));
+            if (optionValue == meetingHour) {
+                option.click();
+                break;
+            } else if (selectOptionsIteration == meetingHourOptions.size()) {
+                System.out.println("System never found correct option.");
+                break;
+            } else {
+                continue;
+            }
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return timeOfDay;
+    }
+
     public void selectTimeOfDay(String timeOfDay) {
+        //Refactoring By to Components class results in Null Pointer Exception. Refactored the selector as an alternative.
         WebElement timeOfDayElement = driver.findElement(By.cssSelector(v2OldSchedulerComponents.getTimeOfDaySelector()));
         Select timeOfDaySelect = new Select(timeOfDayElement);
         List<WebElement> timeOfDaySelectOptions = timeOfDaySelect.getOptions();
 
         int timeOfDaySelectOptionsIteration = 0;
         for (WebElement option : timeOfDaySelectOptions) {
+            System.out.println("Option " + timeOfDaySelectOptionsIteration + " is: " + option.getAttribute("value"));
             timeOfDaySelectOptionsIteration++;
-            if (option.getAttribute("value") == timeOfDay) {
+            if (option.getAttribute("value").contentEquals(timeOfDay)) {
                 option.click();
                 break;
             }
