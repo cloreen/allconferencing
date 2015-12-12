@@ -209,14 +209,14 @@ public class GmailObject extends BaseSeleniumTest {
     public void checkEmailContentForNewConfInfo() {
         List<WebElement> emailBodyTable = gmailInbox.getEmailBody();
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         if (emailBodyTable.size() != 1) {
             System.out.println("Through first wait - table not populated");
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -224,7 +224,7 @@ public class GmailObject extends BaseSeleniumTest {
         if (emailBodyTable.size() != 1) {
             System.out.println("Through second wait - table still not populated");
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
