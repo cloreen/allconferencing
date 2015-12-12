@@ -65,7 +65,7 @@ public class GmailObject extends BaseSeleniumTest {
             String emailTime = waitForEmailTimestamp(originalTimestamp);
             //System.out.println("Email time retrieved from Gmail was: " + emailTime);
 
-            createCheckforNewEmail(emailTime, emailArrivalTime);
+            createCheckforNewEmail(emailTime);
 
             waitForEmailToBeReceived(emailArrivalTime, currentHour, currentMinutes, emailMinuteThreshold);
 
@@ -139,7 +139,7 @@ public class GmailObject extends BaseSeleniumTest {
         return emailTime;
     }
 
-    public void createCheckforNewEmail(String emailTime, WebElement emailArrivalTime) {
+    public void createCheckforNewEmail(String emailTime) {
         String[] emailTimeParts = emailTime.split(":");
         String emailHourStr = emailTimeParts[0];
         String emailMinuteStr = emailTimeParts[1];
