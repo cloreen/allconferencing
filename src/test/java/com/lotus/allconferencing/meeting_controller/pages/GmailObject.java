@@ -208,7 +208,6 @@ public class GmailObject extends BaseSeleniumTest {
 
     public void checkEmailContentForNewConfInfo() {
         List<WebElement> emailBodyTable = gmailInbox.getEmailBody();
-        //List<WebElement> emailBodyTable = driver.findElements(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*"));
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
