@@ -87,7 +87,7 @@ public class OldScheduler1_v2_Invite_Test {
         // Check invite email, passcodes and dial-in numbers have been generated
         checkEmailIsReceived();
 
-        gmail.getEmail();
+        gmail.openEmail();
 
         List<WebElement> emailBodyTable = driver2.findElements(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*"));
         try {

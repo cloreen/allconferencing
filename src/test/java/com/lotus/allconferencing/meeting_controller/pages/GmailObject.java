@@ -91,7 +91,7 @@ public class GmailObject extends BaseSeleniumTest {
         gmail.enterGmailPassword();
     }
 
-    public void getEmail() {
+    public void openEmail() {
         subject.click();
         try {
             Thread.sleep(3000);
