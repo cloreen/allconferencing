@@ -39,11 +39,6 @@ public class GmailInboxComponentsObject {
         return emailSubject;
     }
 
-    public String getEmailSubjectText() {
-        WebElement emailSubject = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
-        return emailSubject.getText();
-    }
-
     public WebElement getEmailArrivalTime() {
         WebElement emailArrivalTime = driver.findElement(TIMESTAMP);
         return emailArrivalTime;

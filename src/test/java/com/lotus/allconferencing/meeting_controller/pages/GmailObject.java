@@ -61,7 +61,6 @@ public class GmailObject extends BaseSeleniumTest {
         String emailText = "AllConferencing Meeting Invite";
         try {
             subject = getSubject();
-            String emailSubjectString = getSubjectText();;
             WebElement emailArrivalTime = getEmailArrivalTime();
             String originalTimestamp = emailArrivalTime.getText();
             String emailTime = waitForEmailTimestamp(originalTimestamp);
@@ -109,11 +108,6 @@ public class GmailObject extends BaseSeleniumTest {
     public WebElement getSubject() {
         gmailInbox = new GmailInboxComponentsObject(driver);
         return gmailInbox.getEmailSubject();
-    }
-
-    public String getSubjectText() {
-        gmailInbox = new GmailInboxComponentsObject(driver);
-        return gmailInbox.getEmailSubjectText();
     }
 
     public WebElement getEmailArrivalTime () {
