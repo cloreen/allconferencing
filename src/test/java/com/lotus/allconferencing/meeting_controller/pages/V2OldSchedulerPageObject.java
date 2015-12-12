@@ -70,7 +70,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
         Integer currentHour = currentTime.getHourOfDay();
         System.out.println("Current Hour is: " + currentHour);
         Integer meetingHour = 0;
-        if (currentHour <= 11 || currentHour == 23) {
+        if (currentHour <= 10 || currentHour == 23) {
             timeOfDay = "AM";
         } else {
             timeOfDay = "PM";
