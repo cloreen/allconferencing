@@ -89,95 +89,7 @@ public class OldScheduler1_v2_Invite_Test {
 
         gmail.openEmail();
 
-        List<WebElement> emailBodyTable = driver2.findElements(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*"));
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (emailBodyTable.size() != 1) {
-            System.out.println("Through first wait - table not populated");
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        if (emailBodyTable.size() != 1) {
-            System.out.println("Through second wait - table still not populated");
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (emailBodyTable.size() != 1) {
-            System.out.println("Through third wait (15 seconds) - table still not populated");
-        }
-
-        Integer elementCounter = 0;
-        String[] emailContent = null;
-        System.out.println(emailBodyTable.size());
-        DateTime dateTime = new DateTime();
-        Integer mins = dateTime.getMinuteOfHour();
-        System.out.println("Minute of Hour using DateTime: " + mins);
-        Integer minThreshold = null;
-        if (mins != 0) {
-            minThreshold = mins - 1;
-        } else {
-            minThreshold = 59;
-        }
-        System.out.println("Minutes threshold = " + minThreshold);
-        String tollFreeNum = null;
-        String modPasscode = null;
-        for (WebElement element : emailBodyTable) {
-            if (element.isDisplayed()) {
-                emailContent = element.getText().split("\n");
-            }
-            for (String line : emailContent) {
-                elementCounter += 1;
-                System.out.println("Line " + elementCounter + ":");
-                System.out.println(line);
-                if (line.contains("(0 minutes ago)")) {
-                    System.out.println("Found newest email");
-                    isNewEmail = true;
-                }
-                if (isNewEmail == true) {
-                    if (line.contains("Toll-free phone number")) {
-                        System.out.println("Toll-free number found!");
-                        tollFreeNum = line;
-                    } else if (line.contains("Participant Passcode")) {
-                        System.out.println("Passcode found!");
-                        modPasscode = line;
-                    }
-                }
-                System.out.println("");
-            }
-
-            if (isNewEmail == true) {
-                tollFreeNumArr = tollFreeNum.split(" ");
-                passcodeArr = modPasscode.split(" ");
-                System.out.println("Toll Free Number line:");
-                for (String item : tollFreeNumArr) {
-                    System.out.println(item);
-                }
-                System.out.println("");
-                System.out.println("Passcode line:");
-                for (String item : passcodeArr) {
-                    System.out.println(item);
-                }
-                pattern = Pattern.compile("\\d+");
-                System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
-                verifyTollFreeNumberIsGenerated(tollFreeNumArr[27]);
-                System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
-                verifyPasscodesAreGenerated(passcodeArr[28]);
-                partPasscode = passcodeArr[28];
-            } else {
-                System.out.println("The new email was not found.");
-                System.exit(-1);
-            }
-        }
+        checkEmailContentForNewConfInfo();
     }
 
     @Test
@@ -355,6 +267,11 @@ public class OldScheduler1_v2_Invite_Test {
     public void checkEmailIsReceived() {
         String inviteEmailSubject = checkInviteEmail();
         verifyEmailReceived(inviteEmailSubject);
+    }
+
+    public void checkEmailContentForNewConfInfo() {
+        gmail = new GmailObject(driver2);
+        gmail.checkEmailContentForNewConfInfo();
     }
 
     public void removeConferenceFromList() {
