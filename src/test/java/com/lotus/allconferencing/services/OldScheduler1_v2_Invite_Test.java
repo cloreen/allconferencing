@@ -85,20 +85,10 @@ public class OldScheduler1_v2_Invite_Test {
         }
 
         // Check invite email, passcodes and dial-in numbers have been generated
-//        getGmailInbox();
-        String inviteEmailSubject = checkInviteEmail();
-        verifyEmailReceived(inviteEmailSubject);
+        checkEmailIsReceived();
 
-//        WebElement emailSubject = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
-//        WebElement emailSubject;
-/*
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-*/
         gmail.getEmail();
+
         List<WebElement> emailBodyTable = driver2.findElements(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*"));
         try {
             Thread.sleep(5000);
@@ -360,6 +350,11 @@ public class OldScheduler1_v2_Invite_Test {
         gmail = new GmailObject(driver2);
         ;//driver2.get("http://www.gmail.com/");
         return gmail.checkInviteEmail();
+    }
+
+    public void checkEmailIsReceived() {
+        String inviteEmailSubject = checkInviteEmail();
+        verifyEmailReceived(inviteEmailSubject);
     }
 
     public void removeConferenceFromList() {
