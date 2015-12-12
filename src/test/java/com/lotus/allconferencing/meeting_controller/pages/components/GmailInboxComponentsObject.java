@@ -31,8 +31,6 @@ public class GmailInboxComponentsObject {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     public WebElement getEmailSubject() {
@@ -49,18 +47,4 @@ public class GmailInboxComponentsObject {
         WebElement refreshButton = driver.findElement(REFRESH);
         return refreshButton;
     }
-
-    public String waitForEmailTimestamp(String emailTime) {
-        for (int i = 0; i < 3; i++) {
-            if (!emailTime.contains("am")) {
-                if (!emailTime.contains("pm")) {
-                    //refreshInbox();
-                    WebElement emailArrivalTime = driver.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
-                    emailTime = emailArrivalTime.getText();
-                }
-            }
-        }
-        return emailTime;
-    }
-
 }
