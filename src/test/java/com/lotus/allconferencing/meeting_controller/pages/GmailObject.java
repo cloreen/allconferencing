@@ -58,7 +58,6 @@ public class GmailObject extends BaseSeleniumTest {
         loginToGmail(gmail);
 
         // Inbox - get most recent email, evaluate time received and email subject
-        String emailText = "AllConferencing Meeting Invite";
         try {
             subject = getSubject();
             WebElement emailArrivalTime = getEmailArrivalTime();
@@ -129,7 +128,14 @@ public class GmailObject extends BaseSeleniumTest {
 
     public String waitForEmailTimestamp(String emailTime) {
         gmailInbox = new GmailInboxComponentsObject(driver);
-        gmailInbox.waitForEmailTimestamp(emailTime);
+        for (int i = 0; i < 3; i++) {
+            if (!emailTime.contains("am")) {
+                if (!emailTime.contains("pm")) {
+                    WebElement emailArrivalTime = getEmailArrivalTime();
+                    emailTime = emailArrivalTime.getText();
+                }
+            }
+        }
         return emailTime;
     }
 
