@@ -208,6 +208,80 @@ public class GmailObject extends BaseSeleniumTest {
 
     public void checkEmailContentForNewConfInfo() {
         List<WebElement> emailBodyTable = gmailInbox.getEmailBody();
+        if (emailBodyTable.size() == 1) {
+//            System.out.println("List was populated upon assignment!");
+        } else {
+            waitForListToPopulate(emailBodyTable);
+        }
+        Integer elementCounter = 0;
+        String[] emailContent = null;
+//        System.out.println(emailBodyTable.size());
+        DateTime dateTime = new DateTime();
+        Integer mins = dateTime.getMinuteOfHour();
+//        System.out.println("Minute of Hour using DateTime: " + mins);
+        Integer minThreshold = null;
+        if (mins != 0) {
+            minThreshold = mins - 1;
+        } else {
+            minThreshold = 59;
+        }
+//        System.out.println("Minutes threshold = " + minThreshold);
+        String tollFreeNum = null;
+        String modPasscode = null;
+        for (WebElement element : emailBodyTable) {
+            if (element.isDisplayed()) {
+                emailContent = element.getText().split("\n");
+            }
+            for (String line : emailContent) {
+                elementCounter += 1;
+//                System.out.println("Line " + elementCounter + ":");
+//                System.out.println(line);
+                if (line.contains("(0 minutes ago)")) {
+//                    System.out.println("Found newest email");
+                    isNewEmail = true;
+                }
+                if (isNewEmail == true) {
+                    if (line.contains("Toll-free phone number")) {
+//                        System.out.println("Toll-free number found!");
+                        tollFreeNum = line;
+                    } else if (line.contains("Participant Passcode")) {
+//                        System.out.println("Passcode found!");
+                        modPasscode = line;
+                    }
+                }
+//                System.out.println("");
+            }
+
+            if (isNewEmail == true) {
+                tollFreeNumArr = tollFreeNum.split(" ");
+                passcodeArr = modPasscode.split(" ");
+                /*
+                System.out.println("Toll Free Number line:");
+                for (String item : tollFreeNumArr) {
+                    System.out.println(item);
+                }
+                System.out.println("");
+                System.out.println("Passcode line:");
+                for (String item : passcodeArr) {
+                    System.out.println(item);
+                }
+                */
+                pattern = Pattern.compile("\\d+");
+//                System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
+                verifyTollFreeNumberIsGenerated(tollFreeNumArr[27]);
+//                System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
+                verifyPasscodesAreGenerated(passcodeArr[28]);
+                partPasscode = passcodeArr[28];
+            } else {
+                System.out.println("The new email was not found.");
+                System.exit(-1);
+            }
+        }
+
+    }
+
+    public void waitForListToPopulate(List<WebElement> emailBodyTable) {
+
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -231,72 +305,9 @@ public class GmailObject extends BaseSeleniumTest {
         }
 
         if (emailBodyTable.size() != 1) {
-            System.out.println("Through third wait (15 seconds) - table still not populated");
+            System.out.println("Through third wait (6 seconds total) - table was still not populated");
+            System.exit(-1);
         }
-
-        Integer elementCounter = 0;
-        String[] emailContent = null;
-        System.out.println(emailBodyTable.size());
-        DateTime dateTime = new DateTime();
-        Integer mins = dateTime.getMinuteOfHour();
-        System.out.println("Minute of Hour using DateTime: " + mins);
-        Integer minThreshold = null;
-        if (mins != 0) {
-            minThreshold = mins - 1;
-        } else {
-            minThreshold = 59;
-        }
-        System.out.println("Minutes threshold = " + minThreshold);
-        String tollFreeNum = null;
-        String modPasscode = null;
-        for (WebElement element : emailBodyTable) {
-            if (element.isDisplayed()) {
-                emailContent = element.getText().split("\n");
-            }
-            for (String line : emailContent) {
-                elementCounter += 1;
-                System.out.println("Line " + elementCounter + ":");
-                System.out.println(line);
-                if (line.contains("(0 minutes ago)")) {
-                    System.out.println("Found newest email");
-                    isNewEmail = true;
-                }
-                if (isNewEmail == true) {
-                    if (line.contains("Toll-free phone number")) {
-                        System.out.println("Toll-free number found!");
-                        tollFreeNum = line;
-                    } else if (line.contains("Participant Passcode")) {
-                        System.out.println("Passcode found!");
-                        modPasscode = line;
-                    }
-                }
-                System.out.println("");
-            }
-
-            if (isNewEmail == true) {
-                tollFreeNumArr = tollFreeNum.split(" ");
-                passcodeArr = modPasscode.split(" ");
-                System.out.println("Toll Free Number line:");
-                for (String item : tollFreeNumArr) {
-                    System.out.println(item);
-                }
-                System.out.println("");
-                System.out.println("Passcode line:");
-                for (String item : passcodeArr) {
-                    System.out.println(item);
-                }
-                pattern = Pattern.compile("\\d+");
-                System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
-                verifyTollFreeNumberIsGenerated(tollFreeNumArr[27]);
-                System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
-                verifyPasscodesAreGenerated(passcodeArr[28]);
-                partPasscode = passcodeArr[28];
-            } else {
-                System.out.println("The new email was not found.");
-                System.exit(-1);
-            }
-        }
-
     }
 
     public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {
