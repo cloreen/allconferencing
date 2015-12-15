@@ -3,6 +3,7 @@ package com.lotus.allconferencing.meeting_controller.pages;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.components.OldAccountServicesComponents;
+import com.lotus.allconferencing.meeting_controller.pages.components.V2ConferenceListComponents;
 import com.lotus.allconferencing.meeting_controller.pages.components.V2OldSchedulerComponents;
 import org.joda.time.DateTime;
 import org.openqa.selenium.WebDriver;
@@ -40,6 +41,7 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
 
     public OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+    public V2ConferenceListComponents v2ConferenceListComponents = new V2ConferenceListComponents(driver);
 
     public void openV2OldScheduler() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
@@ -60,6 +62,18 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
         WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
         waitForAcctSvcs.until(
                 ExpectedConditions.titleIs(oldAccountServicesComponents.getExpectedTitle())
+        );
+    }
+
+    public void listConferences() {
+        oldAccountServicesComponents = new OldAccountServicesComponents(driver);
+        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
+        WebElement listConferencesLink = oldAccountServicesComponents.getListConferencesLink();
+        listConferencesLink.click();
+
+        WebDriverWait waitForConferenceList = new WebDriverWait(driver, 10);
+        waitForConferenceList.until(
+                ExpectedConditions.titleIs(v2ConferenceListComponents.getExpectedTitle())
         );
     }
 }

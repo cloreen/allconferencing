@@ -88,23 +88,17 @@ public class OldScheduler1_v2_Invite_Test {
     public void checkConferenceList() {
         getSettings();
         refreshAccountServices();
-        /*
-        driver.switchTo().window(myAccountWindow);
-        driver.navigate().refresh();
-
-        WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
-        waitForAcctSvcs.until(
-                ExpectedConditions.titleIs("All Conferencing - Account Services")
-        );
-        */
 
         // Check conference list
+        goToV2ConferenceList();
+        /*
         WebElement listConferences = driver.findElement(By.partialLinkText("List/Edit/Delete"));
         listConferences.click();
         WebDriverWait waitForConferenceList = new WebDriverWait(driver, 10);
         waitForConferenceList.until(
                 ExpectedConditions.titleIs("List/Edit/Delete Conference")
         );
+        */
         WebElement newConferencePasscodeElement = driver.findElement(By.xpath("/html/body/form/table[2]/tbody/tr[3]/td[5]/p"));
         newConferencePasscode = newConferencePasscodeElement.getText();
         //System.out.println("Passcode found in Conference List is: " + newConferencePasscode);
@@ -267,6 +261,11 @@ public class OldScheduler1_v2_Invite_Test {
     public void refreshAccountServices() {
         oldAccountServicesPage = new OldAccountServicesPage(driver);
         oldAccountServicesPage.refreshAccountServices(myAccountWindow);
+    }
+
+    public void goToV2ConferenceList() {
+        oldAccountServicesPage = new OldAccountServicesPage(driver);
+        oldAccountServicesPage.listConferences();
     }
 
     public void removeConferenceFromList() {

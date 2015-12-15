@@ -12,7 +12,7 @@ public class V2ConferenceListComponents {
     private static ReadPropertyFile readProps = null;
 
     // Selectors for Old Account Services Page Components--------------------------------------------
-    //private static final String EXPECTED_TITLE =
+    private static final String EXPECTED_TITLE = "List/Edit/Delete Conference";
     //-----------------------------------------------------------------------------------------------
 
 
@@ -26,7 +26,7 @@ public class V2ConferenceListComponents {
         }
     }
 
-    public void refreshConferenceList() {
-
+    public String getExpectedTitle() {
+        return EXPECTED_TITLE;
     }
 }
