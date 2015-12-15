@@ -51,4 +51,14 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
                 ExpectedConditions.titleIs(v2OldSchedulerComponents.getExpectedTitle())
         );
     }
+
+    public void refreshAccountServices(String myAccountWindowHandle) {
+        driver.switchTo().window(myAccountWindowHandle);
+        driver.navigate().refresh();
+
+        WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
+        waitForAcctSvcs.until(
+                ExpectedConditions.titleIs("All Conferencing - Account Services")
+        );
+    }
 }

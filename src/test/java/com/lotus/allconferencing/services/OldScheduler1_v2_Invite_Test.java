@@ -1,10 +1,7 @@
 package com.lotus.allconferencing.services;
 
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.meeting_controller.pages.GmailObject;
-import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
-import com.lotus.allconferencing.meeting_controller.pages.OldAccountServicesPage;
-import com.lotus.allconferencing.meeting_controller.pages.V2OldSchedulerPageObject;
+import com.lotus.allconferencing.meeting_controller.pages.*;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openqa.selenium.*;
@@ -49,12 +46,12 @@ public class OldScheduler1_v2_Invite_Test {
     GmailObject gmail = new GmailObject(driver2);
     public V2OldSchedulerPageObject v2OldScheduler = new V2OldSchedulerPageObject(driver);
     public OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
-
+    public V2ConferenceListPage v2ConferenceListPage = new V2ConferenceListPage(driver);
 
     @Test
     public void scheduleV2Meeting() {
 
-        getAccountSettings();
+        getSettings();
 
         openBrowser();
         goToHomePage();
@@ -78,7 +75,7 @@ public class OldScheduler1_v2_Invite_Test {
 
     @Test
     public void checkEmailAndPasscodes() {
-        getAccountSettings();
+        getSettings();
 
         // Check invite email, passcodes and dial-in numbers have been generated
         checkEmailIsReceived();
@@ -89,12 +86,9 @@ public class OldScheduler1_v2_Invite_Test {
 
     @Test
     public void checkConferenceList() {
-        try {
-            readProps = new ReadPropertyFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        getSettings();
+        refreshAccountServices();
+        /*
         driver.switchTo().window(myAccountWindow);
         driver.navigate().refresh();
 
@@ -102,6 +96,7 @@ public class OldScheduler1_v2_Invite_Test {
         waitForAcctSvcs.until(
                 ExpectedConditions.titleIs("All Conferencing - Account Services")
         );
+        */
 
         // Check conference list
         WebElement listConferences = driver.findElement(By.partialLinkText("List/Edit/Delete"));
@@ -147,7 +142,7 @@ public class OldScheduler1_v2_Invite_Test {
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
-    public void getAccountSettings() {
+    public void getSettings() {
         try {
             readProps = new ReadPropertyFile();
         } catch (Exception e) {
@@ -267,6 +262,11 @@ public class OldScheduler1_v2_Invite_Test {
     public void checkEmailContentForNewConfInfo() {
         gmail = new GmailObject(driver2);
         gmail.checkEmailContentForNewConfInfo();
+    }
+
+    public void refreshAccountServices() {
+        oldAccountServicesPage = new OldAccountServicesPage(driver);
+        oldAccountServicesPage.refreshAccountServices(myAccountWindow);
     }
 
     public void removeConferenceFromList() {
