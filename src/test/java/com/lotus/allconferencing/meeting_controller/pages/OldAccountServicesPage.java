@@ -39,14 +39,16 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
     }
 
     public OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
+    public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
 
     public void openV2OldScheduler() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
+        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
         WebElement v2ScheduleMeetingLink = oldAccountServicesComponents.getV2ScheduleMeetingLink();
         v2ScheduleMeetingLink.click();
         WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
         waitForSchedulerToDisplay.until(
-                ExpectedConditions.titleIs("All Conferencing - Schedule a Conference")
+                ExpectedConditions.titleIs(v2OldSchedulerComponents.getExpectedTitle())
         );
     }
 }

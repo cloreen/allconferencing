@@ -30,6 +30,7 @@ public class V2OldSchedulerComponents {
     private static final By SEND_REMINDER = By.cssSelector("#Checkbox2");
     private static final By SUBMIT = By.cssSelector("input[name='cmdSubmit']");
     private static final By ACCT_SERVICES = By.cssSelector("input[name='Submit']");
+    private static final String EXPECTED_TITLE = "All Conferencing - Schedule a Conference";
     //-----------------------------------------------------------------------------------
 
 
@@ -122,4 +123,7 @@ public class V2OldSchedulerComponents {
         return acctSvcsButton;
     }
 
+    public String getExpectedTitle() {
+        return EXPECTED_TITLE;
+    }
 }

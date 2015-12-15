@@ -5,6 +5,7 @@ import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.components.GmailInboxComponentsObject;
 import com.lotus.allconferencing.meeting_controller.pages.components.GmailLoginPageObject;
+import com.lotus.allconferencing.meeting_controller.pages.components.OldAccountServicesComponents;
 import com.lotus.allconferencing.meeting_controller.pages.components.V2OldSchedulerComponents;
 import org.joda.time.DateTime;
 import org.openqa.selenium.By;
@@ -44,6 +45,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
     }
 
     public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+    public OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
 
     public void enterMeetingName() {
         v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
@@ -166,11 +168,12 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
 
     public void goToAccountServices() {
         v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        oldAccountServicesComponents = new OldAccountServicesComponents(driver);
         WebElement acctSvcsButton = v2OldSchedulerComponents.getAcctSvcsButton();
         acctSvcsButton.click();
         WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
         waitForAcctSvcs.until(
-                ExpectedConditions.titleIs("All Conferencing - Account Services")
+                ExpectedConditions.titleIs(oldAccountServicesComponents.getExpectedTitle())
         );
     }
 

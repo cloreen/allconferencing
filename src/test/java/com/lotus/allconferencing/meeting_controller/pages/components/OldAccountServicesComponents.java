@@ -19,6 +19,7 @@ public class OldAccountServicesComponents {
 
     // Selectors for Old Account Services Page Components--------------------------------------------
     private static final By SCHEDULE_V2_MEETING = By.cssSelector("a[href='schedule_v2.asp?Rights=0']");
+    private static final String EXPECTED_TITLE = "All Conferencing - Account Services";
     //-----------------------------------------------------------------------------------------------
 
 
@@ -53,5 +54,9 @@ public class OldAccountServicesComponents {
     public WebElement getV2ScheduleMeetingLink() {
         WebElement v2ScheduleMeetingLink = driver.findElement(SCHEDULE_V2_MEETING);
         return v2ScheduleMeetingLink;
+    }
+
+    public String getExpectedTitle() {
+        return EXPECTED_TITLE;
     }
 }
