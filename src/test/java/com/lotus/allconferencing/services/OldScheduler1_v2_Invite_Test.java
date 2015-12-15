@@ -36,6 +36,7 @@ public class OldScheduler1_v2_Invite_Test {
     private static String baseWindow;
     private static String myAccountWindow;
     private static Boolean isNewEmail = false;
+    private static Boolean conferenceDisplays = false;
     private static Pattern pattern = null;
     private static String newConferencePasscode = "";
     private static String tollFreeNumArr[];
@@ -80,7 +81,7 @@ public class OldScheduler1_v2_Invite_Test {
         // Check invite email, passcodes and dial-in numbers have been generated
         checkEmailIsReceived();
         gmail.openEmail();
-        checkEmailContentForNewConfInfo();
+        partPasscode = checkEmailContentForNewConfInfo();
         closeWindow();
     }
 
@@ -91,21 +92,11 @@ public class OldScheduler1_v2_Invite_Test {
 
         // Check conference list
         goToV2ConferenceList();
-        /*
-        WebElement listConferences = driver.findElement(By.partialLinkText("List/Edit/Delete"));
-        listConferences.click();
-        WebDriverWait waitForConferenceList = new WebDriverWait(driver, 10);
-        waitForConferenceList.until(
-                ExpectedConditions.titleIs("List/Edit/Delete Conference")
-        );
-        */
-        WebElement newConferencePasscodeElement = driver.findElement(By.xpath("/html/body/form/table[2]/tbody/tr[3]/td[5]/p"));
-        newConferencePasscode = newConferencePasscodeElement.getText();
-        //System.out.println("Passcode found in Conference List is: " + newConferencePasscode);
-        Boolean conferenceDisplays = false;
-        conferenceDisplays = verifyNewMeetingDisplaysInConferenceList(newConferencePasscode, conferenceDisplays);
+
+        conferenceDisplays = checkForNewConference();
 
         // Cleanup after test by deleting conference from list
+
         if(conferenceDisplays) {
             removeConferenceFromList();
         }
@@ -253,9 +244,9 @@ public class OldScheduler1_v2_Invite_Test {
         verifyEmailReceived(inviteEmailSubject);
     }
 
-    public void checkEmailContentForNewConfInfo() {
+    public String checkEmailContentForNewConfInfo() {
         gmail = new GmailObject(driver2);
-        gmail.checkEmailContentForNewConfInfo();
+        return gmail.checkEmailContentForNewConfInfo();
     }
 
     public void refreshAccountServices() {
@@ -266,6 +257,12 @@ public class OldScheduler1_v2_Invite_Test {
     public void goToV2ConferenceList() {
         oldAccountServicesPage = new OldAccountServicesPage(driver);
         oldAccountServicesPage.listConferences();
+    }
+
+    public Boolean checkForNewConference() {
+        v2ConferenceListPage = new V2ConferenceListPage(driver);
+        conferenceDisplays = v2ConferenceListPage.getLatestConferencePasscode(partPasscode);
+        return conferenceDisplays;
     }
 
     public void removeConferenceFromList() {
