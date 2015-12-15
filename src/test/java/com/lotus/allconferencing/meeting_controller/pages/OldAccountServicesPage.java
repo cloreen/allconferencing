@@ -53,12 +53,13 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
     }
 
     public void refreshAccountServices(String myAccountWindowHandle) {
+        oldAccountServicesComponents = new OldAccountServicesComponents(driver);
         driver.switchTo().window(myAccountWindowHandle);
         driver.navigate().refresh();
 
         WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
         waitForAcctSvcs.until(
-                ExpectedConditions.titleIs("All Conferencing - Account Services")
+                ExpectedConditions.titleIs(oldAccountServicesComponents.getExpectedTitle())
         );
     }
 }
