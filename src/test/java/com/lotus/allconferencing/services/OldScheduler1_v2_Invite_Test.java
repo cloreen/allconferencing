@@ -78,18 +78,13 @@ public class OldScheduler1_v2_Invite_Test {
 
     @Test
     public void checkEmailAndPasscodes() {
-        try {
-            readProps = new ReadPropertyFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        getAccountSettings();
 
         // Check invite email, passcodes and dial-in numbers have been generated
         checkEmailIsReceived();
-
         gmail.openEmail();
-
         checkEmailContentForNewConfInfo();
+        closeWindow();
     }
 
     @Test
@@ -283,6 +278,10 @@ public class OldScheduler1_v2_Invite_Test {
         waitForDeletionConfirmationPage.until(
                 ExpectedConditions.titleIs("All Conferencing - Delete Conference")
         );
+    }
+
+    public void closeWindow() {
+        driver2.close();
     }
 
     // End Helper methods ----------------------------------------------------------------------------------------------
