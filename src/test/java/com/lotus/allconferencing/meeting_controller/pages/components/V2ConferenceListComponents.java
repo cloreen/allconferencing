@@ -3,6 +3,7 @@ package com.lotus.allconferencing.meeting_controller.pages.components;
 import com.lotus.allconferencing.ReadPropertyFile;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 /**
  * Created by Ben on 12/14/2015.
@@ -13,6 +14,9 @@ public class V2ConferenceListComponents {
 
     // Selectors for Old Account Services Page Components--------------------------------------------
     private static final String EXPECTED_TITLE = "List/Edit/Delete Conference";
+    private static final String DELETION_PAGE_EXPECTED_TITLE = "All Conferencing - Delete Conference";
+    private static final By LATEST_CONFERENCE_PASSCODE = By.xpath("/html/body/form/table[2]/tbody/tr[3]/td[5]/p");
+    private static final By LATEST_CONFERENCE_DELETE = By.cssSelector("input[name='cmdRemove']");
     //-----------------------------------------------------------------------------------------------
 
 
@@ -24,6 +28,20 @@ public class V2ConferenceListComponents {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getLatestConferencePasscode() {
+        WebElement latestConferencePasscodeElement = driver.findElement(LATEST_CONFERENCE_PASSCODE);
+        return latestConferencePasscodeElement.getText();
+    }
+
+    public WebElement getDeleteButtonForLatestConference() {
+        WebElement deleteButton = driver.findElement(LATEST_CONFERENCE_DELETE);
+        return deleteButton;
+    }
+
+    public String getDeletionExpectedTitle() {
+        return DELETION_PAGE_EXPECTED_TITLE;
     }
 
     public String getExpectedTitle() {

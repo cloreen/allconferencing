@@ -5,6 +5,7 @@ import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.components.OldAccountServicesComponents;
 import com.lotus.allconferencing.meeting_controller.pages.components.V2ConferenceListComponents;
 import com.lotus.allconferencing.meeting_controller.pages.components.V2OldSchedulerComponents;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -44,6 +45,18 @@ public class V2ConferenceListPage extends BaseSeleniumTest {
         Boolean conferenceDisplays = false;
         conferenceDisplays = verifyNewMeetingDisplaysInConferenceList(partPasscode, newConferencePasscode, conferenceDisplays);
         return conferenceDisplays;
+    }
+
+    public void removeConferenceFromList() {
+        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
+        WebElement deleteButton = v2ConferenceListComponents.getDeleteButtonForLatestConference();
+        deleteButton.click();
+        Alert confirmAlert = driver.switchTo().alert();
+        confirmAlert.accept();
+        WebDriverWait waitForDeletionConfirmationPage = new WebDriverWait(driver, 10);
+        waitForDeletionConfirmationPage.until(
+                ExpectedConditions.titleIs(v2ConferenceListComponents.getDeletionExpectedTitle())
+        );
     }
 
     public Boolean verifyNewMeetingDisplaysInConferenceList(String expectedPasscode, String actualPasscode, Boolean conferenceDisplays) {

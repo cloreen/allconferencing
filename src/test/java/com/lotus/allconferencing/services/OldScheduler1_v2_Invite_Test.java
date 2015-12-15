@@ -266,14 +266,8 @@ public class OldScheduler1_v2_Invite_Test {
     }
 
     public void removeConferenceFromList() {
-        WebElement deleteButton = driver.findElement(By.cssSelector("input[name='cmdRemove']"));
-        deleteButton.click();
-        Alert confirmAlert = driver.switchTo().alert();
-        confirmAlert.accept();
-        WebDriverWait waitForDeletionConfirmationPage = new WebDriverWait(driver, 10);
-        waitForDeletionConfirmationPage.until(
-                ExpectedConditions.titleIs("All Conferencing - Delete Conference")
-        );
+        v2ConferenceListPage = new V2ConferenceListPage(driver);
+        v2ConferenceListPage.removeConferenceFromList();
     }
 
     public void closeWindow() {
