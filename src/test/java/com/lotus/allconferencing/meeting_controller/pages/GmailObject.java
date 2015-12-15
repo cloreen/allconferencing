@@ -206,7 +206,7 @@ public class GmailObject extends BaseSeleniumTest {
         }
     }
 
-    public void checkEmailContentForNewConfInfo() {
+    public String checkEmailContentForNewConfInfo() {
         List<WebElement> emailBodyTable = gmailInbox.getEmailBody();
         if (emailBodyTable.size() == 1) {
 //            System.out.println("List was populated upon assignment!");
@@ -277,7 +277,7 @@ public class GmailObject extends BaseSeleniumTest {
                 System.exit(-1);
             }
         }
-
+        return partPasscode;
     }
 
     public void waitForListToPopulate(List<WebElement> emailBodyTable) {
