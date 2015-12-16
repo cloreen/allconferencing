@@ -139,7 +139,7 @@ public class OldScheduler1_v2_Invite_Test {
         int i = 0;
         Set<String> set = driver.getWindowHandles();
         String windowHandle = "";
-        List<String> windowHandles = new ArrayList<String>();
+        //List<String> windowHandles = new ArrayList<String>();
         for (String item : set) {
             driver.switchTo().window(item);
         }
@@ -150,15 +150,14 @@ public class OldScheduler1_v2_Invite_Test {
     public void login(LoginPageObject.LoginType loginType) {
         // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
         // get its handle.
-        System.out.println("Base window handle is: " + baseWindow);
+        //System.out.println("Base window handle is: " + baseWindow);
 
         loginPage = new LoginPageObject(driver);
         loginPage.selectLogin(loginType);
         myAccountWindow = getWindow();
         loginPage.login(readProps.getOlderAcctClientID(), readProps.getOlderAcctPassword());
-        //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
-        //waitForLoginPage.until();
-        System.out.println("My Account window handle is: " + myAccountWindow);
+
+        //System.out.println("My Account window handle is: " + myAccountWindow);
     }
 
     public void openScheduler() {
@@ -220,7 +219,6 @@ public class OldScheduler1_v2_Invite_Test {
     public String checkInviteEmail() {
         driver2 = new FirefoxDriver();
         gmail = new GmailObject(driver2);
-        ;//driver2.get("http://www.gmail.com/");
         return gmail.checkInviteEmail();
     }
 

@@ -70,7 +70,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
         List<WebElement> meetingHourOptions = v2OldSchedulerComponents.getMeetingHourOptions();
         DateTime currentTime = new DateTime();
         Integer currentHour = currentTime.getHourOfDay();
-        System.out.println("Current Hour is: " + currentHour);
+        //System.out.println("Current Hour is: " + currentHour);
         Integer meetingHour = 0;
         if (currentHour <= 10 || currentHour == 23) {
             timeOfDay = "AM";
@@ -114,7 +114,7 @@ public class V2OldSchedulerPageObject extends BaseSeleniumTest {
         List<WebElement> timeOfDaySelectOptions = v2OldSchedulerComponents.getTimeOfDayOptions();
         int timeOfDaySelectOptionsIteration = 0;
         for (WebElement option : timeOfDaySelectOptions) {
-            System.out.println("Option " + timeOfDaySelectOptionsIteration + " is: " + option.getAttribute("value"));
+            //System.out.println("Option " + timeOfDaySelectOptionsIteration + " is: " + option.getAttribute("value"));
             timeOfDaySelectOptionsIteration++;
             if (option.getAttribute("value").contentEquals(timeOfDay)) {
                 option.click();

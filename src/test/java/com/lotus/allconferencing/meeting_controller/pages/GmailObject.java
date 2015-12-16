@@ -85,10 +85,7 @@ public class GmailObject extends BaseSeleniumTest {
         }
 
 
-        //WebDriverWait waitForEmail = new WebDriverWait(driver, 30);
-        //waitForEmail.until(ExpectedConditions.textToBePresentInElement(emailSubject, emailText));
-
-        System.out.println("The subject of the email found is: " + subject.getText());
+        //System.out.println("The subject of the email found is: " + subject.getText());
         return (subject.getText());
 
     }
