@@ -1,6 +1,7 @@
 package com.lotus.allconferencing.meeting_controller.pages;
 
 import com.lotus.allconferencing.ReadPropertyFile;
+import com.lotus.allconferencing.meeting_controller.pages.components.LoginComponents;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -56,10 +57,11 @@ public class LoginPageObject {
 
 
     public void selectLogin(LoginType loginType) {
+        LoginComponents loginComponents = new LoginComponents(driver);
         // Opens new page in a new window (contextClick() + sendKeys("w") = open in new window)
         accountType = loginType;
         Actions actions = new Actions(driver);
-        actions.contextClick(getElementWithIndex(By.cssSelector("ul[id='MenuBar3']>li>a"), loginType.value())).perform();
+        actions.contextClick(getElementWithIndex(loginComponents.getLoginButtonBy(), loginType.value())).perform();
         actions.sendKeys(new String("w")).perform();
         try {
             Thread.sleep(2000);
