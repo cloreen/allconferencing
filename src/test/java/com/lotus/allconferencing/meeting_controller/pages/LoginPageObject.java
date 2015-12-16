@@ -12,6 +12,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * Created by Ben on 7/20/2015.
  */
+
+/*******
+ * TODO - Refactor selectors out to Home Page and Login Components Classes
+ */
+
 public class LoginPageObject {
     private WebDriver driver;
     private LoginType accountType;
