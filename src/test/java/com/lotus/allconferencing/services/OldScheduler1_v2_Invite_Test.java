@@ -23,8 +23,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 10/13/2015.
  */
 /*******************************
- * TODO - Clean up past conferences in list
- * TODO - Create Old Scheduler 1 Page Object
  * TODO - Create Type 3 account My Services Page Object
  */
 
