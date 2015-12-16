@@ -96,7 +96,6 @@ public class OldScheduler1_v2_Invite_Test {
         conferenceDisplays = checkForNewConference();
 
         // Cleanup after test by deleting conference from list
-
         if(conferenceDisplays) {
             removeConferenceFromList();
         }
@@ -107,20 +106,6 @@ public class OldScheduler1_v2_Invite_Test {
 
     public void verifyEmailReceived(String emailSubject) {
         assertThat("Appropriate email is received", emailSubject.contentEquals(readProps.getInviteEmailSubject()));
-    }
-
-    public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {
-        assertTrue("Toll-Free Number has been generated", tollFreeNum.matches("^?[0-9, -]{1,14}"));
-    }
-
-    public void verifyPasscodesAreGenerated(String participantPasscode) {
-        assertTrue("Passcodes have been generated", participantPasscode.matches("^?[0-9]{1,6}"));
-    }
-
-    public Boolean verifyNewMeetingDisplaysInConferenceList(String participantPasscode, Boolean conferenceDisplays) {
-        assertTrue("Passcodes display in conference list", participantPasscode.contains(partPasscode));
-        conferenceDisplays = true;
-        return conferenceDisplays;
     }
 
     // End Verifications -----------------------------------------------------------------------------------------------
