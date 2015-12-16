@@ -12,8 +12,10 @@ public class LoginComponents {
     private static WebDriver driver;
     private static ReadPropertyFile readProps = null;
 
-    // Selectors for Login Components--------------------------------------------
-        public static By LOGIN_BUTTON = By.cssSelector("ul[id='MenuBar3']>li>a");
+    // Selectors for Login Components----------------------------------------------------------------
+    private static By LOGIN_BUTTON = By.cssSelector("ul[id='MenuBar3']>li>a");
+    private static By CLIENT_ID = By.cssSelector("form[id='login']>fieldset>input[type='text']");
+    private static By PASSWORD = By.cssSelector("form[id='login']>fieldset>label>label>input[type='password']");
     //-----------------------------------------------------------------------------------------------
 
     public LoginComponents(WebDriver newDriver) {
@@ -27,15 +29,19 @@ public class LoginComponents {
     }
 
 
-    public WebElement getLoginButton() {
-        WebElement loginButton = driver.findElement(LOGIN_BUTTON);
-        return loginButton;
-    }
-
     public By getLoginButtonBy() {
         return LOGIN_BUTTON;
     }
 
+    public WebElement getClientIDField() {
+        WebElement clientIDField = driver.findElement(CLIENT_ID);
+        return clientIDField;
+    }
+
+    public WebElement getPasswordField() {
+        WebElement passwordField = driver.findElement(PASSWORD);
+        return passwordField;
+    }
 
 
 }

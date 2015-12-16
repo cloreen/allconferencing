@@ -58,11 +58,10 @@ public class LoginPageObject {
 
     public void selectLogin(LoginType loginType) {
         LoginComponents loginComponents = new LoginComponents(driver);
-        // Opens new page in a new window (contextClick() + sendKeys("w") = open in new window)
         accountType = loginType;
         Actions actions = new Actions(driver);
         actions.contextClick(getElementWithIndex(loginComponents.getLoginButtonBy(), loginType.value())).perform();
-        actions.sendKeys(new String("w")).perform();
+        actions.sendKeys(new String("w")).perform();// Opens new page in a new window (contextClick() + sendKeys("w") = open in new window)
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -88,11 +87,10 @@ public class LoginPageObject {
     }
 
     public void login(String clientID, String pwd) {
-
-
-        WebElement element = driver.findElement(By.cssSelector("form[id='login']>fieldset>input[type='text']"));
-        element.click();
-        element.sendKeys(new String(clientID));
+        LoginComponents loginComponents = new LoginComponents(driver);
+        WebElement clientIDField = loginComponents.getClientIDField();
+        clientIDField.click();
+        clientIDField.sendKeys(new String(clientID));
 
         try {
             Thread.sleep(1000);
@@ -100,10 +98,10 @@ public class LoginPageObject {
             e.printStackTrace();
         }
 
-        element = driver.findElement(By.cssSelector("form[id='login']>fieldset>label>label>input[type='password']"));
-        element.click();
-        element.sendKeys(new String(pwd));
-        element.submit();
+        WebElement passwordField = loginComponents.getPasswordField();
+        passwordField.click();
+        passwordField.sendKeys(new String(pwd));
+        passwordField.submit();
 
         WebDriverWait waitForMyAccount = new WebDriverWait(driver, 10);
         waitForMyAccount.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
