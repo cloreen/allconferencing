@@ -23,7 +23,7 @@ import static junit.framework.TestCase.assertTrue;
  */
 
 /************
- * TODO - Comment refactor points
+ *
  */
 public class GmailObject extends BaseSeleniumTest {
     private static WebDriver driver;
