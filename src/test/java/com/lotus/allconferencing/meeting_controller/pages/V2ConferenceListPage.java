@@ -18,7 +18,7 @@ import static junit.framework.TestCase.assertTrue;
  */
 
 /************
- * TODO - Comment refactor points
+ *
  */
 public class V2ConferenceListPage extends BaseSeleniumTest {
     private static WebDriver driver;
