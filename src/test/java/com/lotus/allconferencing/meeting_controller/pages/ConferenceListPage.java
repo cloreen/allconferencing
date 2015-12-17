@@ -2,8 +2,8 @@ package com.lotus.allconferencing.meeting_controller.pages;
 
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
+import com.lotus.allconferencing.meeting_controller.pages.components.ConferenceListComponents;
 import com.lotus.allconferencing.meeting_controller.pages.components.OldAccountServicesComponents;
-import com.lotus.allconferencing.meeting_controller.pages.components.V2ConferenceListComponents;
 import com.lotus.allconferencing.meeting_controller.pages.components.V2OldSchedulerComponents;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
@@ -36,34 +36,34 @@ public class ConferenceListPage extends BaseSeleniumTest {
 
     }
 
-    public V2ConferenceListComponents v2ConferenceListComponents = new V2ConferenceListComponents(driver);
+    public ConferenceListComponents conferenceListComponents = new ConferenceListComponents(driver);
 
 
     public Boolean getLatestV2ConferencePasscode(String partPasscode) {
-        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
-        String newConferencePasscode = v2ConferenceListComponents.getLatestV2ConferencePasscode();
+        conferenceListComponents = new ConferenceListComponents(driver);
+        String newConferencePasscode = conferenceListComponents.getLatestV2ConferencePasscode();
         Boolean conferenceDisplays = false;
         conferenceDisplays = verifyNewMeetingDisplaysInConferenceList(partPasscode, newConferencePasscode, conferenceDisplays);
         return conferenceDisplays;
     }
 
     public Boolean getLatestV1ConferencePasscode(String partPasscode) {
-        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
-        String newConferencePasscode = v2ConferenceListComponents.getLatestV1ConferencePasscode();
+        conferenceListComponents = new ConferenceListComponents(driver);
+        String newConferencePasscode = conferenceListComponents.getLatestV1ConferencePasscode();
         Boolean conferenceDisplays = false;
         conferenceDisplays = verifyNewMeetingDisplaysInConferenceList(partPasscode, newConferencePasscode, conferenceDisplays);
         return conferenceDisplays;
     }
 
     public void removeConferenceFromList() {
-        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
-        WebElement deleteButton = v2ConferenceListComponents.getDeleteButtonForLatestConference();
+        conferenceListComponents = new ConferenceListComponents(driver);
+        WebElement deleteButton = conferenceListComponents.getDeleteButtonForLatestConference();
         deleteButton.click();
         Alert confirmAlert = driver.switchTo().alert();
         confirmAlert.accept();
         WebDriverWait waitForDeletionConfirmationPage = new WebDriverWait(driver, 10);
         waitForDeletionConfirmationPage.until(
-                ExpectedConditions.titleIs(v2ConferenceListComponents.getDeletionExpectedTitle())
+                ExpectedConditions.titleIs(conferenceListComponents.getDeletionExpectedTitle())
         );
     }
 

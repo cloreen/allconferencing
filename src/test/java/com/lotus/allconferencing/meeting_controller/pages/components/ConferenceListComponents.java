@@ -8,7 +8,7 @@ import org.openqa.selenium.WebElement;
 /**
  * Created by Ben on 12/14/2015.
  */
-public class V2ConferenceListComponents {
+public class ConferenceListComponents {
     private static WebDriver driver;
     private static ReadPropertyFile readProps = null;
 
@@ -21,7 +21,7 @@ public class V2ConferenceListComponents {
     //-----------------------------------------------------------------------------------------------
 
 
-    public V2ConferenceListComponents(WebDriver newDriver) {
+    public ConferenceListComponents(WebDriver newDriver) {
         driver = newDriver;
 
         try {
