@@ -2,9 +2,9 @@ package com.lotus.allconferencing.meeting_controller.pages;
 
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
+import com.lotus.allconferencing.meeting_controller.pages.components.ConferenceListComponents;
 import com.lotus.allconferencing.meeting_controller.pages.components.OldAccountServicesComponents;
-import com.lotus.allconferencing.meeting_controller.pages.components.V2ConferenceListComponents;
-import com.lotus.allconferencing.meeting_controller.pages.components.V2OldSchedulerComponents;
+import com.lotus.allconferencing.meeting_controller.pages.components.OldSchedulerComponents;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -38,8 +38,8 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
     }
 
     public OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-    public V2OldSchedulerComponents v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
-    public V2ConferenceListComponents v2ConferenceListComponents = new V2ConferenceListComponents(driver);
+    public OldSchedulerComponents oldSchedulerComponents = new OldSchedulerComponents(driver);
+    public ConferenceListComponents conferenceListComponents = new ConferenceListComponents(driver);
 
     public enum Version {
         VERSION1, VERSION2;
@@ -56,22 +56,22 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
             switch (version){
                 case VERSION1:
                     oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-                    v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+                    oldSchedulerComponents = new OldSchedulerComponents(driver);
                     WebElement v1ScheduleMeetingLink = oldAccountServicesComponents.getV1ScheduleMeetingLink();
                     v1ScheduleMeetingLink.click();
                     WebDriverWait waitForV1SchedulerToDisplay = new WebDriverWait(driver, 10);
                     waitForV1SchedulerToDisplay.until(
-                            ExpectedConditions.titleIs(v2OldSchedulerComponents.getExpectedTitle())
+                            ExpectedConditions.titleIs(oldSchedulerComponents.getExpectedTitle())
                     );
                     break;
                 case VERSION2:
                     oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-                    v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+                    oldSchedulerComponents = new OldSchedulerComponents(driver);
                     WebElement v2ScheduleMeetingLink = oldAccountServicesComponents.getV2ScheduleMeetingLink();
                     v2ScheduleMeetingLink.click();
                     WebDriverWait waitForV2SchedulerToDisplay = new WebDriverWait(driver, 10);
                     waitForV2SchedulerToDisplay.until(
-                            ExpectedConditions.titleIs(v2OldSchedulerComponents.getExpectedTitle())
+                            ExpectedConditions.titleIs(oldSchedulerComponents.getExpectedTitle())
                     );
                     break;
             }
@@ -86,23 +86,23 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
 
     public void openV2OldScheduler() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        oldSchedulerComponents = new OldSchedulerComponents(driver);
         WebElement v2ScheduleMeetingLink = oldAccountServicesComponents.getV2ScheduleMeetingLink();
         v2ScheduleMeetingLink.click();
         WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
         waitForSchedulerToDisplay.until(
-                ExpectedConditions.titleIs(v2OldSchedulerComponents.getExpectedTitle())
+                ExpectedConditions.titleIs(oldSchedulerComponents.getExpectedTitle())
         );
     }
 
     public void openV1OldScheduler() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-        v2OldSchedulerComponents = new V2OldSchedulerComponents(driver);
+        oldSchedulerComponents = new OldSchedulerComponents(driver);
         WebElement v1ScheduleMeetingLink = oldAccountServicesComponents.getV1ScheduleMeetingLink();
         v1ScheduleMeetingLink.click();
         WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
         waitForSchedulerToDisplay.until(
-                ExpectedConditions.titleIs(v2OldSchedulerComponents.getExpectedTitle())
+                ExpectedConditions.titleIs(oldSchedulerComponents.getExpectedTitle())
         );
     }
 
@@ -119,25 +119,25 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
 
     public void listV2Conferences() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
+        conferenceListComponents = new ConferenceListComponents(driver);
         WebElement listConferencesLink = oldAccountServicesComponents.getListV2ConferencesLink();
         listConferencesLink.click();
 
         WebDriverWait waitForConferenceList = new WebDriverWait(driver, 10);
         waitForConferenceList.until(
-                ExpectedConditions.titleIs(v2ConferenceListComponents.getExpectedTitle())
+                ExpectedConditions.titleIs(conferenceListComponents.getExpectedTitle())
         );
     }
 
     public void listV1Conferences() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
+        conferenceListComponents = new ConferenceListComponents(driver);
         WebElement listConferencesLink = oldAccountServicesComponents.getListV1ConferencesLink();
         listConferencesLink.click();
 
         WebDriverWait waitForConferenceList = new WebDriverWait(driver, 10);
         waitForConferenceList.until(
-                ExpectedConditions.titleIs(v2ConferenceListComponents.getExpectedTitle())
+                ExpectedConditions.titleIs(conferenceListComponents.getExpectedTitle())
         );
     }
 }

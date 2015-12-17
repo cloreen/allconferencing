@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Ben on 12/6/2015.
  */
-public class V2OldSchedulerComponents {
+public class OldSchedulerComponents {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
 
@@ -35,7 +35,7 @@ public class V2OldSchedulerComponents {
 
 
 
-    public V2OldSchedulerComponents (WebDriver newDriver) {
+    public OldSchedulerComponents (WebDriver newDriver) {
 
         try {
             Thread.sleep(500);
