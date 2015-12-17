@@ -24,6 +24,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 /*******************************
  * TODO - Create Type 3 account My Services Page Object
+ * TODO - Rename this class/file
+ * TODO - Create copy of class for v1 test
  */
 
 public class OldScheduler1_v2_Invite_Test {
@@ -41,11 +43,14 @@ public class OldScheduler1_v2_Invite_Test {
     private static String passcodeArr[];
     private static String partPasscode = "";
     private static String timeOfDay = "";
+    private static Integer version = 2;
 
     GmailObject gmail = new GmailObject(driver2);
-    public V2OldSchedulerPageObject v2OldScheduler = new V2OldSchedulerPageObject(driver);
+    public OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
     public OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
-    public V2ConferenceListPage v2ConferenceListPage = new V2ConferenceListPage(driver);
+    public ConferenceListPage conferenceListPage = new ConferenceListPage(driver);
+
+
 
     @Test
     public void scheduleV2Meeting() {
@@ -89,7 +94,7 @@ public class OldScheduler1_v2_Invite_Test {
         refreshAccountServices();
 
         // Check conference list
-        goToV2ConferenceList();
+        goToConferenceList();
 
         conferenceDisplays = checkForNewConference();
 
@@ -160,58 +165,70 @@ public class OldScheduler1_v2_Invite_Test {
 
     public void openScheduler() {
         oldAccountServicesPage = new OldAccountServicesPage(driver);
-        oldAccountServicesPage.openV2OldScheduler();
+        switch (version) {
+            case 1:
+                oldAccountServicesPage.openV1OldScheduler();
+                break;
+            case 2:
+                oldAccountServicesPage.openV2OldScheduler();
+                break;
+            default:
+                System.out.println("Version not specified. Permitted values are 1 or 2.");
+                System.exit(-1);
+        }
+
     }
 
     public void enterMeetingName() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.enterMeetingName();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.enterMeetingName();
     }
 
     public void enterModeratorName() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.enterModeratorName();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.enterModeratorName();
     }
 
     public void selectSpecifyTime() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.selectSpecifyTime();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.selectSpecifyTime();
     }
 
     public String selectMeetingHour(String timeOfDay) {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        timeOfDay = v2OldScheduler.selectMeetingHour(timeOfDay);
+        oldScheduler = new OldSchedulerPageObject(driver);
+        timeOfDay = oldScheduler.selectMeetingHour(timeOfDay);
         return timeOfDay;
+
     }
 
     public void selectTimeOfDay(String timeOfDay) {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.selectTimeOfDay(timeOfDay);
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.selectTimeOfDay(timeOfDay);
     }
 
     public void selectTimeZone() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.choosePacificTimeZone();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.choosePacificTimeZone();
     }
 
     public void addParticipant() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.addParticipant();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.addParticipant();
     }
 
     public void enableEmailReminders() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.enableEmailReminders();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.enableEmailReminders();
     }
 
     public void submitForm() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.submitForm();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.submitForm();
     }
 
     public void goToAccountServices() {
-        v2OldScheduler = new V2OldSchedulerPageObject(driver);
-        v2OldScheduler.goToAccountServices();
+        oldScheduler = new OldSchedulerPageObject(driver);
+        oldScheduler.goToAccountServices();
     }
 
     public String checkInviteEmail() {
@@ -235,20 +252,40 @@ public class OldScheduler1_v2_Invite_Test {
         oldAccountServicesPage.refreshAccountServices(myAccountWindow);
     }
 
-    public void goToV2ConferenceList() {
+    public void goToConferenceList() {
         oldAccountServicesPage = new OldAccountServicesPage(driver);
-        oldAccountServicesPage.listConferences();
+        switch (version) {
+            case 2:
+                oldAccountServicesPage.listV2Conferences();
+                break;
+            case 1:
+                oldAccountServicesPage.listV1Conferences();
+                break;
+            default:
+                System.out.println("Version not specified. Permitted values are 1 or 2.");
+                System.exit(-1);
+        }
     }
 
     public Boolean checkForNewConference() {
-        v2ConferenceListPage = new V2ConferenceListPage(driver);
-        conferenceDisplays = v2ConferenceListPage.getLatestConferencePasscode(partPasscode);
+        conferenceListPage = new ConferenceListPage(driver);
+        switch (version) {
+            case 2:
+                conferenceDisplays = conferenceListPage.getLatestV2ConferencePasscode(partPasscode);
+                break;
+            case 1:
+                conferenceDisplays = conferenceListPage.getLatestV1ConferencePasscode(partPasscode);
+                break;
+            default:
+                System.out.println("Version not specified. Permitted values are 1 or 2.");
+                System.exit(-1);
+        }
         return conferenceDisplays;
     }
 
     public void removeConferenceFromList() {
-        v2ConferenceListPage = new V2ConferenceListPage(driver);
-        v2ConferenceListPage.removeConferenceFromList();
+        conferenceListPage = new ConferenceListPage(driver);
+        conferenceListPage.removeConferenceFromList();
     }
 
     public void closeWindow() {

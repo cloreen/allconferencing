@@ -19,7 +19,9 @@ public class OldAccountServicesComponents {
 
     // Selectors for Old Account Services Page Components--------------------------------------------
     private static final By SCHEDULE_V2_MEETING = By.cssSelector("a[href='schedule_v2.asp?Rights=0']");
-    private static final By LIST_CONFERENCES = By.partialLinkText("List/Edit/Delete");
+    private static final By SCHEDULE_V1_MEETING = By.cssSelector("a[href='schedule.asp?Rights=0']");
+    private static final By LIST_V2_CONFERENCES = By.cssSelector("a[href='edit_conf_v2.asp?Rights=0']");
+    private static final By LIST_V1_CONFERENCES = By.cssSelector("a[href='edit_conf.asp?Rights=0']");
     private static final String EXPECTED_TITLE = "All Conferencing - Account Services";
     //-----------------------------------------------------------------------------------------------
 
@@ -57,8 +59,18 @@ public class OldAccountServicesComponents {
         return v2ScheduleMeetingLink;
     }
 
-    public WebElement getListConferencesLink() {
-        WebElement listV2ConferencesLink = driver.findElement(LIST_CONFERENCES);
+    public WebElement getV1ScheduleMeetingLink() {
+        WebElement v1ScheduleMeetingLink = driver.findElement(SCHEDULE_V1_MEETING);
+        return v1ScheduleMeetingLink;
+    }
+
+    public WebElement getListV2ConferencesLink() {
+        WebElement listV2ConferencesLink = driver.findElement(LIST_V2_CONFERENCES);
+        return listV2ConferencesLink;
+    }
+
+    public WebElement getListV1ConferencesLink() {
+        WebElement listV2ConferencesLink = driver.findElement(LIST_V1_CONFERENCES);
         return listV2ConferencesLink;
     }
 

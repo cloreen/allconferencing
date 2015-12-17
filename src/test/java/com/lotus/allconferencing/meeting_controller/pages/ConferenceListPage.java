@@ -20,11 +20,11 @@ import static junit.framework.TestCase.assertTrue;
 /************
  *
  */
-public class V2ConferenceListPage extends BaseSeleniumTest {
+public class ConferenceListPage extends BaseSeleniumTest {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
 
-    public V2ConferenceListPage(WebDriver newDriver) {
+    public ConferenceListPage(WebDriver newDriver) {
 
         driver = newDriver;
 
@@ -39,9 +39,17 @@ public class V2ConferenceListPage extends BaseSeleniumTest {
     public V2ConferenceListComponents v2ConferenceListComponents = new V2ConferenceListComponents(driver);
 
 
-    public Boolean getLatestConferencePasscode(String partPasscode) {
+    public Boolean getLatestV2ConferencePasscode(String partPasscode) {
         v2ConferenceListComponents = new V2ConferenceListComponents(driver);
-        String newConferencePasscode = v2ConferenceListComponents.getLatestConferencePasscode();
+        String newConferencePasscode = v2ConferenceListComponents.getLatestV2ConferencePasscode();
+        Boolean conferenceDisplays = false;
+        conferenceDisplays = verifyNewMeetingDisplaysInConferenceList(partPasscode, newConferencePasscode, conferenceDisplays);
+        return conferenceDisplays;
+    }
+
+    public Boolean getLatestV1ConferencePasscode(String partPasscode) {
+        v2ConferenceListComponents = new V2ConferenceListComponents(driver);
+        String newConferencePasscode = v2ConferenceListComponents.getLatestV1ConferencePasscode();
         Boolean conferenceDisplays = false;
         conferenceDisplays = verifyNewMeetingDisplaysInConferenceList(partPasscode, newConferencePasscode, conferenceDisplays);
         return conferenceDisplays;

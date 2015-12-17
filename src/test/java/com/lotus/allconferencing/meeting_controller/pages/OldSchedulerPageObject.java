@@ -25,14 +25,14 @@ import java.util.NoSuchElementException;
 /************
  * TODO - Comment refactor points
  */
-public class V2OldSchedulerPageObject extends BaseSeleniumTest {
+public class OldSchedulerPageObject extends BaseSeleniumTest {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
 
 
 
 
-    public V2OldSchedulerPageObject(WebDriver newDriver) {
+    public OldSchedulerPageObject(WebDriver newDriver) {
 
         driver = newDriver;
 

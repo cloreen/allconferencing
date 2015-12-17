@@ -15,7 +15,8 @@ public class V2ConferenceListComponents {
     // Selectors for Old Account Services Page Components--------------------------------------------
     private static final String EXPECTED_TITLE = "List/Edit/Delete Conference";
     private static final String DELETION_PAGE_EXPECTED_TITLE = "All Conferencing - Delete Conference";
-    private static final By LATEST_CONFERENCE_PASSCODE = By.xpath("/html/body/form/table[2]/tbody/tr[3]/td[5]/p");
+    private static final By LATEST_V2_CONFERENCE_PASSCODE = By.xpath("/html/body/form/table[2]/tbody/tr[3]/td[5]/p");
+    private static final By LATEST_V1_CONFERENCE_PASSCODE = By.xpath("/html/body/form/table[3]/tbody/tr[3]/td[5]/p");
     private static final By LATEST_CONFERENCE_DELETE = By.cssSelector("input[name='cmdRemove']");
     //-----------------------------------------------------------------------------------------------
 
@@ -30,9 +31,14 @@ public class V2ConferenceListComponents {
         }
     }
 
-    public String getLatestConferencePasscode() {
-        WebElement latestConferencePasscodeElement = driver.findElement(LATEST_CONFERENCE_PASSCODE);
-        return latestConferencePasscodeElement.getText();
+    public String getLatestV2ConferencePasscode() {
+        WebElement latestV2ConferencePasscodeElement = driver.findElement(LATEST_V2_CONFERENCE_PASSCODE);
+        return latestV2ConferencePasscodeElement.getText();
+    }
+
+    public String getLatestV1ConferencePasscode() {
+        WebElement latestV1ConferencePasscodeElement = driver.findElement(LATEST_V1_CONFERENCE_PASSCODE);
+        return latestV1ConferencePasscodeElement.getText();
     }
 
     public WebElement getDeleteButtonForLatestConference() {
