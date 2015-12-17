@@ -24,8 +24,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 /*******************************
  * TODO - Create Type 3 account My Services Page Object
- * TODO - Rename this class/file
- * TODO - Create copy of class for v1 test
+ * TODO - Rename this class/file, V2ConferenceListComponents, V2OldSchedulerComponents
+ * TODO - Create copy of class for v1 test *
  */
 
 public class OldScheduler1_v2_Invite_Test {
