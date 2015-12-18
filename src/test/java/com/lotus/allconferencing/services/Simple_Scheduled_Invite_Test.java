@@ -2,7 +2,9 @@ package com.lotus.allconferencing.services;
 
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
+import com.lotus.allconferencing.meeting_controller.pages.OldSchedulerPageObject;
 import com.lotus.allconferencing.meeting_controller.pages.SimpleAccountServicesPage;
+import com.lotus.allconferencing.meeting_controller.pages.SimpleScheduledInvitePage;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -18,6 +20,7 @@ public class Simple_Scheduled_Invite_Test {
     private ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
+    public static String timeOfDay = "";
 
     public Simple_Scheduled_Invite_Test() {
         try {
@@ -26,6 +29,8 @@ public class Simple_Scheduled_Invite_Test {
             e.printStackTrace();
         }
     }
+
+    SimpleScheduledInvitePage simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
 
     @Test
     public void sendEasyAllInvite() {
@@ -36,6 +41,9 @@ public class Simple_Scheduled_Invite_Test {
 
         login(LoginPageObject.LoginType.STANDARD);
         simpleAccountServicesPage.openEasyAllInvitePage();
+        timeOfDay = selectMeetingHour(timeOfDay);
+        selectTimeOfDay(timeOfDay);
+        selectTimeZone();
     }
 
 
@@ -62,5 +70,21 @@ public class Simple_Scheduled_Invite_Test {
         loginPageObject.login(readProps.getOldAcctClientID(), readProps.getOldAcctPassword());
 
         //System.out.println("My Account window handle is: " + myAccountWindow);
+    }
+
+    public String selectMeetingHour(String timeOfDay) {
+        simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
+        timeOfDay = simpleScheduledInvitePage.selectMeetingHour(timeOfDay);
+        return timeOfDay;
+    }
+
+    public void selectTimeOfDay(String timeOfDay) {
+        simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
+        simpleScheduledInvitePage.selectTimeOfDay(timeOfDay);
+    }
+
+    public void selectTimeZone() {
+        simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
+        simpleScheduledInvitePage.choosePacificTimeZone();
     }
 }
