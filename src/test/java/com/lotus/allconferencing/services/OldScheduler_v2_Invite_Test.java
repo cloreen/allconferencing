@@ -2,6 +2,7 @@ package com.lotus.allconferencing.services;
 
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.*;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -93,6 +94,11 @@ public class OldScheduler_v2_Invite_Test {
         if(conferenceDisplays) {
             removeConferenceFromList();
         }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        driver.quit();
     }
 
 
