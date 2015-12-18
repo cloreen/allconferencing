@@ -3,8 +3,6 @@ package com.lotus.allconferencing.meeting_controller.pages;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.components.ConferenceListComponents;
-import com.lotus.allconferencing.meeting_controller.pages.components.OldAccountServicesComponents;
-import com.lotus.allconferencing.meeting_controller.pages.components.V2OldSchedulerComponents;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

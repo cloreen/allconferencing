@@ -2,21 +2,12 @@ package com.lotus.allconferencing.services;
 
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.meeting_controller.pages.*;
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -28,19 +19,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * TODO - Create copy of class for v1 test *
  */
 
-public class OldScheduler1_v2_Invite_Test {
+public class OldScheduler_v2_Invite_Test {
     private static WebDriver driver;
     private static WebDriver driver2;
     private LoginPageObject loginPage;
     private ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
-    private static Boolean isNewEmail = false;
+    //private static Boolean isNewEmail = false;
     private static Boolean conferenceDisplays = false;
-    private static Pattern pattern = null;
+    /*private static Pattern pattern = null;
     private static String newConferencePasscode = "";
     private static String tollFreeNumArr[];
-    private static String passcodeArr[];
+    private static String passcodeArr[];*/
     private static String partPasscode = "";
     private static String timeOfDay = "";
     private static Integer version = 2;
