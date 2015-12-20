@@ -49,6 +49,7 @@ public class Simple_Scheduled_Invite_Test {
         selectTimeOfDay(timeOfDay);
         selectTimeZone();
         addParticipant();
+        enterMeetingName();
     }
 
 
@@ -124,5 +125,10 @@ public class Simple_Scheduled_Invite_Test {
     public void addParticipant() {
         simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
         simpleScheduledInvitePage.addParticipant();
+    }
+
+    public void enterMeetingName() {
+        simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
+        simpleScheduledInvitePage.enterMeetingName();
     }
 }

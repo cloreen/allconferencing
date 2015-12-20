@@ -114,4 +114,11 @@ public class SimpleScheduledInvitePage {
         WebElement addParticipant = simpleScheduledInviteComponents.getAddParticipantsField();
         addParticipant.sendKeys(readProps.getParticipantEmail());
     }
+
+    public void enterMeetingName() {
+        simpleScheduledInviteComponents = new SimpleScheduledInviteComponents(driver);
+        WebElement meetingName = simpleScheduledInviteComponents.getMeetingNameField();
+        meetingName.clear();
+        meetingName.sendKeys("Test Meeting");
+    }
 }
