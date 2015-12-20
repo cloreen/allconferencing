@@ -21,6 +21,7 @@ public class SimpleScheduledInviteComponents {
     private static final By TIME_ZONE = By.cssSelector("#ddnConfZone");
     private static final By ADD_PARTICIPANTS = By.cssSelector("#txtAddrs");
     private static final By MEETING_NAME = By.cssSelector("#txtSubject");
+    private static final By SUBMIT = By.cssSelector("#btnInvite");
     //-----------------------------------------------------------------------------------------------
 
     public SimpleScheduledInviteComponents(WebDriver newDriver) {
@@ -62,6 +63,11 @@ public class SimpleScheduledInviteComponents {
     public WebElement getMeetingNameField() {
         WebElement meetingNameField = driver.findElement(MEETING_NAME);
         return meetingNameField;
+    }
+
+    public WebElement getSubmitButton() {
+        WebElement submitButton = driver.findElement(SUBMIT);
+        return submitButton;
     }
 
 }

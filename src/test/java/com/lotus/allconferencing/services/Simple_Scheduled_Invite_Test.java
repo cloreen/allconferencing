@@ -50,6 +50,7 @@ public class Simple_Scheduled_Invite_Test {
         selectTimeZone();
         addParticipant();
         enterMeetingName();
+        submitInvite();
     }
 
 
@@ -130,5 +131,10 @@ public class Simple_Scheduled_Invite_Test {
     public void enterMeetingName() {
         simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
         simpleScheduledInvitePage.enterMeetingName();
+    }
+
+    public void submitInvite() {
+        simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
+        simpleScheduledInvitePage.submitInvite();
     }
 }

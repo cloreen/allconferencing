@@ -121,4 +121,10 @@ public class SimpleScheduledInvitePage {
         meetingName.clear();
         meetingName.sendKeys("Test Meeting");
     }
+
+    public void submitInvite() {
+        simpleScheduledInviteComponents = new SimpleScheduledInviteComponents(driver);
+        WebElement submitInvite = simpleScheduledInviteComponents.getSubmitButton();
+        submitInvite.click();
+    }
 }
