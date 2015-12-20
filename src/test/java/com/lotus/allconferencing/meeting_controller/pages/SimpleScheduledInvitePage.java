@@ -108,4 +108,10 @@ public class SimpleScheduledInvitePage {
             }
         }
     }
+
+    public void addParticipant() {
+        simpleScheduledInviteComponents = new SimpleScheduledInviteComponents(driver);
+        WebElement addParticipant = simpleScheduledInviteComponents.getAddParticipantsField();
+        addParticipant.sendKeys(readProps.getParticipantEmail());
+    }
 }
