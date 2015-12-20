@@ -6,7 +6,9 @@ import com.lotus.allconferencing.meeting_controller.pages.OldSchedulerPageObject
 import com.lotus.allconferencing.meeting_controller.pages.SimpleAccountServicesPage;
 import com.lotus.allconferencing.meeting_controller.pages.SimpleScheduledInvitePage;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.util.Set;
@@ -30,22 +32,48 @@ public class Simple_Scheduled_Invite_Test {
         }
     }
 
+    SimpleAccountServicesPage simpleAccountServicesPage = new SimpleAccountServicesPage(driver);
     SimpleScheduledInvitePage simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
 
     @Test
     public void sendEasyAllInvite() {
-        driver = new FirefoxDriver();
-        driver.get(readProps.getUrl());
 
-        SimpleAccountServicesPage simpleAccountServicesPage = new SimpleAccountServicesPage(driver);
+        getSettings();
+        openBrowser();
+
+        goToHomePage();
 
         login(LoginPageObject.LoginType.STANDARD);
-        simpleAccountServicesPage.openEasyAllInvitePage();
+        openScheduler();
         timeOfDay = selectMeetingHour(timeOfDay);
         selectTimeOfDay(timeOfDay);
         selectTimeZone();
+        addParticipant();
     }
 
+
+    public void getSettings() {
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void openBrowser() {
+        driver = new FirefoxDriver();
+    }
+
+    public void goToHomePage() {
+        driver.get(readProps.getUrl());
+
+        // Click on HTML element -- May be necessary to run tests in Firefox.
+        WebElement htmlElement = driver.findElement(By.tagName("html"));
+        htmlElement.click();
+
+        // Get handle for home page
+        baseWindow = driver.getWindowHandle();
+    }
 
     public static String getWindow() {
         int i = 0;
@@ -72,6 +100,11 @@ public class Simple_Scheduled_Invite_Test {
         //System.out.println("My Account window handle is: " + myAccountWindow);
     }
 
+    public void openScheduler() {
+        simpleAccountServicesPage = new SimpleAccountServicesPage(driver);
+        simpleAccountServicesPage.openEasyAllInvitePage();
+    }
+
     public String selectMeetingHour(String timeOfDay) {
         simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
         timeOfDay = simpleScheduledInvitePage.selectMeetingHour(timeOfDay);
@@ -86,5 +119,10 @@ public class Simple_Scheduled_Invite_Test {
     public void selectTimeZone() {
         simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
         simpleScheduledInvitePage.choosePacificTimeZone();
+    }
+
+    public void addParticipant() {
+        simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
+        simpleScheduledInvitePage.addParticipant();
     }
 }
