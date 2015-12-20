@@ -19,6 +19,7 @@ public class SimpleScheduledInviteComponents {
     private static final By MEETING_HOUR = By.cssSelector("#ddnConfHour");
     private static final By TIME_OF_DAY = By.cssSelector("#ddnConfMer");
     private static final By TIME_ZONE = By.cssSelector("#ddnConfZone");
+    private static final By ADD_PARTICIPANTS = By.cssSelector("#txtAddrs");
     //-----------------------------------------------------------------------------------------------
 
     public SimpleScheduledInviteComponents(WebDriver newDriver) {
@@ -50,6 +51,11 @@ public class SimpleScheduledInviteComponents {
         Select timeZoneSelect = new Select(timeZoneElement);
         List<WebElement> timeZoneOptions = timeZoneSelect.getOptions();
         return timeZoneOptions;
+    }
+
+    public WebElement getAddParticipantsField() {
+        WebElement addParticipantsField = driver.findElement(ADD_PARTICIPANTS);
+        return addParticipantsField;
     }
 
 
