@@ -7,6 +7,7 @@ import com.lotus.allconferencing.services.schedulers.pages.OldSchedulerPageObjec
 import com.lotus.allconferencing.support_classes.GmailObject;
 import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -28,7 +29,7 @@ public class OldScheduler_v2_Invite_Test {
     private static WebDriver driver;
     private static WebDriver driver2;
     private LoginPageObject loginPage;
-    private ReadPropertyFile readProps = null;
+    private static ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
     //private static Boolean isNewEmail = false;
@@ -42,35 +43,28 @@ public class OldScheduler_v2_Invite_Test {
     private static Integer version = 2;
 
     GmailObject gmail = new GmailObject(driver2);
-    public OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
+    private static OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
     public OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
     public ConferenceListPage conferenceListPage = new ConferenceListPage(driver);
 
+    @BeforeClass
+    public static void setup() {
+        getSettings();
+        openBrowser();
+    }
 
 
     @Test
     public void scheduleV2Meeting() {
-
-        getSettings();
-
-        openBrowser();
         goToHomePage();
         login(LoginPageObject.LoginType.STANDARD);
         openScheduler();
 
         // Enter Meeting Info
-        enterMeetingName();
-        enterModeratorName();
-        selectSpecifyTime(); // Check Radio Button to schedule for a specific time
-        timeOfDay = selectMeetingHour(timeOfDay); // Get hour of the day and select meeting hour
-        selectTimeOfDay(timeOfDay); // Choose AM or PM based on current hour
-        selectTimeZone();
-        addParticipant();
-        enableEmailReminders();
-        submitForm();
-
+        setupMeeting(timeOfDay);
         goToAccountServices();
     }
+
 
 
     @Test
@@ -116,7 +110,7 @@ public class OldScheduler_v2_Invite_Test {
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
-    public void getSettings() {
+    public static void getSettings() {
         try {
             readProps = new ReadPropertyFile();
         } catch (Exception e) {
@@ -124,7 +118,7 @@ public class OldScheduler_v2_Invite_Test {
         }
     }
 
-    public void openBrowser() {
+    public static void openBrowser() {
         driver = new FirefoxDriver();
     }
 
@@ -177,57 +171,22 @@ public class OldScheduler_v2_Invite_Test {
                 System.out.println("Version not specified. Permitted values are 1 or 2.");
                 System.exit(-1);
         }
-
+        oldScheduler = new OldSchedulerPageObject(driver);
     }
 
-    public void enterMeetingName() {
-        oldScheduler = new OldSchedulerPageObject(driver);
+    private void setupMeeting(String timeOfDay) {
         oldScheduler.enterMeetingName();
-    }
-
-    public void enterModeratorName() {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.enterModeratorName();
-    }
-
-    public void selectSpecifyTime() {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.selectSpecifyTime();
-    }
-
-    public String selectMeetingHour(String timeOfDay) {
-        oldScheduler = new OldSchedulerPageObject(driver);
         timeOfDay = oldScheduler.selectMeetingHour(timeOfDay);
-        return timeOfDay;
-    }
-
-    public void selectTimeOfDay(String timeOfDay) {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.selectTimeOfDay(timeOfDay);
-    }
-
-    public void selectTimeZone() {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.choosePacificTimeZone();
-    }
-
-    public void addParticipant() {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.addParticipant();
-    }
-
-    public void enableEmailReminders() {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.enableEmailReminders();
-    }
-
-    public void submitForm() {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.submitForm();
     }
 
     public void goToAccountServices() {
-        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.goToAccountServices();
     }
 
