@@ -1,4 +1,4 @@
-package com.lotus.allconferencing.meeting_controller.pages.components;
+package com.lotus.allconferencing.website.login.components;
 
 import com.lotus.allconferencing.ReadPropertyFile;
 import org.openqa.selenium.By;

@@ -1,13 +1,9 @@
-package com.lotus.allconferencing.meeting_controller.pages.components;
+package com.lotus.allconferencing.support_classes;
 
-import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.meeting_controller.pages.GmailObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 

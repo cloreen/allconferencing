@@ -1,12 +1,11 @@
-package com.lotus.allconferencing.meeting_controller.pages;
+package com.lotus.allconferencing.support_classes;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.meeting_controller.pages.components.GmailInboxComponentsObject;
-import com.lotus.allconferencing.meeting_controller.pages.components.GmailLoginPageObject;
+import com.lotus.allconferencing.services.schedulers.components.OldSchedulerComponents;
+import com.lotus.allconferencing.services.schedulers.components.SimpleScheduledInviteComponents;
 import org.joda.time.DateTime;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -53,6 +52,17 @@ public class GmailObject extends BaseSeleniumTest {
     GmailLoginPageObject gmail = new GmailLoginPageObject(driver);
     GmailInboxComponentsObject gmailInbox = new GmailInboxComponentsObject(driver);
 
+    public enum MeetingType {
+        OLD(0), SIMPLE(1), NEW(2);
+
+        private int meetingType;
+
+        MeetingType(int value) { this.meetingType = value; }
+
+        public int value() { return meetingType; }
+    }
+
+    MeetingType meetingType = MeetingType.OLD;
 
     public void get() {
 
@@ -223,6 +233,8 @@ public class GmailObject extends BaseSeleniumTest {
             minThreshold = 59;
         }
 //        System.out.println("Minutes threshold = " + minThreshold);
+        String tollFreeLabel_Simple = getSimpleSchedulerEmailTollFreeLabel();
+        String tollFreeLabel_Old = getOldSchedulerEmailTollFreeLabel();
         String tollFreeNum = null;
         String modPasscode = null;
         for (WebElement element : emailBodyTable) {
@@ -231,18 +243,21 @@ public class GmailObject extends BaseSeleniumTest {
             }
             for (String line : emailContent) {
                 elementCounter += 1;
-//                System.out.println("Line " + elementCounter + ":");
-//                System.out.println(line);
+                System.out.println("Line " + elementCounter + ":");
+                System.out.println(line);
                 if (line.contains("(0 minutes ago)")) {
 //                    System.out.println("Found newest email");
                     isNewEmail = true;
                 }
                 if (isNewEmail == true) {
-                    if (line.contains("Toll-free phone number")) {
-//                        System.out.println("Toll-free number found!");
+                    if (line.contains(tollFreeLabel_Old)) {
+                        System.out.println("Toll-free number found!");
+                        tollFreeNum = line;
+                    } else if (line.contains(tollFreeLabel_Simple)) {
+                        System.out.println("Toll free number found!");
                         tollFreeNum = line;
                     } else if (line.contains("Participant Passcode")) {
-//                        System.out.println("Passcode found!");
+                        System.out.println("Passcode found!");
                         modPasscode = line;
                     }
                 }
@@ -252,7 +267,7 @@ public class GmailObject extends BaseSeleniumTest {
             if (isNewEmail == true) {
                 tollFreeNumArr = tollFreeNum.split(" ");
                 passcodeArr = modPasscode.split(" ");
-                /*
+
                 System.out.println("Toll Free Number line:");
                 for (String item : tollFreeNumArr) {
                     System.out.println(item);
@@ -262,11 +277,11 @@ public class GmailObject extends BaseSeleniumTest {
                 for (String item : passcodeArr) {
                     System.out.println(item);
                 }
-                */
+
                 pattern = Pattern.compile("\\d+");
-//                System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
+                System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
                 verifyTollFreeNumberIsGenerated(tollFreeNumArr[27]);
-//                System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
+                System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
                 verifyPasscodesAreGenerated(passcodeArr[28]);
                 partPasscode = passcodeArr[28];
             } else {
@@ -287,7 +302,7 @@ public class GmailObject extends BaseSeleniumTest {
         if (emailBodyTable.size() != 1) {
             System.out.println("Through first wait - table not populated");
             try {
-                Thread.sleep(2000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -295,7 +310,7 @@ public class GmailObject extends BaseSeleniumTest {
         if (emailBodyTable.size() != 1) {
             System.out.println("Through second wait - table still not populated");
             try {
-                Thread.sleep(2000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -305,6 +320,16 @@ public class GmailObject extends BaseSeleniumTest {
             System.out.println("Through third wait (6 seconds total) - table was still not populated");
             System.exit(-1);
         }
+    }
+
+    public String getOldSchedulerEmailTollFreeLabel() {
+        OldSchedulerComponents oldSchedulerComponents = new OldSchedulerComponents(driver);
+        return oldSchedulerComponents.getEmailInviteTollFreeLabel();
+    }
+
+    public String getSimpleSchedulerEmailTollFreeLabel() {
+        SimpleScheduledInviteComponents simpleScheduledInviteComponents = new SimpleScheduledInviteComponents(driver);
+        return simpleScheduledInviteComponents.getEmailInviteTollFreeLabel();
     }
 
     public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {

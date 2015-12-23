@@ -1,8 +1,7 @@
-package com.lotus.allconferencing.meeting_controller.pages;
+package com.lotus.allconferencing.services.schedulers.pages;
 
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.meeting_controller.pages.components.OldSchedulerComponents;
-import com.lotus.allconferencing.meeting_controller.pages.components.SimpleScheduledInviteComponents;
+import com.lotus.allconferencing.services.schedulers.components.SimpleScheduledInviteComponents;
 import org.joda.time.DateTime;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

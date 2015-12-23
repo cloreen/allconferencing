@@ -1,9 +1,9 @@
-package com.lotus.allconferencing.meeting_controller.pages;
+package com.lotus.allconferencing.services.schedulers.pages;
 
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.meeting_controller.pages.components.OldAccountServicesComponents;
-import com.lotus.allconferencing.meeting_controller.pages.components.OldSchedulerComponents;
+import com.lotus.allconferencing.services.components.OldAccountServicesComponents;
+import com.lotus.allconferencing.services.schedulers.components.OldSchedulerComponents;
 import org.joda.time.DateTime;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

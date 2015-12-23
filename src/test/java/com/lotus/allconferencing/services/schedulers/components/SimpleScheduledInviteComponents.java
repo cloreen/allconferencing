@@ -1,4 +1,4 @@
-package com.lotus.allconferencing.meeting_controller.pages.components;
+package com.lotus.allconferencing.services.schedulers.components;
 
 import com.lotus.allconferencing.ReadPropertyFile;
 import org.openqa.selenium.By;
@@ -22,6 +22,7 @@ public class SimpleScheduledInviteComponents {
     private static final By ADD_PARTICIPANTS = By.cssSelector("#txtAddrs");
     private static final By MEETING_NAME = By.cssSelector("#txtSubject");
     private static final By SUBMIT = By.cssSelector("#btnInvite");
+    private static final String EMAIL_TOLL_FREE = "Toll free";
     //-----------------------------------------------------------------------------------------------
 
     public SimpleScheduledInviteComponents(WebDriver newDriver) {
@@ -68,6 +69,10 @@ public class SimpleScheduledInviteComponents {
     public WebElement getSubmitButton() {
         WebElement submitButton = driver.findElement(SUBMIT);
         return submitButton;
+    }
+
+    public String getEmailInviteTollFreeLabel() {
+        return EMAIL_TOLL_FREE;
     }
 
 }

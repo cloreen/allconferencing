@@ -1,4 +1,4 @@
-package com.lotus.allconferencing.meeting_controller.pages.components;
+package com.lotus.allconferencing.services.schedulers.components;
 
 import com.lotus.allconferencing.ReadPropertyFile;
 import org.openqa.selenium.By;
@@ -30,6 +30,7 @@ public class OldSchedulerComponents {
     private static final By SUBMIT = By.cssSelector("input[name='cmdSubmit']");
     private static final By ACCT_SERVICES = By.cssSelector("input[name='Submit']");
     private static final String EXPECTED_TITLE = "All Conferencing - Schedule a Conference";
+    private static final String EMAIL_TOLL_FREE = "Toll-free phone number";
     //-----------------------------------------------------------------------------------
 
 
@@ -124,5 +125,9 @@ public class OldSchedulerComponents {
 
     public String getExpectedTitle() {
         return EXPECTED_TITLE;
+    }
+
+    public String getEmailInviteTollFreeLabel() {
+        return EMAIL_TOLL_FREE;
     }
 }

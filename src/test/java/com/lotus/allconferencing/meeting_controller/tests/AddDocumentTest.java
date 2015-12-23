@@ -1,4 +1,4 @@
-package com.lotus.allconferencing.meeting_controller;
+package com.lotus.allconferencing.meeting_controller.tests;
 
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.meeting_controller.pages.AddDocPageObject;
@@ -45,6 +45,5 @@ public class AddDocumentTest extends BaseSeleniumTest {
 
         WebElement newDocTitleBar = driver.findElement(By.xpath("/html/body/div/div/div"));
         assert(newDocTitleBar.getText().contains("Edit File - " + documentName + ".html"));
-
     }
 }

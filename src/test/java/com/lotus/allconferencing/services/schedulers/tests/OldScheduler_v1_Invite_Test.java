@@ -1,10 +1,16 @@
-package com.lotus.allconferencing.services;
+package com.lotus.allconferencing.services.schedulers.tests;
 
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.meeting_controller.pages.*;
+import com.lotus.allconferencing.services.pages.ConferenceListPage;
+import com.lotus.allconferencing.services.pages.OldAccountServicesPage;
+import com.lotus.allconferencing.services.schedulers.pages.OldSchedulerPageObject;
+import com.lotus.allconferencing.support_classes.GmailObject;
+import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import org.junit.AfterClass;
 import org.junit.Test;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.util.Set;
@@ -14,13 +20,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created by Ben on 10/13/2015.
  */
+
 /*******************************
  * TODO - Create Type 3 account My Services Page Object
  * TODO - Rename this class/file, V2ConferenceListComponents, V2OldSchedulerComponents
  * TODO - Create copy of class for v1 test *
  */
 
-public class OldScheduler_v2_Invite_Test {
+public class OldScheduler_v1_Invite_Test {
     private static WebDriver driver;
     private static WebDriver driver2;
     private LoginPageObject loginPage;
@@ -35,7 +42,7 @@ public class OldScheduler_v2_Invite_Test {
     private static String passcodeArr[];*/
     private static String partPasscode = "";
     private static String timeOfDay = "";
-    private static Integer version = 2;
+    private static Integer version = 1;
 
     GmailObject gmail = new GmailObject(driver2);
     public OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);

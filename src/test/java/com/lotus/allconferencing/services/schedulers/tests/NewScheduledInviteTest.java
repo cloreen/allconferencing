@@ -1,35 +1,18 @@
-package com.lotus.allconferencing.services;
+package com.lotus.allconferencing.services.schedulers.tests;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.meeting_controller.pages.AddDocPageObject;
-import com.lotus.allconferencing.meeting_controller.pages.GmailObject;
-import com.lotus.allconferencing.meeting_controller.pages.LoginPageObject;
+import com.lotus.allconferencing.support_classes.GmailObject;
+import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import com.lotus.allconferencing.services.meetingmanager.MeetingManagerPageObject;
-import com.lotus.allconferencing.suites.MeetingControllerSuiteTest;
-import jdk.nashorn.internal.runtime.linker.JavaAdapterFactory;
-import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.chrono.Chronology;
 import java.util.*;
-import java.util.NoSuchElementException;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static junit.framework.Assert.assertEquals;
@@ -45,6 +28,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
     private static WebDriver driver2;
     private LoginPageObject loginPage;
     private MeetingManagerPageObject meetingManagerPage;
+    private GmailObject gmail;
     private ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
@@ -134,109 +118,9 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 */
     public String checkInviteEmail() {
         driver2 = new FirefoxDriver();
+        gmail = new GmailObject(driver2);
         driver2.get("http://www.gmail.com/");
-        WebDriverWait wait = new WebDriverWait(driver2, 10);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("title")));
-        wait.until(ExpectedConditions.titleIs("Gmail"));
-        WebElement emailAddress = driver2.findElement(By.cssSelector("input[id='Email']"));
-        emailAddress.sendKeys(new String(readProps.getParticipantEmail()));
-        emailAddress.submit();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[id='Passwd']")));
-        WebElement password = driver2.findElement(By.cssSelector("input[id='Passwd']"));
-        password.sendKeys(new String(readProps.getParticipantEmailPwd()));
-        password.submit();
-        wait.until(ExpectedConditions.titleContains("Inbox"));
-
-        String emailText = "AllConferencing Meeting Invite";
-        WebElement refreshButton = driver2.findElement(By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div")); // div[role='button']   // div[class='asa']
-        WebElement emailSubject = null;
-        try {
-            emailSubject = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(6) div div div span"));
-            String emailSubjectString = emailSubject.getText();
-            WebElement emailArrivalTime = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
-            String emailTime = emailArrivalTime.getText();
-            for (int i = 0; i < 3; i++) {
-                if (!emailTime.contains("am")) {
-                    if (!emailTime.contains("pm")) {
-                        refreshButton.click();
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        emailArrivalTime = driver2.findElement(By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"));
-                        emailTime = emailArrivalTime.getText();
-                    }
-                }
-            }
-
-            System.out.println("Email time retrieved from Gmail was: " + emailTime);
-            String[] emailTimeParts = emailTime.split(":");
-            String emailHourStr = emailTimeParts[0];
-            String emailMinuteStr = emailTimeParts[1];
-            String[] minuteParts = emailMinuteStr.split("\\s");
-            emailMinuteStr = minuteParts[0];
-            Integer emailHour = (Integer.parseInt(emailHourStr));
-            System.out.println("Email hour is: " + emailHour);
-            Integer emailMinute = (Integer.parseInt(emailMinuteStr));
-            System.out.println("Email minute is: " + emailMinute);
-            Integer emailMinuteThreshold = emailMinute + 1;
-            System.out.println("Email Minute Threshold is: " + emailMinuteThreshold);
-
-            DateTime dt = new DateTime();
-            System.out.println("Current DateTime is: " + dt);
-            Integer currentHour = dt.getHourOfDay();
-            System.out.println("Current Hour is: " + currentHour);
-            Integer currentMinutes = dt.getMinuteOfHour();
-            System.out.println("Current Minute is: " + currentMinutes);
-            if (currentHour > 12) {
-                currentHour -= 12;
-            }
-
-            wait.until(ExpectedConditions.textToBePresentInElement(emailArrivalTime, String.valueOf(currentHour)));
-            Boolean thresholdReached = false;
-            for (int i = 0; i < 15; i++) {
-                if (currentMinutes <= emailMinuteThreshold) {
-                    thresholdReached = true;
-                    i = 15;
-                    break;
-                }
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (i == 6 || i == 12) {
-                    refreshButton.click();
-                }
-            }
-
-            if (thresholdReached == false) {
-                System.out.println("Email time synchronization failed. The time threshold was not reached.");
-                System.exit(-1);
-            }
-        } catch (NoSuchElementException nsee) {
-            refreshButton.click();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } catch (ElementNotFoundException enfe) {
-            refreshButton.click();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        //WebDriverWait waitForEmail = new WebDriverWait(driver, 30);
-        //waitForEmail.until(ExpectedConditions.textToBePresentInElement(emailSubject, emailText));
-
-        System.out.println("The subject of the email found is: " + emailSubject.getText());
-        return (emailSubject.getText());
+        return gmail.checkInviteEmail();
     }
 
     public void verifyEmailReceived(String emailSubject) {
