@@ -69,13 +69,8 @@ public class OldScheduler_v2_Invite_Test {
 
     @Test
     public void checkEmailAndPasscodes() {
-        getSettings();
-
-        // Check invite email, passcodes and dial-in numbers have been generated
-        checkEmailIsReceived();
-        gmail.openEmail();
-        partPasscode = checkEmailContentForNewConfInfo();
-        closeWindow();
+        partPasscode = getParticipantPasscodeFromEmail();
+        closeEmailWindow();
     }
 
     @Test
@@ -191,19 +186,12 @@ public class OldScheduler_v2_Invite_Test {
     }
 
     // checkEmailIsReceived(), checkInviteEmail(), and checkEmailContentForNewInfo should be condensed into one method.
-    public String checkInviteEmail() {
+    public String getParticipantPasscodeFromEmail() {
         driver2 = new FirefoxDriver();
         gmail = new GmailObject(driver2);
-        return gmail.checkInviteEmail();
-    }
-
-    public void checkEmailIsReceived() {
-        String inviteEmailSubject = checkInviteEmail();
+        String inviteEmailSubject = gmail.checkInviteEmail();
         verifyEmailReceived(inviteEmailSubject);
-    }
-
-    public String checkEmailContentForNewConfInfo() {
-        gmail = new GmailObject(driver2);
+        gmail.openEmail();
         return gmail.checkEmailContentForNewConfInfo();
     }
 
@@ -248,7 +236,7 @@ public class OldScheduler_v2_Invite_Test {
         conferenceListPage.removeConferenceFromList();
     }
 
-    public void closeWindow() {
+    public void closeEmailWindow() {
         driver2.quit();
     }
 
