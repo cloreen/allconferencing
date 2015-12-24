@@ -75,15 +75,11 @@ public class OldScheduler_v2_Invite_Test {
 
     @Test
     public void checkConferenceList() {
-        getSettings();
-        refreshAccountServices();
-
         // Check conference list
         goToConferenceList();
-
         conferenceDisplays = checkForNewConference();
 
-        // Cleanup after test by deleting conference from list
+        // Remove conference from list once it's found
         if(conferenceDisplays) {
             removeConferenceFromList();
         }
@@ -195,13 +191,9 @@ public class OldScheduler_v2_Invite_Test {
         return gmail.checkEmailContentForNewConfInfo();
     }
 
-    public void refreshAccountServices() {
-        oldAccountServicesPage = new OldAccountServicesPage(driver);
-        oldAccountServicesPage.refreshAccountServices(myAccountWindow);
-    }
-
     public void goToConferenceList() {
         oldAccountServicesPage = new OldAccountServicesPage(driver);
+        oldAccountServicesPage.refreshAccountServices(myAccountWindow);
         switch (version) {
             case 2:
                 oldAccountServicesPage.listV2Conferences();
@@ -232,7 +224,6 @@ public class OldScheduler_v2_Invite_Test {
     }
 
     public void removeConferenceFromList() {
-        conferenceListPage = new ConferenceListPage(driver);
         conferenceListPage.removeConferenceFromList();
     }
 
