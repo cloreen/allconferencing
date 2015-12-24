@@ -20,8 +20,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 10/13/2015.
  */
 /*******************************
- * TODO - Initialize page objects only once per test
- * TODO - Condense email checking methods into one method
  * TODO - Create Type 3 account My Services Page Object
  */
 
