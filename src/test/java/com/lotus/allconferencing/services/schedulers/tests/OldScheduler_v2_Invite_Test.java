@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 10/13/2015.
  */
 /*******************************
+ * TODO - Experiment with encapsulation of instantiated Page Objects to find most efficient mode of instantiation
  * TODO - Create Type 3 account My Services Page Object
  */
 
@@ -63,8 +64,6 @@ public class OldScheduler_v2_Invite_Test {
         goToAccountServices();
     }
 
-
-
     @Test
     public void checkEmailAndPasscodes() {
         partPasscode = getParticipantPasscodeFromEmail();
@@ -82,6 +81,7 @@ public class OldScheduler_v2_Invite_Test {
             removeConferenceFromList();
         }
     }
+
 
     @AfterClass
     public static void tearDown() {
