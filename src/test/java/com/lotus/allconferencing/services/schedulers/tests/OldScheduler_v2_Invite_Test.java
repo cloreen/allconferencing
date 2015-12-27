@@ -20,7 +20,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 10/13/2015.
  */
 /*******************************
- * TODO - Experiment with encapsulation of instantiated Page Objects to find most efficient mode of instantiation
  * TODO - Create Type 3 account My Services Page Object
  */
 
@@ -42,9 +41,9 @@ public class OldScheduler_v2_Invite_Test {
     private static Integer version = 2;
 
     GmailObject gmail = new GmailObject(driver2);
-    private static OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
-    public OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
-    public ConferenceListPage conferenceListPage = new ConferenceListPage(driver);
+    OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
+    OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
+    ConferenceListPage conferenceListPage = new ConferenceListPage(driver);
 
     @BeforeClass
     public static void setup() {
