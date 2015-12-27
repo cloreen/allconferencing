@@ -5,6 +5,7 @@ import com.lotus.allconferencing.services.pages.ConferenceListPage;
 import com.lotus.allconferencing.services.pages.OldAccountServicesPage;
 import com.lotus.allconferencing.services.schedulers.pages.OldSchedulerPageObject;
 import com.lotus.allconferencing.support_classes.GmailObject;
+import com.lotus.allconferencing.webdriver.manager.WindowManager;
 import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -40,6 +41,7 @@ public class OldScheduler_v2_Invite_Test {
     private static String timeOfDay = "";
     private static Integer version = 2;
 
+    WindowManager windowManager = new WindowManager(driver);
     GmailObject gmail = new GmailObject(driver2);
     OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
     OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
@@ -118,18 +120,13 @@ public class OldScheduler_v2_Invite_Test {
         htmlElement.click();
 
         // Get handle for home page
-        baseWindow = driver.getWindowHandle();
+        baseWindow = getWindow();
     }
 
-    public static String getWindow() {
-        int i = 0;
-        Set<String> set = driver.getWindowHandles();
-        String windowHandle = "";
-        //List<String> windowHandles = new ArrayList<String>();
-        for (String item : set) {
-            driver.switchTo().window(item);
-        }
-        windowHandle = driver.getWindowHandle();
+    public String getWindow() {
+        //Brings current window to foregroud and assignes window handle to a string to easily switch windows later.
+        windowManager = new WindowManager(driver);
+        String windowHandle = windowManager.getWindow();
         return windowHandle;
     }
 
