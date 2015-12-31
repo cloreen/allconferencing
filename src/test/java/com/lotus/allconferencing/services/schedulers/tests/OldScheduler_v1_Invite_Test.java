@@ -42,7 +42,7 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
     private static String passcodeArr[];*/
     private static String partPasscode = "";
     private static String timeOfDay = "";
-    private static Integer version = 1;
+    private static Integer version = 1; // Version defines whether v1 or v2 scheduler is used
 
     GmailObject gmail = new GmailObject(driver2);
     public OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
@@ -52,7 +52,7 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
 
 
     @Test
-    public void scheduleV2Meeting() {
+    public void scheduleMeeting() {
 
         getSettings();
 

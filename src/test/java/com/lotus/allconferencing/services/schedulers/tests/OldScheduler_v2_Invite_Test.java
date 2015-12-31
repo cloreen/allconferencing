@@ -39,7 +39,7 @@ public class OldScheduler_v2_Invite_Test {
     private static String passcodeArr[];*/
     private static String partPasscode = "";
     private static String timeOfDay = "";
-    private static Integer version = 2;
+    private static Integer version = 2; // Version is used to specify whether v1 or v2 scheduler is used.
 
     WindowManager windowManager = new WindowManager(driver);
     GmailObject gmail = new GmailObject(driver2);
@@ -55,7 +55,7 @@ public class OldScheduler_v2_Invite_Test {
 
 
     @Test
-    public void scheduleV2Meeting() {
+    public void scheduleMeeting() {
         goToHomePage();
         login(LoginPageObject.LoginType.STANDARD);
         openScheduler();
