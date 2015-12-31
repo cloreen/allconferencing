@@ -1,0 +1,5 @@
+IE:
+- sendKeys is extremely slow (about 1 char/sec)
+
+CHROME:
+- some css locators ending in span do not appear to work. Change to a css locator searching for span element by id.
