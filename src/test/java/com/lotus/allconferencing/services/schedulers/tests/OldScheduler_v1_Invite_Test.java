@@ -128,7 +128,7 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
     }
 
     public void openBrowser() {
-        driver = BaseSeleniumTest.setDriver(BaseSeleniumTest.BrowserName.FIREFOX);
+        driver = BaseSeleniumTest.setDriver(BrowserName.FIREFOX);
     }
 
     public void goToHomePage() {
