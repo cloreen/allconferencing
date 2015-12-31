@@ -248,7 +248,7 @@ public class OldScheduler_v1_Invite_Test {
 
     public String checkEmailContentForNewConfInfo() {
         gmail = new GmailObject(driver2);
-        return gmail.checkEmailContentForNewConfInfo();
+        return gmail.checkEmailContentForNewConfInfo(GmailObject.MeetingType.OLD);
     }
 
     public void refreshAccountServices() {

@@ -62,8 +62,6 @@ public class GmailObject extends BaseSeleniumTest {
         public int value() { return meetingType; }
     }
 
-    MeetingType meetingType = MeetingType.OLD;
-
     public void get() {
 
         driver.get("http://www.gmail.com/");
@@ -213,7 +211,7 @@ public class GmailObject extends BaseSeleniumTest {
         }
     }
 
-    public String checkEmailContentForNewConfInfo() {
+    public String checkEmailContentForNewConfInfo(MeetingType meetingType) {
         List<WebElement> emailBodyTable = gmailInbox.getEmailBody();
         if (emailBodyTable.size() == 1) {
 //            System.out.println("List was populated upon assignment!");
@@ -279,11 +277,30 @@ public class GmailObject extends BaseSeleniumTest {
                 }
 
                 pattern = Pattern.compile("\\d+");
-                System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
-                verifyTollFreeNumberIsGenerated(tollFreeNumArr[27]);
-                System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
-                verifyPasscodesAreGenerated(passcodeArr[28]);
-                partPasscode = passcodeArr[28];
+                switch (meetingType) {
+                    case OLD:
+                        System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
+                        verifyTollFreeNumberIsGenerated(tollFreeNumArr[27]);
+                        System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
+                        verifyPasscodesAreGenerated(passcodeArr[28]);
+                        partPasscode = passcodeArr[28];
+                        break;
+                    case SIMPLE:
+                        System.out.println("This is index (3) in tollFreeNumArr: " + tollFreeNumArr[3]);
+                        verifyTollFreeNumberIsGenerated(tollFreeNumArr[3]);
+                        System.out.println("This is index (2) in participantPasscode: " + passcodeArr[2]);
+                        verifyPasscodesAreGenerated(passcodeArr[2]);
+                        partPasscode = passcodeArr[2];
+                        break;
+                    default:
+                        System.out.println("This is index (27) in tollFreeNumArr: " + tollFreeNumArr[27]);
+                        verifyTollFreeNumberIsGenerated(tollFreeNumArr[27]);
+                        System.out.println("This is index (28) in participantPasscode: " + passcodeArr[28]);
+                        verifyPasscodesAreGenerated(passcodeArr[28]);
+                        partPasscode = passcodeArr[28];
+                        break;
+                }
+
             } else {
                 System.out.println("The new email was not found.");
                 System.exit(-1);

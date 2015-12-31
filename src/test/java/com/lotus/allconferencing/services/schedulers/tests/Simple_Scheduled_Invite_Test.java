@@ -165,7 +165,7 @@ public class Simple_Scheduled_Invite_Test {
 
     public String checkEmailContentForNewConfInfo() {
         gmail = new GmailObject(driver2);
-        return gmail.checkEmailContentForNewConfInfo();
+        return gmail.checkEmailContentForNewConfInfo(GmailObject.MeetingType.SIMPLE);
     }
 
     public String checkInviteEmail() {

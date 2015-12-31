@@ -10,10 +10,10 @@ import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -182,7 +182,7 @@ public class OldScheduler_v2_Invite_Test {
         String inviteEmailSubject = gmail.checkInviteEmail();
         verifyEmailReceived(inviteEmailSubject);
         gmail.openEmail();
-        return gmail.checkEmailContentForNewConfInfo();
+        return gmail.checkEmailContentForNewConfInfo(GmailObject.MeetingType.OLD);
     }
 
     public void goToConferenceList() {
