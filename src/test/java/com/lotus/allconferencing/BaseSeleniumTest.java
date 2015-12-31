@@ -25,7 +25,7 @@ public abstract class BaseSeleniumTest {
 
     public enum BrowserName {FIREFOX, CHROME, IE, OPERA, SAFARI, SAUCELABS, HTMLUNIT}
 
-    public static WebDriver setDriver(BrowserName browser) throws ZipException, IOException {
+    public static WebDriver setDriver(BrowserName browser) {
 
         switch (browser) {
             case FIREFOX:
@@ -33,7 +33,13 @@ public abstract class BaseSeleniumTest {
                 break;
 
             case CHROME:
-                driver = chromeDriverFactory.getChromeDriver();
+                try {
+                    driver = chromeDriverFactory.getChromeDriver();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ZipException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case IE:
