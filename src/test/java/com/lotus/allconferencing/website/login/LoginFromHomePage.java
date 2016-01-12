@@ -17,7 +17,7 @@ import static junit.framework.Assert.assertFalse;
 /**
  * Created by Ben on 5/1/2015.
  */
-public class AcctLoginTests {
+public class LoginFromHomePage {
 
     private static WebDriver driver;
     private static String currentPage, loginPageTitle, acctLandingPageTitle = "";
