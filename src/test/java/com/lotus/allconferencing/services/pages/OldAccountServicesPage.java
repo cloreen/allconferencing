@@ -1,10 +1,10 @@
 package com.lotus.allconferencing.services.pages;
 
-import com.lotus.allconferencing.BaseSeleniumTest;
+import com.lotus.allconferencing.PageManager;
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.services.components.ConferenceListComponents;
 import com.lotus.allconferencing.services.components.OldAccountServicesComponents;
-import com.lotus.allconferencing.services.schedulers.components.OldSchedulerComponents;
+import com.lotus.allconferencing.services.schedulers.pages.OldSchedulerPageObject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,11 +17,22 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /************
  * TODO - Comment refactor points
  */
-public class OldAccountServicesPage extends BaseSeleniumTest {
+public class OldAccountServicesPage extends PageManager {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
 
-
+    // Selectors for Old Account Services Page Components--------------------------------------------
+    private static final By SCHEDULE_V2_MEETING = By.cssSelector("a[href='schedule_v2.asp?Rights=0']");
+    private static final By SCHEDULE_V1_MEETING = By.cssSelector("a[href='schedule.asp?Rights=0']");
+    private static final By LIST_V2_CONFERENCES = By.cssSelector("a[href='edit_conf_v2.asp?Rights=0']");
+    private static final By LIST_V1_CONFERENCES = By.cssSelector("a[href='edit_conf.asp?Rights=0']");
+    //private static final By LOGOUT = By.cssSelector("img[name='logout']");
+    private static final By LOGOUT = By.name("logout");
+    public static final By TITLE = By.tagName("title");
+    private static final String ACCOUNT_SERVICES_EXPECTED_TITLE = "All Conferencing - Account Services";
+    private static final String SCHEDULER_EXPECTED_TITLE = "All Conferencing - Schedule a Conference";
+    private static final String CONFERENCE_LIST_EXPECTED_TITLE = "List/Edit/Delete";
+    //-----------------------------------------------------------------------------------------------
 
 
     public OldAccountServicesPage(WebDriver newDriver) {
@@ -37,9 +48,9 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
     }
 
     public OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
-    public OldSchedulerComponents oldSchedulerComponents = new OldSchedulerComponents(driver);
-    public ConferenceListComponents conferenceListComponents = new ConferenceListComponents(driver);
-
+//    public OldSchedulerComponents oldSchedulerComponents = new OldSchedulerComponents(driver);
+//    public ConferenceListComponents conferenceListComponents = new ConferenceListComponents(driver);
+/*
     public enum Version {
         VERSION1, VERSION2;
     }
@@ -76,13 +87,27 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
             }
         }
     }
+*/
+    public OldSchedulerPageObject openV1OldScheduler() {
+        driver.findElement(SCHEDULE_V1_MEETING).click();
+        WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
+        waitForSchedulerToDisplay.until(
+                ExpectedConditions.titleIs(ACCOUNT_SERVICES_EXPECTED_TITLE)
+        );
+        return new OldSchedulerPageObject(driver);
+    }
+
+    public OldSchedulerPageObject openV2OldScheduler() {
+        driver.findElement(SCHEDULE_V2_MEETING).click();
+        WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
+        waitForSchedulerToDisplay.until(
+                ExpectedConditions.titleIs(ACCOUNT_SERVICES_EXPECTED_TITLE)
+        );
+        return new OldSchedulerPageObject(driver);
+    }
 
 
-
-
-
-
-
+/*
     public void openV2OldScheduler() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
         oldSchedulerComponents = new OldSchedulerComponents(driver);
@@ -104,7 +129,7 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
                 ExpectedConditions.titleIs(oldSchedulerComponents.getExpectedTitle())
         );
     }
-
+*/
     public void refreshAccountServices(String myAccountWindowHandle) {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
         driver.switchTo().window(myAccountWindowHandle);
@@ -116,6 +141,27 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
         );
     }
 
+   public ConferenceListPage listV1Conferences() {
+       driver.findElement(LIST_V1_CONFERENCES).click();
+       WebDriverWait waitForConferenceListToDisplay = new WebDriverWait(driver, 10);
+       waitForConferenceListToDisplay.until(
+               ExpectedConditions.titleIs(CONFERENCE_LIST_EXPECTED_TITLE)
+       );
+       return new ConferenceListPage(driver);
+   }
+
+    public ConferenceListPage listV2Conferences() {
+        driver.findElement(LIST_V2_CONFERENCES).click();
+        WebDriverWait waitForConferenceListToDisplay = new WebDriverWait(driver, 10);
+        waitForConferenceListToDisplay.until(
+                ExpectedConditions.titleIs(CONFERENCE_LIST_EXPECTED_TITLE)
+        );
+        return new ConferenceListPage(driver);
+    }
+
+
+
+/*
     public void listV2Conferences() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
         conferenceListComponents = new ConferenceListComponents(driver);
@@ -138,5 +184,14 @@ public class OldAccountServicesPage extends BaseSeleniumTest {
         waitForConferenceList.until(
                 ExpectedConditions.titleIs(conferenceListComponents.getExpectedTitle())
         );
+    }
+*/
+
+    public void logout() {
+        oldAccountServicesComponents = new OldAccountServicesComponents(driver);
+        WebElement logoutButton = oldAccountServicesComponents.getLogoutButton();
+        logoutButton.click();
+        driver.switchTo().alert().accept();
+        waitForTitle(driver);
     }
 }
