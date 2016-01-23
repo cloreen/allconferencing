@@ -1,11 +1,10 @@
 package com.lotus.allconferencing.services.pages;
 
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.services.components.SimpleAccountServicesComponents;
+import com.lotus.allconferencing.services.components.CorpAccountServicesComponents;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Created by Ben on 12/17/2015.
@@ -13,6 +12,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class CorpAccountServicesPage {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
+
+    private CorpAccountServicesComponents corpAccountServicesComponents = new CorpAccountServicesComponents(driver);
+
+
+    // Selectors for Corp Account Services Page Components--------------------------------------------
+    private static final By LOGOUT = By.partialLinkText("Logout");
+    private static final String CORP_ACCOUNT_SERVICES_TITLE = "Corporate Administrator Home Page";
+    //-----------------------------------------------------------------------------------------------
+
 
     public CorpAccountServicesPage(WebDriver newDriver) {
         driver = newDriver;
@@ -24,13 +32,9 @@ public class CorpAccountServicesPage {
         }
     }
 
-    public void openEasyAllInvitePage() {
-        SimpleAccountServicesComponents simpleAccountServicesComponents = new SimpleAccountServicesComponents(driver);
-        WebElement easyAllInvite = simpleAccountServicesComponents.getEasyAllInviteLink();
-        easyAllInvite.click();
-        WebDriverWait waitForInvitePage = new WebDriverWait(driver, 10);
-        waitForInvitePage.until(
-                ExpectedConditions.titleIs(simpleAccountServicesComponents.getExpectedEasyAllTitle())
-        );
+    public void logout() {
+        CorpAccountServicesComponents corpAccountServicesComponents = new CorpAccountServicesComponents(driver);
+        WebElement logoutButton = corpAccountServicesComponents.getLogoutButton();
+        logoutButton.click();
     }
 }

@@ -73,9 +73,7 @@ public class LoginFromHomePage {
 
     @Test
     public void test02_CorpLogin() {
-        //goToHomePage();
         homePage.login(AccountType.LoginType.CORPORATE, AccountType.AcctType.CORPORATE);
-        corpAccountServicesPage.waitForTitle();
         corpAccountServicesPage.logout();
     }
 
