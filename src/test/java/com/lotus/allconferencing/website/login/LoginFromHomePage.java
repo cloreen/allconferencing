@@ -1,160 +1,145 @@
 package com.lotus.allconferencing.website.login;
 
+import com.lotus.allconferencing.ReadPropertyFile;
+import com.lotus.allconferencing.services.components.CorpAccountServicesComponents;
+import com.lotus.allconferencing.services.components.OldAccountServicesComponents;
+import com.lotus.allconferencing.services.pages.CorpAccountServicesPage;
+import com.lotus.allconferencing.services.pages.OldAccountServicesPage;
+import com.lotus.allconferencing.services.participantprojectshare.components.PartProjectShareComponents;
+import com.lotus.allconferencing.services.participantprojectshare.pages.PartProjectSharePage;
+import com.lotus.allconferencing.website.login.pages.AccountType;
+import com.lotus.allconferencing.website.pages.HomePage;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Actions;
 
 import java.util.List;
 import java.util.Set;
 
-import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Created by Ben on 5/1/2015.
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LoginFromHomePage {
 
     private static WebDriver driver;
+    private static ReadPropertyFile readProps = null;
     private static String currentPage, loginPageTitle, acctLandingPageTitle = "";
+    private static String baseWindow, myAccountWindow;
     private static String homeURL = "http://www.allconferencing.com";
+    private static WebElement acctSvcsTitle;
+    private static String pageTitle;
     private static List<WebElement> webElements;
     private static int webElementsSize;
     private static By locator;
 
-    public WebElement getElementWithIndex(By by, int pos) {
-        return driver.findElements(by).get(pos);
-    }
-
-    public String[] checkPageTitles(By by, int pos) {
-
-        String base = driver.getWindowHandle();
-
-        System.out.println("Base window handle is: " + base);
-
-        Actions actions = new Actions(driver);
-        actions.contextClick(getElementWithIndex(by, pos)).perform();
-        actions.sendKeys(new String("w")).perform();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        int i = 0;
-        Set<String> set = driver.getWindowHandles();
-        String myHandle = "";
-        String otherHandle = "";
-        for (String item : set) {
-            i++;
-            System.out.println("Handle of Window " + i + " is: " + item);
-            if (i == 1) {
-                myHandle = item.toString();
-            } else {
-                otherHandle = item.toString();
-            }
-        }
-
-        set.remove(base);
-        assert (set.size() == 1);
-
-        driver.switchTo().window(otherHandle);
-
-        loginPageTitle = driver.getTitle();
-
-        System.out.println(loginPageTitle);
-
-        WebElement element = driver.findElement(By.cssSelector("form[id='login']>fieldset>input[type='text']"));
-        element.click();
-        element.sendKeys(new String("25784"));
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        element = driver.findElement(By.cssSelector("form[id='login']>fieldset>label>label>input[type='password']"));
-        element.click();
-        element.sendKeys(new String("lotus456"));
-        element.submit();
-
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        acctLandingPageTitle = driver.getTitle();
-
-        String[] pageTitles = new String[2];
-        pageTitles[0] = loginPageTitle;
-        pageTitles[1] = acctLandingPageTitle;
-
-        driver.close();
-        driver.switchTo().window(base);
-
-        return pageTitles;
-    }
-
-
-    public String[] getLoginMenuElementPosition(List<WebElement> webElementsList, int webElementsIndex) {
-        int elementPosition = 0;
-        By locator = By.cssSelector("ul[id='MenuBar3']>li>a");
-        int acctLoginElementPos = 0;
-        int corpLoginElementPos = 0;
-        int partLoginElementPos = 0;
-        WebElement element = webElementsList.get(webElementsIndex);
-        String elementText = element.getText();
-
-        return checkPageTitles(locator, webElementsIndex);
-    }
-
-
+    private HomePage homePage = new HomePage(driver);
+    //private HomePageComponents homePageComponents = new HomePageComponents(driver);
+    //private LoginPageObject loginPage = new LoginPageObject(driver);
+    private OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
+    private OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
+    private CorpAccountServicesPage corpAccountServicesPage = new CorpAccountServicesPage(driver);
+    private CorpAccountServicesComponents corpAccountServicesComponents = new CorpAccountServicesComponents(driver);
+    private PartProjectSharePage partProjectSharePage = new PartProjectSharePage(driver);
+    private PartProjectShareComponents partProjectShareComponents = new PartProjectShareComponents(driver);
 
     @BeforeClass
     public static void setup() {
-        driver = new FirefoxDriver();
-        currentPage = driver.getCurrentUrl().toString();
-        if(currentPage != homeURL) {
-            driver.navigate().to(homeURL);
-        } else {
-            // do nothing
+
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        locator = By.cssSelector("ul[id='MenuBar3']>li>a");
+        driver = new FirefoxDriver();
 
-        webElements = driver.findElements(locator);
-
-        webElementsSize = webElements.size();
     }
 
     @Test
-    public void acctLoginLink() {
-        int webElementsIndex = 0;
-        String loginPageTitle = "";
-        String acctLandingPageTitle = "";
-        String[] pageTitles = new String[2];
+    public void test01_StandardLogin() {
+        homePage.login(AccountType.LoginType.STANDARD, AccountType.AcctType.STANDARD_OLD);
+        oldAccountServicesPage.logout();
+        assertEquals("Title is as expected", homePage.EXPECTED_TITLE, driver.getTitle());
+    }
 
-        pageTitles = getLoginMenuElementPosition(webElements, webElementsIndex);
+    @Test
+    public void test02_CorpLogin() {
+        //goToHomePage();
+        homePage.login(AccountType.LoginType.CORPORATE, AccountType.AcctType.CORPORATE);
+        corpAccountServicesPage.waitForTitle();
+        corpAccountServicesPage.logout();
+    }
 
-        loginPageTitle = pageTitles[0];
-        acctLandingPageTitle = pageTitles[1];
-
-        System.out.println("Login Page Title is: " + loginPageTitle);
-        System.out.println("Acct Landing Page Title is: " + acctLandingPageTitle);
-
-        assertFalse("Account Login title and Landing Title do not match",
-                loginPageTitle == acctLandingPageTitle);
+    @Test
+    public void test03_ParticipantLogin() {
+        goToHomePage();
+//        login(LoginPageObject.LoginType.PART);
+        partProjectSharePage.waitForTitle();
+        partProjectSharePage.logout();
     }
 
     @AfterClass
     public static void tearDown() {
         driver.quit();
     }
+
+    //Methods-----------------------------------------------------------------------------------------------------------
+    public void goToHomePage() {
+        driver.get(readProps.getUrl());
+
+        // Click on HTML element -- May be necessary to run tests in Firefox.
+        WebElement htmlElement = driver.findElement(By.tagName("html"));
+        htmlElement.click();
+
+        // Get handle for home page
+        baseWindow = driver.getWindowHandle();
+    }
+
+    public static String getWindow() {
+        int i = 0;
+        Set<String> set = driver.getWindowHandles();
+        String windowHandle = "";
+        //List<String> windowHandles = new ArrayList<String>();
+        for (String item : set) {
+            driver.switchTo().window(item);
+        }
+        windowHandle = driver.getWindowHandle();
+        return windowHandle;
+    }
+/*
+    public void login(LoginPageObject.LoginType loginType) {
+        // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
+        // get its handle.
+        //System.out.println("Base window handle is: " + baseWindow);
+
+  //      loginPage = new LoginPageObject(driver);
+//        loginPage.selectLogin(loginType);
+        myAccountWindow = getWindow();
+        switch (loginType) {
+            case STANDARD:
+                loginPage.login(readProps.getOlderAcctClientID(), readProps.getOlderAcctPassword());
+                break;
+            case CORP:
+                loginPage.login(readProps.getCorpClientID(), readProps.getCorpPassword());
+                break;
+            case PART:
+                loginPage.login(readProps.getParticipantClientID(), readProps.getParticipantAcctPwd());
+                break;
+            default:
+                System.out.println("A proper login account type must be specified.");
+                System.exit(-1);
+        }
+
+        //System.out.println("My Account window handle is: " + myAccountWindow);
+    }
+    */
 }
