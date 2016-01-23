@@ -1,7 +1,7 @@
 package com.lotus.allconferencing.website.pages;
 
-import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.PageManager;
+import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.website.login.pages.AccountType;
 import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import com.lotus.allconferencing.website.pages.components.HomePageComponents;
@@ -9,8 +9,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Created by Ben on 1/14/2016.
@@ -44,17 +42,16 @@ public class HomePage extends PageManager {
     }
 
     public LoginPageObject login(AccountType.LoginType loginType, AccountType.AcctType acctType) {
+        // Opens new page in a new window (contextClick() + sendKeys("w") = open in new window)
         Actions actions = new Actions(driver);
         actions.contextClick(getElementWithIndex(ACCT_BUTTON, loginType.value())).perform();
-        actions.sendKeys(new String("w")).perform();// Opens new page in a new window (contextClick() + sendKeys("w") = open in new window)
+        actions.sendKeys(new String("w")).perform();
 
         // Switch driver to new window, and assign window handle to string for easy reference later
         loginWindow = getNewWindow(driver, driver.getWindowHandles());
 
-        // Wait for new page to display
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("title")));
-
+        // Wait for new page to display, then return new page
+        waitForTitle(driver);
         return new LoginPageObject(driver, loginType, acctType);
     }
 
