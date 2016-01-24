@@ -84,10 +84,9 @@ public class LoginFromHomePage {
 
     @Test
     public void test03_ParticipantLogin() {
-        goToHomePage();
-//        login(LoginPageObject.LoginType.PART);
-        partProjectSharePage.waitForTitle();
+        homePage.login(loginType.PARTICIPANT, accountType.PARTICIPANT, accessType.LOGIN);
         partProjectSharePage.logout();
+        assertEquals("Title is as expected", homePage.EXPECTED_TITLE, driver.getTitle());
     }
 
     @AfterClass
