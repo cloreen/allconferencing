@@ -1,5 +1,6 @@
 package com.lotus.allconferencing.website.login;
 
+import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.services.pages.CorpAccountServicesPage;
 import com.lotus.allconferencing.services.pages.OldAccountServicesPage;
@@ -13,7 +14,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -21,7 +21,7 @@ import static junit.framework.Assert.assertEquals;
  * Created by Ben on 5/1/2015.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class LoginFromHomePage {
+public class LoginFromHomePage extends BaseSeleniumTest {
 
     private static WebDriver driver;
     private static ReadPropertyFile readProps = null;
@@ -43,7 +43,9 @@ public class LoginFromHomePage {
             e.printStackTrace();
         }
 
-        driver = new FirefoxDriver();
+        driver = setDriver(BrowserName.FIREFOX);
+
+        //driver = new FirefoxDriver();
 
     }
 
