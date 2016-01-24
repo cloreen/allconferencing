@@ -21,7 +21,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.util.List;
-import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -46,7 +45,6 @@ public class LoginFromHomePage {
     private static By locator;
 
     private HomePage homePage = new HomePage(driver);
-    //private HomePageComponents homePageComponents = new HomePageComponents(driver);
     private OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
     private OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
     private CorpAccountServicesPage corpAccountServicesPage = new CorpAccountServicesPage(driver);
@@ -94,54 +92,4 @@ public class LoginFromHomePage {
         driver.quit();
     }
 
-    //Methods-----------------------------------------------------------------------------------------------------------
-    public void goToHomePage() {
-        driver.get(readProps.getUrl());
-
-        // Click on HTML element -- May be necessary to run tests in Firefox.
-        WebElement htmlElement = driver.findElement(By.tagName("html"));
-        htmlElement.click();
-
-        // Get handle for home page
-        baseWindow = driver.getWindowHandle();
-    }
-
-    public static String getWindow() {
-        int i = 0;
-        Set<String> set = driver.getWindowHandles();
-        String windowHandle = "";
-        //List<String> windowHandles = new ArrayList<String>();
-        for (String item : set) {
-            driver.switchTo().window(item);
-        }
-        windowHandle = driver.getWindowHandle();
-        return windowHandle;
-    }
-/*
-    public void login(LoginPageObject.LoginType loginType) {
-        // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
-        // get its handle.
-        //System.out.println("Base window handle is: " + baseWindow);
-
-  //      loginPage = new LoginPageObject(driver);
-//        loginPage.selectLogin(loginType);
-        myAccountWindow = getWindow();
-        switch (loginType) {
-            case STANDARD:
-                loginPage.login(readProps.getOlderAcctClientID(), readProps.getOlderAcctPassword());
-                break;
-            case CORP:
-                loginPage.login(readProps.getCorpClientID(), readProps.getCorpPassword());
-                break;
-            case PART:
-                loginPage.login(readProps.getParticipantClientID(), readProps.getParticipantAcctPwd());
-                break;
-            default:
-                System.out.println("A proper login account type must be specified.");
-                System.exit(-1);
-        }
-
-        //System.out.println("My Account window handle is: " + myAccountWindow);
-    }
-    */
 }
