@@ -8,6 +8,7 @@ import com.lotus.allconferencing.services.pages.OldAccountServicesPage;
 import com.lotus.allconferencing.services.participantprojectshare.components.PartProjectShareComponents;
 import com.lotus.allconferencing.services.participantprojectshare.pages.PartProjectSharePage;
 import com.lotus.allconferencing.website.login.pages.AccountType;
+import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import com.lotus.allconferencing.website.pages.HomePage;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -43,7 +44,6 @@ public class LoginFromHomePage {
 
     private HomePage homePage = new HomePage(driver);
     //private HomePageComponents homePageComponents = new HomePageComponents(driver);
-    //private LoginPageObject loginPage = new LoginPageObject(driver);
     private OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
     private OldAccountServicesComponents oldAccountServicesComponents = new OldAccountServicesComponents(driver);
     private CorpAccountServicesPage corpAccountServicesPage = new CorpAccountServicesPage(driver);
@@ -66,15 +66,17 @@ public class LoginFromHomePage {
 
     @Test
     public void test01_StandardLogin() {
-        homePage.login(AccountType.LoginType.STANDARD, AccountType.AcctType.STANDARD_OLD);
+        homePage.login(AccountType.LoginType.STANDARD, AccountType.AcctType.STANDARD_OLD, LoginPageObject.AccessType.LOGIN);
         oldAccountServicesPage.logout();
         assertEquals("Title is as expected", homePage.EXPECTED_TITLE, driver.getTitle());
     }
 
     @Test
     public void test02_CorpLogin() {
-        homePage.login(AccountType.LoginType.CORPORATE, AccountType.AcctType.CORPORATE);
+        homePage.login(AccountType.LoginType.CORPORATE, AccountType.AcctType.CORPORATE, LoginPageObject.AccessType.LOGIN);
         corpAccountServicesPage.logout();
+        LoginPageObject loginPage = new LoginPageObject(driver, AccountType.LoginType.CORPORATE, AccountType.AcctType.CORPORATE, LoginPageObject.AccessType.OTHER);
+        assertEquals("Title is as expected", loginPage.CORP_LOGIN_EXPECTED_TITLE, driver.getTitle());
     }
 
     @Test

@@ -1,15 +1,15 @@
 package com.lotus.allconferencing.services.pages;
 
+import com.lotus.allconferencing.PageManager;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.services.components.CorpAccountServicesComponents;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 /**
  * Created by Ben on 12/17/2015.
  */
-public class CorpAccountServicesPage {
+public class CorpAccountServicesPage extends PageManager {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
 
@@ -33,8 +33,8 @@ public class CorpAccountServicesPage {
     }
 
     public void logout() {
-        CorpAccountServicesComponents corpAccountServicesComponents = new CorpAccountServicesComponents(driver);
-        WebElement logoutButton = corpAccountServicesComponents.getLogoutButton();
-        logoutButton.click();
+        driver.findElement(LOGOUT).click();
+        driver.switchTo().alert().accept();
+        waitForTitle(driver);
     }
 }
