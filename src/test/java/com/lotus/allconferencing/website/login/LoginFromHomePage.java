@@ -45,8 +45,6 @@ public class LoginFromHomePage extends BaseSeleniumTest {
 
         driver = setDriver(BrowserName.FIREFOX);
 
-        //driver = new FirefoxDriver();
-
     }
 
     @Test
