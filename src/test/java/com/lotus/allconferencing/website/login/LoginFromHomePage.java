@@ -33,6 +33,9 @@ public class LoginFromHomePage {
 
     private static WebDriver driver;
     private static ReadPropertyFile readProps = null;
+    private static LoginPageObject.AccessType accessType;
+    private static AccountType.AcctType accountType;
+    private static AccountType.LoginType loginType;
     private static String currentPage, loginPageTitle, acctLandingPageTitle = "";
     private static String baseWindow, myAccountWindow;
     private static String homeURL = "http://www.allconferencing.com";
@@ -66,16 +69,16 @@ public class LoginFromHomePage {
 
     @Test
     public void test01_StandardLogin() {
-        homePage.login(AccountType.LoginType.STANDARD, AccountType.AcctType.STANDARD_OLD, LoginPageObject.AccessType.LOGIN);
+        homePage.login(loginType.STANDARD, accountType.STANDARD_OLD, accessType.LOGIN);
         oldAccountServicesPage.logout();
         assertEquals("Title is as expected", homePage.EXPECTED_TITLE, driver.getTitle());
     }
 
     @Test
     public void test02_CorpLogin() {
-        homePage.login(AccountType.LoginType.CORPORATE, AccountType.AcctType.CORPORATE, LoginPageObject.AccessType.LOGIN);
+        homePage.login(loginType.CORPORATE, accountType.CORPORATE, accessType.LOGIN);
         corpAccountServicesPage.logout();
-        LoginPageObject loginPage = new LoginPageObject(driver, AccountType.LoginType.CORPORATE, AccountType.AcctType.CORPORATE, LoginPageObject.AccessType.OTHER);
+        LoginPageObject loginPage = new LoginPageObject(driver, loginType.CORPORATE, accountType.CORPORATE, accessType.DISPLAY);
         assertEquals("Title is as expected", loginPage.CORP_LOGIN_EXPECTED_TITLE, driver.getTitle());
     }
 
