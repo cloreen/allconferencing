@@ -43,7 +43,12 @@ public abstract class BaseSeleniumTest {
                 break;
 
             case IE:
-                driver = new InternetExplorerDriver();
+                DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
+                ieCapabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+                ieCapabilities.setCapability("requireWindowFocus", true);
+                ieCapabilities.setCapability("ie.ensureCleanSession", true);
+
+                driver = new InternetExplorerDriver(ieCapabilities);
                 break;
 
             case OPERA:
@@ -55,15 +60,15 @@ public abstract class BaseSeleniumTest {
                 break;
 
             case SAUCELABS:
-                DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-                capabilities.setCapability("version", "5");
-                capabilities.setCapability("platform", Platform.XP);
+                DesiredCapabilities sauceCapabilities = DesiredCapabilities.firefox();
+                sauceCapabilities.setCapability("version", "5");
+                sauceCapabilities.setCapability("platform", Platform.XP);
                 try {
                     // add url to environment variables to avoid releasing with source
                     String sauceURL = System.getenv("SAUCELABS_URL");
                     driver = new RemoteWebDriver(
                             new URL(sauceURL),
-                            capabilities);
+                            sauceCapabilities);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
