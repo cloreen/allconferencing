@@ -11,7 +11,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 
 /**
  * Created by Ben on 7/20/2015.
@@ -24,8 +23,6 @@ import org.openqa.selenium.interactions.Actions;
 public class LoginPageObject extends PageManager {
     private WebDriver driver;
     private ReadPropertyFile readProps = null;
-
-
 
     // Selectors for Login Components-----------------------------------------------------------------------------------
     private static By ACCT_BUTTON = By.cssSelector("ul[id='MenuBar3']>li>a");
@@ -80,7 +77,7 @@ public class LoginPageObject extends PageManager {
         if(accessType != AccessType.DISPLAY) {
             serveLogin(loginType, acctType, accessType);
         } else {
-            // do nothing
+            // Just display the page to assert on title within the test.
         }
     }
 
@@ -93,10 +90,12 @@ public class LoginPageObject extends PageManager {
 
 
     public void selectLogin(LoginType loginType) {
+        driver.findElement((By) getElementWithIndex(ACCT_BUTTON, loginType.value())).click();
+        /*
         Actions actions = new Actions(driver);
         actions.contextClick(getElementWithIndex(ACCT_BUTTON, loginType.value())).perform();
         actions.sendKeys(new String("w")).perform();// Opens new page in a new window (contextClick() + sendKeys("w") = open in new window)
-
+        */
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -132,6 +131,15 @@ public class LoginPageObject extends PageManager {
         commonStandardLogin(readProps.getOlderAcctClientID(), readProps.getOlderAcctPassword(), accessType);
     }
 
+    private NewAccountServicesPage loginToNewStandardAcct(AccessType accessType) {
+        commonStandardLogin(readProps.getOwnerClientID(), readProps.getOwnerPassword(), accessType);
+        return new NewAccountServicesPage(driver);
+    }
+
+    private PartProjectSharePage loginToParticipantAcct(AccessType accessType) {
+        commonStandardLogin(readProps.getParticipantClientID(), readProps.getParticipantAcctPwd(), accessType);
+        return new PartProjectSharePage(driver);
+    }
 
     public CorpAccountServicesPage loginToCorpAcct(AccessType accessType) {
         WebElement clientIDField, passwordField;
@@ -166,7 +174,11 @@ public class LoginPageObject extends PageManager {
         }
 
         driver.findElement(CORP_LOGIN_BUTTON).click();
-        waitForTitle(driver);
+        try {
+            waitForTitle(driver);
+        } catch (WebDriverException wde) {
+            System.out.println("Failed login alert raised exception!");
+        }
         return new CorpAccountServicesPage(driver);
     }
 
@@ -190,17 +202,6 @@ public class LoginPageObject extends PageManager {
                 loginToParticipantAcct(accessType);
                 break;
         }
-    }
-
-    private NewAccountServicesPage loginToNewStandardAcct(AccessType accessType) {
-        commonStandardLogin(readProps.getOwnerClientID(), readProps.getOwnerPassword(), accessType);
-        return new NewAccountServicesPage(driver);
-    }
-
-    private PartProjectSharePage loginToParticipantAcct(AccessType accessType) {
-        commonStandardLogin(readProps.getParticipantClientID(), readProps.getParticipantAcctPwd(), accessType);
-        waitForTitle(driver);
-        return new PartProjectSharePage(driver);
     }
 
     public void commonStandardLogin(String clientID, String password, AccessType accessType) {
