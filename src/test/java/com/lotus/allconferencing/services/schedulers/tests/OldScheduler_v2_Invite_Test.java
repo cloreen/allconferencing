@@ -23,7 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 10/13/2015.
  */
 /*******************************
- * TODO - Create Type 3 account My Services Page Object
+ * TODO - Combine tests into single test.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OldScheduler_v2_Invite_Test extends BaseSeleniumTest {
