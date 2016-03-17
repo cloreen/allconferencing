@@ -15,7 +15,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -23,10 +22,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 10/13/2015.
  */
 /*******************************
- * TODO - Combine tests into single test.
+ * TODO - 
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OldScheduler_v2_Invite_Test extends BaseSeleniumTest {
+    private static WebDriver inDriver;
     private static WebDriver driver;
     private static WebDriver driver2;
     private LoginPageObject loginPage;
@@ -50,38 +50,32 @@ public class OldScheduler_v2_Invite_Test extends BaseSeleniumTest {
     @BeforeClass
     public static void setup() {
         readProps = getSettings();
-        openBrowser(Browser.FIREFOX);
+        driver = openBrowser(Browser.FIREFOX);
     }
 
-
     @Test
-    public void test01_scheduleMeeting() {
+    public void scheduleMeetingAndCheckPasscodes() {
+        //Login and schedule meeting
         homePage.login(AccountType.LoginType.STANDARD, AccountType.AcctType.STANDARD_OLD, LoginPageObject.AccessType.LOGIN);
         oldAccountServicesPage.openScheduler(version);
-
-        // Enter Meeting Info
         oldScheduler.setupMeeting(timeOfDay, version);
-    }
 
-    @Test
-    public void test02_checkEmailAndPasscodes() {
+        //Get passcode from email
+        driver2 = openBrowser(Browser.FIREFOX);
         partPasscode = getParticipantPasscodeFromEmail();
         closeEmailWindow();
-    }
 
-    @Test
-    public void test03_checkConferenceList() {
-        // Check conference list
+        //Check passcode against conference listed in account
         baseWindow = homePage.baseWindow;
         oldAccountServicesPage.refreshAccountServices(baseWindow);
-//        goToConferenceList();
         oldAccountServicesPage.listConferences(version);
         conferenceDisplays = conferenceListPage.checkForNewConference(partPasscode, version);
-
+        assertThat("Assert conference displays in account", conferenceDisplays);
         // Remove conference from list once it's found
         if(conferenceDisplays) {
             conferenceListPage.removeConferenceFromList();
         }
+
     }
 
     @AfterClass
@@ -100,15 +94,17 @@ public class OldScheduler_v2_Invite_Test extends BaseSeleniumTest {
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
-    public static void openBrowser(Browser inBrowser) {
+    public static WebDriver openBrowser(Browser inBrowser) {
+        //driver = inDriver;
         String browser = inBrowser.toString();
 //        driver = new FirefoxDriver();
-        driver = setDriver(BrowserName.valueOf(browser));
+        inDriver = setDriver(BrowserName.valueOf(browser));
+        return inDriver;
     }
 
     // checkEmailIsReceived(), checkInviteEmail(), and checkEmailContentForNewInfo should be condensed into one method.
     public String getParticipantPasscodeFromEmail() {
-        driver2 = new FirefoxDriver();
+//        driver2 = new FirefoxDriver();
         gmail = new GmailObject(driver2);
         String inviteEmailSubject = gmail.checkInviteEmail();
         verifyEmailReceived(inviteEmailSubject);
