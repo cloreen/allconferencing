@@ -43,7 +43,7 @@ public class Simple_Scheduled_Invite_Test {
 
         goToHomePage();
 
-        login(LoginPageObject.LoginType.STANDARD);
+        //login(LoginPageObject.LoginType.STANDARD);
         openScheduler();
         timeOfDay = selectMeetingHour(timeOfDay);
         selectTimeOfDay(timeOfDay);
@@ -108,20 +108,20 @@ public class Simple_Scheduled_Invite_Test {
         windowHandle = driver.getWindowHandle();
         return windowHandle;
     }
-
+/*
     public void login(LoginPageObject.LoginType loginType) {
         // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
         // get its handle.
         //System.out.println("Base window handle is: " + baseWindow);
 
-        loginPageObject = new LoginPageObject(driver);
+        loginPageObject = new LoginPageObject(driver, loginType);
         loginPageObject.selectLogin(loginType);
         myAccountWindow = getWindow();
         loginPageObject.login(readProps.getOldAcctClientID(), readProps.getOldAcctPassword());
 
         //System.out.println("My Account window handle is: " + myAccountWindow);
     }
-
+*/
     public void openScheduler() {
         simpleAccountServicesPage = new SimpleAccountServicesPage(driver);
         simpleAccountServicesPage.openEasyAllInvitePage();

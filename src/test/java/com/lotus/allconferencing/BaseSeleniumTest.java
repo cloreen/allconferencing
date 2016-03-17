@@ -20,6 +20,7 @@ import java.net.URL;
  */
 public abstract class BaseSeleniumTest {
     private static WebDriver driver;
+    private static ReadPropertyFile readProps = null;
 
     private static ChromeDriverFactory chromeDriverFactory = new ChromeDriverFactory();
 
@@ -88,5 +89,14 @@ public abstract class BaseSeleniumTest {
         }
 
         return new FirefoxDriver();
+    }
+
+    public static ReadPropertyFile getSettings() {
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return readProps;
     }
 }

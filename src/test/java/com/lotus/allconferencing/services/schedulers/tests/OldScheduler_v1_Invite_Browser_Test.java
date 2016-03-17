@@ -9,9 +9,7 @@ import com.lotus.allconferencing.support_classes.GmailObject;
 import com.lotus.allconferencing.website.login.pages.LoginPageObject;
 import org.junit.AfterClass;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.util.Set;
 
@@ -56,8 +54,7 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
         getSettings();
 
         openBrowser();
-        goToHomePage();
-        login(LoginPageObject.LoginType.STANDARD);
+//        login(LoginPageObject.LoginType.STANDARD);
         openScheduler();
 
         // Enter Meeting Info
@@ -92,7 +89,7 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
         refreshAccountServices();
 
         // Check conference list
-        goToConferenceList();
+//        goToConferenceList();
 
         conferenceDisplays = checkForNewConference();
 
@@ -118,54 +115,53 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
-    public void getSettings() {
+/*    public void getSettings() {
         try {
             readProps = new ReadPropertyFile();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public void openBrowser() {
-        driver = BaseSeleniumTest.setDriver(BrowserName.FIREFOX);
+        driver = BaseSeleniumTest.setDriver(BrowserName.IE);
+        //driver.manage().deleteAllCookies();
     }
 
-    public void goToHomePage() {
-        driver.get(readProps.getUrl());
-
-        // Click on HTML element -- May be necessary to run tests in Firefox.
-        WebElement htmlElement = driver.findElement(By.tagName("html"));
-        htmlElement.click();
-
-        // Get handle for home page
-        baseWindow = driver.getWindowHandle();
-    }
-
-    public static String getWindow() {
+    public static String setWindow() {
         int i = 0;
-        Set<String> set = driver.getWindowHandles();
         String windowHandle = "";
+        Set<String> set = driver.getWindowHandles();
+        for (String item : set) {
+            System.out.println(item);
+            windowHandle = item;
+        }
+
+
         //List<String> windowHandles = new ArrayList<String>();
+        /*
         for (String item : set) {
             driver.switchTo().window(item);
         }
         windowHandle = driver.getWindowHandle();
+        */
         return windowHandle;
     }
-
+/*
     public void login(LoginPageObject.LoginType loginType) {
         // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
         // get its handle.
         //System.out.println("Base window handle is: " + baseWindow);
 
-        loginPage = new LoginPageObject(driver);
-        loginPage.selectLogin(loginType);
-        myAccountWindow = getWindow();
+        driver.get("https://www.allconferencing.com/pages-conference-calls/login.asp");
+        driver.manage().window().maximize();
+        myAccountWindow = setWindow();
+        loginPage = new LoginPageObject(driver, loginType);
         loginPage.login(readProps.getOlderAcctClientID(), readProps.getOlderAcctPassword());
 
         //System.out.println("My Account window handle is: " + myAccountWindow);
     }
-
+*/
     public void openScheduler() {
         oldAccountServicesPage = new OldAccountServicesPage(driver);
         switch (version) {
@@ -184,7 +180,7 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
 
     public void enterMeetingName() {
         oldScheduler = new OldSchedulerPageObject(driver);
-        oldScheduler.enterMeetingName();
+        oldScheduler.enterMeetingName(version);
     }
 
     public void enterModeratorName() {
@@ -235,7 +231,8 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
     }
 
     public String checkInviteEmail() {
-        driver2 = BaseSeleniumTest.setDriver(BrowserName.FIREFOX);
+        driver2 = BaseSeleniumTest.setDriver(BrowserName.IE);
+        driver2.manage().window().maximize();
         gmail = new GmailObject(driver2);
         return gmail.checkInviteEmail();
     }
@@ -255,7 +252,7 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
         oldAccountServicesPage.refreshAccountServices(myAccountWindow);
     }
 
-    public void goToConferenceList() {
+/*    public void goToConferenceList() {
         oldAccountServicesPage = new OldAccountServicesPage(driver);
         switch (version) {
             case 2:
@@ -268,11 +265,11 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
                 System.out.println("Version not specified. Permitted values are 1 or 2.");
                 System.exit(-1);
         }
-    }
+    }*/
 
     public Boolean checkForNewConference() {
         conferenceListPage = new ConferenceListPage(driver);
-        switch (version) {
+/*        switch (version) {
             case 2:
                 conferenceDisplays = conferenceListPage.getLatestV2ConferencePasscode(partPasscode);
                 break;
@@ -282,7 +279,7 @@ public class OldScheduler_v1_Invite_Browser_Test extends BaseSeleniumTest {
             default:
                 System.out.println("Version not specified. Permitted values are 1 or 2.");
                 System.exit(-1);
-        }
+        }*/
         return conferenceDisplays;
     }
 

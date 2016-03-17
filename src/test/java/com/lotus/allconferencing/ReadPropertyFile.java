@@ -1,8 +1,5 @@
 package com.lotus.allconferencing;
 
-import org.openqa.selenium.By;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -94,8 +91,17 @@ public class ReadPropertyFile {
     } //----------------------------------------------------------------------------
 
     // v2 Scheduled Meeting Test Data-----------------------------------------------
-    public String getv2ScheduledConfName() {
-        return props.getProperty("v2_conf_name");
+    public String getScheduledConfName(Integer version) {
+        String conferenceName = "";
+        switch (version) {
+            case 1:
+                conferenceName = props.getProperty("v1_conf_name");
+                break;
+            case 2:
+                conferenceName = props.getProperty("v2_conf_name");
+                break;
+        }
+        return conferenceName;
     }
     public String getModeratorName() {
         return props.getProperty("mod_name");
@@ -104,4 +110,11 @@ public class ReadPropertyFile {
         return props.getProperty("meeting_invite_subject");
     }
 
+    // Corp test account------------------------------------------------------------
+    public String getCorpClientID() {
+        return props.getProperty("corp_clientid");
+    }
+    public String getCorpPassword() {
+        return props.getProperty("corp_password");
+    }
 }

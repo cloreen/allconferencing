@@ -2,20 +2,23 @@ package com.lotus.allconferencing.services.schedulers.tests;
 
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
+import com.lotus.allconferencing.services.meetingmanager.MeetingManagerPageObject;
 import com.lotus.allconferencing.support_classes.GmailObject;
 import com.lotus.allconferencing.website.login.pages.LoginPageObject;
-import com.lotus.allconferencing.services.meetingmanager.MeetingManagerPageObject;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -58,19 +61,19 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
         windowHandle = driver.getWindowHandle();
         return windowHandle;
     }
-
+/*
     public void getLoginPage(LoginPageObject.LoginType loginType) {
         System.out.println("Base window handle is: " + baseWindow);
 
-        loginPage = new LoginPageObject(driver);
+        loginPage = new LoginPageObject(driver, loginType);
         loginPage.selectLogin(loginType);
         myAccountWindow = getWindow();
-        loginPage.login(readProps.getOwnerClientID(), readProps.getOwnerPassword());
+//        loginPage.login(readProps.getOwnerClientID(), readProps.getOwnerPassword());
         //WebDriverWait waitForLoginPage = new WebDriverWait(driver, 10);
         //waitForLoginPage.until();
         System.out.println("My Account window handle is: " + myAccountWindow);
     }
-
+*/
     public void scheduleMeeting() {
 
         // Open Meeting Manager
@@ -158,7 +161,7 @@ public class NewScheduledInviteTest extends BaseSeleniumTest {
 
         // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
         // get its handle.
-        getLoginPage(LoginPageObject.LoginType.STANDARD);
+//        getLoginPage(LoginPageObject.LoginType.STANDARD);
 
         scheduleMeeting();
 

@@ -44,10 +44,10 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
     private static String timeOfDay = "";
     private static Integer version = 1; // Version defines whether v1 or v2 scheduler is used
 
-    GmailObject gmail = new GmailObject(driver2);
-    public OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
-    public OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
-    public ConferenceListPage conferenceListPage = new ConferenceListPage(driver);
+    private GmailObject gmail = new GmailObject(driver2);
+    private OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
+    private OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
+    private ConferenceListPage conferenceListPage = new ConferenceListPage(driver);
 
 
 
@@ -58,7 +58,7 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
 
         openBrowser();
         goToHomePage();
-        login(LoginPageObject.LoginType.STANDARD);
+//        login(LoginPageObject.LoginType.STANDARD);
         openScheduler();
 
         // Enter Meeting Info
@@ -89,11 +89,11 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
 
     @Test
     public void checkConferenceList() {
-        getSettings();
+        readProps = getSettings();
         refreshAccountServices();
 
         // Check conference list
-        goToConferenceList();
+//        goToConferenceList();
 
         conferenceDisplays = checkForNewConference();
 
@@ -119,13 +119,13 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
-    public void getSettings() {
+/*    public void getSettings() {
         try {
             readProps = new ReadPropertyFile();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public void openBrowser() {
         driver = BaseSeleniumTest.setDriver(BrowserName.FIREFOX);
@@ -153,22 +153,22 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
         windowHandle = driver.getWindowHandle();
         return windowHandle;
     }
-
+/*
     public void login(LoginPageObject.LoginType loginType) {
         // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
         // get its handle.
         //System.out.println("Base window handle is: " + baseWindow);
 
-        loginPage = new LoginPageObject(driver);
+//        loginPage = new LoginPageObject(driver);
         loginPage.selectLogin(loginType);
         myAccountWindow = getWindow();
         loginPage.login(readProps.getOlderAcctClientID(), readProps.getOlderAcctPassword());
 
         //System.out.println("My Account window handle is: " + myAccountWindow);
     }
-
+*/
     public void openScheduler() {
-        oldAccountServicesPage = new OldAccountServicesPage(driver);
+//        oldAccountServicesPage = new OldAccountServicesPage(driver);
         switch (version) {
             case 1:
                 oldAccountServicesPage.openV1OldScheduler();
@@ -185,7 +185,7 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
 
     public void enterMeetingName() {
         oldScheduler = new OldSchedulerPageObject(driver);
-        oldScheduler.enterMeetingName();
+//        oldScheduler.enterMeetingName();
     }
 
     public void enterModeratorName() {
@@ -199,39 +199,39 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
     }
 
     public String selectMeetingHour(String timeOfDay) {
-        oldScheduler = new OldSchedulerPageObject(driver);
+ //       oldScheduler = new OldSchedulerPageObject(driver);
         timeOfDay = oldScheduler.selectMeetingHour(timeOfDay);
         return timeOfDay;
 
     }
 
     public void selectTimeOfDay(String timeOfDay) {
-        oldScheduler = new OldSchedulerPageObject(driver);
+   //     oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.selectTimeOfDay(timeOfDay);
     }
 
     public void selectTimeZone() {
-        oldScheduler = new OldSchedulerPageObject(driver);
+     //   oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.choosePacificTimeZone();
     }
 
     public void addParticipant() {
-        oldScheduler = new OldSchedulerPageObject(driver);
+       // oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.addParticipant();
     }
 
     public void enableEmailReminders() {
-        oldScheduler = new OldSchedulerPageObject(driver);
+//        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.enableEmailReminders();
     }
 
     public void submitForm() {
-        oldScheduler = new OldSchedulerPageObject(driver);
+//        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.submitForm();
     }
 
     public void goToAccountServices() {
-        oldScheduler = new OldSchedulerPageObject(driver);
+//        oldScheduler = new OldSchedulerPageObject(driver);
         oldScheduler.goToAccountServices();
     }
 
@@ -252,12 +252,12 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
     }
 
     public void refreshAccountServices() {
-        oldAccountServicesPage = new OldAccountServicesPage(driver);
+//        oldAccountServicesPage = new OldAccountServicesPage(driver);
         oldAccountServicesPage.refreshAccountServices(myAccountWindow);
     }
 
-    public void goToConferenceList() {
-        oldAccountServicesPage = new OldAccountServicesPage(driver);
+/*    public void goToConferenceList() {
+//        oldAccountServicesPage = new OldAccountServicesPage(driver);
         switch (version) {
             case 2:
                 oldAccountServicesPage.listV2Conferences();
@@ -269,11 +269,11 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
                 System.out.println("Version not specified. Permitted values are 1 or 2.");
                 System.exit(-1);
         }
-    }
+    }*/
 
     public Boolean checkForNewConference() {
-        conferenceListPage = new ConferenceListPage(driver);
-        switch (version) {
+//        conferenceListPage = new ConferenceListPage(driver);
+/*        switch (version) {
             case 2:
                 conferenceDisplays = conferenceListPage.getLatestV2ConferencePasscode(partPasscode);
                 break;
@@ -283,12 +283,12 @@ public class OldScheduler_v1_Invite_Test extends BaseSeleniumTest {
             default:
                 System.out.println("Version not specified. Permitted values are 1 or 2.");
                 System.exit(-1);
-        }
+        }*/
         return conferenceDisplays;
     }
 
     public void removeConferenceFromList() {
-        conferenceListPage = new ConferenceListPage(driver);
+ //       conferenceListPage = new ConferenceListPage(driver);
         conferenceListPage.removeConferenceFromList();
     }
 
