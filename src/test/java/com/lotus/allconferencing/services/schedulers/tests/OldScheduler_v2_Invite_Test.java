@@ -22,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 10/13/2015.
  */
 /*******************************
- * TODO - 
+ * TODO -
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OldScheduler_v2_Invite_Test extends BaseSeleniumTest {
@@ -95,16 +95,13 @@ public class OldScheduler_v2_Invite_Test extends BaseSeleniumTest {
     // Helper methods --------------------------------------------------------------------------------------------------
 
     public static WebDriver openBrowser(Browser inBrowser) {
-        //driver = inDriver;
         String browser = inBrowser.toString();
-//        driver = new FirefoxDriver();
         inDriver = setDriver(BrowserName.valueOf(browser));
         return inDriver;
     }
 
     // checkEmailIsReceived(), checkInviteEmail(), and checkEmailContentForNewInfo should be condensed into one method.
     public String getParticipantPasscodeFromEmail() {
-//        driver2 = new FirefoxDriver();
         gmail = new GmailObject(driver2);
         String inviteEmailSubject = gmail.checkInviteEmail();
         verifyEmailReceived(inviteEmailSubject);
