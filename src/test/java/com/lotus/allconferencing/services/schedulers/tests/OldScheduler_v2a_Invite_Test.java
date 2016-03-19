@@ -24,7 +24,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
+public class OldScheduler_v2a_Invite_Test extends BaseSeleniumTest {
     private static WebDriver inDriver;
     private static WebDriver driver;
     private static WebDriver driver2;
@@ -41,7 +41,7 @@ public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
     private static Boolean conferenceDisplays = false;
     private static String partPasscode = "";
     private static String timeOfDay = "";
-    private static Integer version = 1; // Version is used to specify whether v1 or v2 scheduler is used.
+    private static Integer version = 2; // Version is used to specify whether v1 or v2 scheduler is used.
 
     HomePage homePage = new HomePage(driver);
     GmailObject gmail = new GmailObject(driver2);
