@@ -17,6 +17,11 @@ import org.openqa.selenium.WebDriver;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
+/*
+* TODO - Handle multiple rows of test data from excel
+*
+* */
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OldScheduler_v2a_Invite_Test extends BaseSeleniumTest {
     private static WebDriver inDriver;
