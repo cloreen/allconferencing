@@ -3,6 +3,7 @@ package com.lotus.allconferencing.services.schedulers.tests;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ExcelData;
 import com.lotus.allconferencing.ReadPropertyFile;
+import com.lotus.allconferencing.Utility;
 import com.lotus.allconferencing.services.pages.ConferenceListPage;
 import com.lotus.allconferencing.services.pages.OldAccountServicesPage;
 import com.lotus.allconferencing.services.schedulers.pages.OldSchedulerPageObject;
@@ -45,7 +46,7 @@ public class OldScheduler_v2a_Invite_Test extends BaseSeleniumTest {
     @BeforeClass
     public static void setup() {
         readProps = getSettings();
-        ExcelData.getDataFromExcel();
+        ExcelData.getDataFromExcel(1);
         driver = openBrowser(ExcelData.browser);
     }
 
@@ -54,23 +55,37 @@ public class OldScheduler_v2a_Invite_Test extends BaseSeleniumTest {
         //Login and schedule meeting
 //        homePage.login(AccountType.LoginType.STANDARD, AccountType.AcctType.STANDARD_OLD, LoginPageObject.AccessType.LOGIN);
         homePage.login(ExcelData.loginType, ExcelData.accountType, ExcelData.accessType);
+        System.out.println("Logged in!");
+        Utility.captureScreenshot(driver, "LoggedIn");
+
         oldAccountServicesPage.openScheduler(version);
+        System.out.println("Scheduler opened!");
+        Utility.captureScreenshot(driver, "Scheduler");
+
         oldScheduler.setupMeeting(timeOfDay, version);
+        System.out.println("Meeting scheduled!");
+        Utility.captureScreenshot(driver, "ScheduledMeeting");
 
         //Get passcode from email
         driver2 = openBrowser(ExcelData.browser);
         partPasscode = getParticipantPasscodeFromEmail();
+        System.out.println("Got email!");
+        Utility.captureScreenshot(driver, "Email");
         closeEmailWindow();
 
         //Check passcode against conference listed in account
         baseWindow = homePage.baseWindow;
         oldAccountServicesPage.refreshAccountServices(baseWindow);
         oldAccountServicesPage.listConferences(version);
+        System.out.println("Listing conferences...");
+        Utility.captureScreenshot(driver, "ConferenceList");
+
         conferenceDisplays = conferenceListPage.checkForNewConference(partPasscode, version);
         assertThat("Assert conference displays in account", conferenceDisplays);
         // Remove conference from list once it's found
         if(conferenceDisplays) {
             conferenceListPage.removeConferenceFromList();
+            System.out.println("Conference was found!");
         }
 
     }

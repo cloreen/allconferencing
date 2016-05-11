@@ -119,7 +119,7 @@ public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
 
     public static void getDataFromExcel() {
         try {
-            excelData = dataFromExcel();
+            excelData = dataFromExcel(1);
         } catch (IOException e) {
             e.printStackTrace();
         }

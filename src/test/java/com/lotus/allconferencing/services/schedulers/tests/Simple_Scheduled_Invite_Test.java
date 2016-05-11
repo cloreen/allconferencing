@@ -1,10 +1,14 @@
 package com.lotus.allconferencing.services.schedulers.tests;
 
+import com.lotus.allconferencing.BaseSeleniumTest;
+import com.lotus.allconferencing.ExcelData;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.services.pages.SimpleAccountServicesPage;
 import com.lotus.allconferencing.services.schedulers.pages.SimpleScheduledInvitePage;
 import com.lotus.allconferencing.support_classes.GmailObject;
 import com.lotus.allconferencing.website.login.pages.LoginPageObject;
+import com.lotus.allconferencing.website.pages.HomePage;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -21,36 +25,44 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Created by Ben on 12/17/2015.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Simple_Scheduled_Invite_Test {
+public class Simple_Scheduled_Invite_Test extends BaseSeleniumTest {
+    private static WebDriver inDriver;
     private static WebDriver driver;
     private static WebDriver driver2;
     private LoginPageObject loginPageObject;
-    private ReadPropertyFile readProps = null;
+    private static ReadPropertyFile readProps = null;
     private static String baseWindow;
     private static String myAccountWindow;
     public static String timeOfDay = "";
     public static String partPasscode = "";
 
-    SimpleAccountServicesPage simpleAccountServicesPage = new SimpleAccountServicesPage(driver);
+    HomePage homePage = new HomePage(driver);
+    SimpleAccountServicesPage simpleAccountServices = new SimpleAccountServicesPage(driver);
     SimpleScheduledInvitePage simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
     GmailObject gmail = new GmailObject(driver);
+
+    @BeforeClass
+    public static void setup() {
+        readProps = getSettings();
+        ExcelData.getDataFromExcel(2);
+        driver = openBrowser(ExcelData.browser);
+    }
 
     @Test
     public void test1_sendEasyAllInvite() {
 
-        getSettings();
-        openBrowser();
+        homePage.login(ExcelData.loginType, ExcelData.accountType, ExcelData.accessType);
 
-        goToHomePage();
+//        openScheduler();
+        simpleAccountServices.openEasyAllInvitePage();
 
-        //login(LoginPageObject.LoginType.STANDARD);
-        openScheduler();
-        timeOfDay = selectMeetingHour(timeOfDay);
+/*        timeOfDay = selectMeetingHour(timeOfDay);
         selectTimeOfDay(timeOfDay);
         selectTimeZone();
         addParticipant();
         enterMeetingName();
-        submitInvite();
+        submitInvite();*/
+        simpleScheduledInvitePage.scheduleMeeting(timeOfDay);
     }
 
     @Test
@@ -74,16 +86,18 @@ public class Simple_Scheduled_Invite_Test {
 
 
 
-    public void getSettings() {
+/*    public void getSettings() {
         try {
             readProps = new ReadPropertyFile();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public void openBrowser() {
-        driver = new FirefoxDriver();
+    public static WebDriver openBrowser(ExcelData.Browser inBrowser) {
+        String browser = inBrowser.toString();
+        inDriver = setDriver(BrowserName.valueOf(browser));
+        return inDriver;
     }
 
     public void goToHomePage() {
@@ -108,23 +122,10 @@ public class Simple_Scheduled_Invite_Test {
         windowHandle = driver.getWindowHandle();
         return windowHandle;
     }
-/*
-    public void login(LoginPageObject.LoginType loginType) {
-        // Login with standard credentials, transfer driver to new window, bring My Account window to foreground,
-        // get its handle.
-        //System.out.println("Base window handle is: " + baseWindow);
 
-        loginPageObject = new LoginPageObject(driver, loginType);
-        loginPageObject.selectLogin(loginType);
-        myAccountWindow = getWindow();
-        loginPageObject.login(readProps.getOldAcctClientID(), readProps.getOldAcctPassword());
-
-        //System.out.println("My Account window handle is: " + myAccountWindow);
-    }
-*/
     public void openScheduler() {
-        simpleAccountServicesPage = new SimpleAccountServicesPage(driver);
-        simpleAccountServicesPage.openEasyAllInvitePage();
+//        simpleAccountServicesPage = new SimpleAccountServicesPage(driver);
+//        simpleAccountServicesPage.openEasyAllInvitePage();
     }
 
     public String selectMeetingHour(String timeOfDay) {
@@ -140,7 +141,7 @@ public class Simple_Scheduled_Invite_Test {
 
     public void selectTimeZone() {
         simpleScheduledInvitePage = new SimpleScheduledInvitePage(driver);
-        simpleScheduledInvitePage.choosePacificTimeZone();
+        simpleScheduledInvitePage.selectTimeZone();
     }
 
     public void addParticipant() {
