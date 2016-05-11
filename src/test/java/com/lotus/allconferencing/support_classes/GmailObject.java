@@ -3,11 +3,14 @@ package com.lotus.allconferencing.support_classes;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.lotus.allconferencing.BaseSeleniumTest;
 import com.lotus.allconferencing.ReadPropertyFile;
+import com.lotus.allconferencing.Utility;
 import com.lotus.allconferencing.services.schedulers.components.OldSchedulerComponents;
 import com.lotus.allconferencing.services.schedulers.components.SimpleScheduledInviteComponents;
 import org.joda.time.DateTime;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -32,9 +35,20 @@ public class GmailObject extends BaseSeleniumTest {
     private static Integer currentHour, currentMinutes, emailMinuteThreshold;
     private static Pattern pattern = null;
     private static Boolean isNewEmail = false;
+    private static Boolean isFull = false;
     private static String tollFreeNumArr[];
     private static String passcodeArr[];
     private static String partPasscode = "";
+
+
+    // Selectors for Gmail Inbox Page----------------------------------------------------------------
+//    private static final By EMAIL_SUBJECT = By.xpath("//table[id=':36']/tbody/tr/td:nth-of-type(6)/div/div/div/span"); //-- Works in Firefox
+    private static final By EMAIL_SUBJECT = By.cssSelector(".y6 span"); //-- Works in Chrome and Firefox
+//    private static final By TIMESTAMP = By.cssSelector("table[id=':36'] tbody tr td:nth-of-type(8) span"); //-- Works in Firefox
+    private static final By TIMESTAMP = By.cssSelector(".xW.xY span"); //-- Works in Chrome and Firefox
+    private static final By REFRESH = By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div");
+    private static final By EMAIL_BODY = By.xpath("/html/body/div[7]/div[3]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/table/*");
+    //-----------------------------------------------------------------------------------------------
 
 
     public GmailObject(WebDriver newDriver) {
@@ -70,14 +84,20 @@ public class GmailObject extends BaseSeleniumTest {
 
 
     public String checkInviteEmail() {
-        gmailInbox = new GmailInboxComponentsObject(driver);
+//        gmailInbox = new GmailInboxComponentsObject(driver);
         // Login to Gmail
         loginToGmail(gmail);
+        System.out.println("Logged in to Gmail!");
 
         // Inbox - get most recent email, evaluate time received and email subject
         try {
-            subject = getSubject();
-            WebElement emailArrivalTime = getEmailArrivalTime();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            subject = driver.findElement(EMAIL_SUBJECT);
+            WebElement emailArrivalTime = driver.findElement(TIMESTAMP);
             String originalTimestamp = emailArrivalTime.getText();
             String emailTime = waitForEmailTimestamp(originalTimestamp);
             //System.out.println("Email time retrieved from Gmail was: " + emailTime);
@@ -101,8 +121,11 @@ public class GmailObject extends BaseSeleniumTest {
     private void loginToGmail(GmailLoginPageObject gmail) {
         gmail = new GmailLoginPageObject(driver);
         gmail.goToGmail();
+        Utility.captureScreenshot(driver, "GmailLogin");
         gmail.enterGmailUsername();
+        Utility.captureScreenshot(driver, "GmailLoginWithUser");
         gmail.enterGmailPassword();
+        Utility.captureScreenshot(driver, "GmailLoginWithPass");
     }
 
     public void openEmail() {
@@ -115,8 +138,8 @@ public class GmailObject extends BaseSeleniumTest {
     }
 
     public WebElement getSubject() {
-        gmailInbox = new GmailInboxComponentsObject(driver);
-        return gmailInbox.getEmailSubject();
+//        gmailInbox = new GmailInboxComponentsObject(driver);
+        return driver.findElement(EMAIL_SUBJECT);
     }
 
     public WebElement getEmailArrivalTime () {
@@ -126,8 +149,8 @@ public class GmailObject extends BaseSeleniumTest {
     }
 
     public void refreshInbox () {
-        gmailInbox = new GmailInboxComponentsObject(driver);
-        WebElement refreshButton = gmailInbox.getRefreshButton();
+//        gmailInbox = new GmailInboxComponentsObject(driver);
+        WebElement refreshButton = driver.findElement(REFRESH);
         refreshButton.click();
         try {
             Thread.sleep(2000);
@@ -137,11 +160,11 @@ public class GmailObject extends BaseSeleniumTest {
     }
 
     public String waitForEmailTimestamp(String emailTime) {
-        gmailInbox = new GmailInboxComponentsObject(driver);
+//        gmailInbox = new GmailInboxComponentsObject(driver);
         for (int i = 0; i < 3; i++) {
             if (!emailTime.contains("am")) {
                 if (!emailTime.contains("pm")) {
-                    WebElement emailArrivalTime = getEmailArrivalTime();
+                    WebElement emailArrivalTime = driver.findElement(TIMESTAMP);
                     emailTime = emailArrivalTime.getText();
                 }
             }
@@ -151,6 +174,8 @@ public class GmailObject extends BaseSeleniumTest {
 
     public void createCheckforNewEmail(String emailTime) {
         String[] emailTimeParts = emailTime.split(":");
+        WebDriverWait waitForTableToPopulate = new WebDriverWait(driver, 10);
+        waitForTableToPopulate.until(tableIsPopulated(emailTimeParts, 2));
         String emailHourStr = emailTimeParts[0];
         String emailMinuteStr = emailTimeParts[1];
         String[] minuteParts = emailMinuteStr.split("\\s");
@@ -212,7 +237,7 @@ public class GmailObject extends BaseSeleniumTest {
     }
 
     public String checkEmailContentForNewConfInfo(MeetingType meetingType) {
-        List<WebElement> emailBodyTable = gmailInbox.getEmailBody();
+        List<WebElement> emailBodyTable = driver.findElements(EMAIL_BODY);
         if (emailBodyTable.size() == 1) {
 //            System.out.println("List was populated upon assignment!");
         } else {
@@ -310,7 +335,23 @@ public class GmailObject extends BaseSeleniumTest {
     }
 
     public void waitForListToPopulate(List<WebElement> emailBodyTable) {
+        int emailIterateNum = 0;
+        while(emailBodyTable.size() != 1) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
+            emailIterateNum++;
+            if (emailIterateNum==3) {
+                break;
+
+            } else {
+                System.out.println("Through wait number " + emailIterateNum + ". Table not yet populated.");
+            }
+        }
+        /*
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -337,6 +378,7 @@ public class GmailObject extends BaseSeleniumTest {
             System.out.println("Through third wait (6 seconds total) - table was still not populated");
             System.exit(-1);
         }
+        */
     }
 
     public String getOldSchedulerEmailTollFreeLabel() {
@@ -347,6 +389,21 @@ public class GmailObject extends BaseSeleniumTest {
     public String getSimpleSchedulerEmailTollFreeLabel() {
         SimpleScheduledInviteComponents simpleScheduledInviteComponents = new SimpleScheduledInviteComponents(driver);
         return simpleScheduledInviteComponents.getEmailInviteTollFreeLabel();
+    }
+
+    private ExpectedCondition<Boolean> tableIsPopulated(final String[] stringArray, final int expectedSize) {
+
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver webDriver) {
+                if (stringArray.length == expectedSize) {
+                    isFull = true;
+                } else {
+                    isFull = false;
+                }
+                return isFull;
+            }
+        };
     }
 
     public void verifyTollFreeNumberIsGenerated(String tollFreeNum) {

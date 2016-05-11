@@ -45,7 +45,7 @@ public class GmailLoginPageObject {
         password = driver.findElement(By.cssSelector("input[id='Passwd']"));
         password.sendKeys(new String(readProps.getParticipantEmailPwd()));
         password.submit();
-        waitForInbox();
+        //waitForInbox();
     }
 
     public void waitForGmail() {
@@ -60,10 +60,15 @@ public class GmailLoginPageObject {
         wait.until(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[id='Passwd']"))
         );
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void waitForInbox() {
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, 60);
         wait.until(
                 ExpectedConditions.titleContains("Inbox")
         );
