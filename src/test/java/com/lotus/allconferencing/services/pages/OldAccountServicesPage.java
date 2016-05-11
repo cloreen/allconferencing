@@ -31,7 +31,7 @@ public class OldAccountServicesPage extends PageManager {
     public static final By TITLE = By.tagName("title");
     private static final String ACCOUNT_SERVICES_EXPECTED_TITLE = "All Conferencing - Account Services";
     private static final String SCHEDULER_EXPECTED_TITLE = "All Conferencing - Schedule a Conference";
-    private static final String CONFERENCE_LIST_EXPECTED_TITLE = "List/Edit/Delete";
+    private static final String CONFERENCE_LIST_EXPECTED_TITLE = "List/Edit/Delete Conference";
     //-----------------------------------------------------------------------------------------------
 
 
@@ -92,7 +92,7 @@ public class OldAccountServicesPage extends PageManager {
         driver.findElement(SCHEDULE_V1_MEETING).click();
         WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
         waitForSchedulerToDisplay.until(
-                ExpectedConditions.titleIs(ACCOUNT_SERVICES_EXPECTED_TITLE)
+                ExpectedConditions.titleIs(SCHEDULER_EXPECTED_TITLE)
         );
         return new OldSchedulerPageObject(driver);
     }
@@ -101,7 +101,7 @@ public class OldAccountServicesPage extends PageManager {
         driver.findElement(SCHEDULE_V2_MEETING).click();
         WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
         waitForSchedulerToDisplay.until(
-                ExpectedConditions.titleIs(ACCOUNT_SERVICES_EXPECTED_TITLE)
+                ExpectedConditions.titleIs(SCHEDULER_EXPECTED_TITLE)
         );
         return new OldSchedulerPageObject(driver);
     }
@@ -131,17 +131,17 @@ public class OldAccountServicesPage extends PageManager {
     }
 */
     public void refreshAccountServices(String myAccountWindowHandle) {
-        oldAccountServicesComponents = new OldAccountServicesComponents(driver);
+//        oldAccountServicesComponents = new OldAccountServicesComponents(driver);
         driver.switchTo().window(myAccountWindowHandle);
         driver.navigate().refresh();
 
         WebDriverWait waitForAcctSvcs = new WebDriverWait(driver, 10);
         waitForAcctSvcs.until(
-                ExpectedConditions.titleIs(oldAccountServicesComponents.getExpectedTitle())
+                ExpectedConditions.titleIs(ACCOUNT_SERVICES_EXPECTED_TITLE)
         );
     }
 
-   public ConferenceListPage listV1Conferences() {
+/*   public ConferenceListPage listV1Conferences() {
        driver.findElement(LIST_V1_CONFERENCES).click();
        WebDriverWait waitForConferenceListToDisplay = new WebDriverWait(driver, 10);
        waitForConferenceListToDisplay.until(
@@ -152,6 +152,24 @@ public class OldAccountServicesPage extends PageManager {
 
     public ConferenceListPage listV2Conferences() {
         driver.findElement(LIST_V2_CONFERENCES).click();
+        WebDriverWait waitForConferenceListToDisplay = new WebDriverWait(driver, 10);
+        waitForConferenceListToDisplay.until(
+                ExpectedConditions.titleIs(CONFERENCE_LIST_EXPECTED_TITLE)
+        );
+        return new ConferenceListPage(driver);
+    }*/
+
+    public ConferenceListPage listConferences(Integer version) {
+        WebElement conferenceList = null;
+        switch(version) {
+            case 1:
+                conferenceList = driver.findElement(LIST_V1_CONFERENCES);
+                break;
+            case 2:
+                conferenceList = driver.findElement(LIST_V2_CONFERENCES);
+                break;
+        }
+        conferenceList.click();
         WebDriverWait waitForConferenceListToDisplay = new WebDriverWait(driver, 10);
         waitForConferenceListToDisplay.until(
                 ExpectedConditions.titleIs(CONFERENCE_LIST_EXPECTED_TITLE)
@@ -186,12 +204,32 @@ public class OldAccountServicesPage extends PageManager {
         );
     }
 */
-
+/*
     public void logout() {
         oldAccountServicesComponents = new OldAccountServicesComponents(driver);
         WebElement logoutButton = oldAccountServicesComponents.getLogoutButton();
         logoutButton.click();
         driver.switchTo().alert().accept();
         waitForTitle(driver);
+    }
+*/
+    public OldSchedulerPageObject openScheduler(int inVersion) {
+        switch (inVersion) {
+            case 1:
+                driver.findElement(SCHEDULE_V1_MEETING).click();
+                break;
+            case 2:
+                driver.findElement(SCHEDULE_V2_MEETING).click();
+                break;
+            default:
+                System.out.println("Version not specified. Permitted values are 1 or 2.");
+                System.exit(-1);
+                break;
+        }
+        WebDriverWait waitForSchedulerToDisplay = new WebDriverWait(driver, 10);
+        waitForSchedulerToDisplay.until(
+                ExpectedConditions.titleIs(SCHEDULER_EXPECTED_TITLE)
+        );
+        return new OldSchedulerPageObject(driver);
     }
 }

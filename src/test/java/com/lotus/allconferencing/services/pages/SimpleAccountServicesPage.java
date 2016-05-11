@@ -1,18 +1,24 @@
 package com.lotus.allconferencing.services.pages;
 
+import com.lotus.allconferencing.PageManager;
 import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.services.components.SimpleAccountServicesComponents;
+import com.lotus.allconferencing.services.schedulers.pages.SimpleScheduledInvitePage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Created by Ben on 12/17/2015.
  */
-public class SimpleAccountServicesPage {
+
+
+public class SimpleAccountServicesPage extends PageManager {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
+
+    // Selectors for Simple Account Services Page========--------------------------------------------
+    private static final By EASY_ALL_INVITE = By.xpath("//table[2]/tbody/tr/td/table/tbody/tr[2]/td/div[3]/div/table/tbody/tr[3]/td/a");
+    private static final String SIMPLE_ACCOUNT_SERVICES_TITLE = "Welcome to All Conferencing Services";
+    //-----------------------------------------------------------------------------------------------
 
     public SimpleAccountServicesPage(WebDriver newDriver) {
         driver = newDriver;
@@ -24,13 +30,9 @@ public class SimpleAccountServicesPage {
         }
     }
 
-    public void openEasyAllInvitePage() {
-        SimpleAccountServicesComponents simpleAccountServicesComponents = new SimpleAccountServicesComponents(driver);
-        WebElement easyAllInvite = simpleAccountServicesComponents.getEasyAllInviteLink();
-        easyAllInvite.click();
-        WebDriverWait waitForInvitePage = new WebDriverWait(driver, 10);
-        waitForInvitePage.until(
-                ExpectedConditions.titleIs(simpleAccountServicesComponents.getExpectedEasyAllTitle())
-        );
+    public SimpleScheduledInvitePage openEasyAllInvitePage() {
+        driver.findElement(EASY_ALL_INVITE).click();
+        waitForTitle(driver);
+        return new SimpleScheduledInvitePage(driver);
     }
 }
