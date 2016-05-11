@@ -19,18 +19,21 @@ public class ExcelData extends BaseSeleniumTest {
     private static Object excelObject;
     private static List<Object> dataList;
 
-    public enum Browser {FIREFOX, CHROME, IE, OPERA, SAUCELABS, HTMLUNIT}
+    public enum Browser {FIREFOX, CHROME, IE, OPERA, SAUCELABS, HTMLUNIT, PHANTOMJS}
     public static AccountType.LoginType loginType;
     public static AccountType.AcctType accountType;
     public static LoginPageObject.AccessType accessType;
     public static Browser browser;
+    private static Integer testCaseNum;
 
     public ExcelData() {
+
     }
 
-    public static void getDataFromExcel() {
+    public static void getDataFromExcel(int inTestCaseNum) {
         try {
-            excelData = dataFromExcel();
+            testCaseNum = inTestCaseNum;
+            excelData = dataFromExcel(testCaseNum);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,6 +68,9 @@ public class ExcelData extends BaseSeleniumTest {
                             break;
                         case "HTMLUNIT":
                             browser = Browser.HTMLUNIT;
+                            break;
+                        case "PHANTOMJS":
+                            browser = Browser.PHANTOMJS;
                             break;
                     }
                 case 1:
