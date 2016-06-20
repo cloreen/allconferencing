@@ -6,6 +6,7 @@ import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.Utility;
 import com.lotus.allconferencing.services.schedulers.components.OldSchedulerComponents;
 import com.lotus.allconferencing.services.schedulers.components.SimpleScheduledInviteComponents;
+import com.lotus.allconferencing.services.schedulers.pages.OldSchedulerPageObject;
 import org.joda.time.DateTime;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -65,6 +66,7 @@ public class GmailObject extends BaseSeleniumTest {
 
     GmailLoginPageObject gmail = new GmailLoginPageObject(driver);
     GmailInboxComponentsObject gmailInbox = new GmailInboxComponentsObject(driver);
+    OldSchedulerPageObject oldScheduler = new OldSchedulerPageObject(driver);
 
     public enum MeetingType {
         OLD(0), SIMPLE(1), NEW(2);
@@ -84,7 +86,6 @@ public class GmailObject extends BaseSeleniumTest {
 
 
     public String checkInviteEmail() {
-//        gmailInbox = new GmailInboxComponentsObject(driver);
         // Login to Gmail
         loginToGmail(gmail);
         System.out.println("Logged in to Gmail!");
@@ -97,14 +98,17 @@ public class GmailObject extends BaseSeleniumTest {
                 e.printStackTrace();
             }
             subject = driver.findElement(EMAIL_SUBJECT);
+            System.out.println("Email subject found! Subject text is: " + subject.getText());
             WebElement emailArrivalTime = driver.findElement(TIMESTAMP);
             String originalTimestamp = emailArrivalTime.getText();
+            System.out.println("Email timestamp found! Timestamp is: " + originalTimestamp);
             String emailTime = waitForEmailTimestamp(originalTimestamp);
             //System.out.println("Email time retrieved from Gmail was: " + emailTime);
 
             createCheckforNewEmail(emailTime);
 
             waitForEmailToBeReceived(emailArrivalTime, currentHour, currentMinutes, emailMinuteThreshold);
+            System.out.println("Verified email was received!");
 
         } catch (NoSuchElementException nsee) {
             refreshInbox();
@@ -137,19 +141,13 @@ public class GmailObject extends BaseSeleniumTest {
         }
     }
 
-    public WebElement getSubject() {
-//        gmailInbox = new GmailInboxComponentsObject(driver);
-        return driver.findElement(EMAIL_SUBJECT);
-    }
-
-    public WebElement getEmailArrivalTime () {
+/*    public WebElement getEmailArrivalTime () {
         gmailInbox = new GmailInboxComponentsObject(driver);
         WebElement emailArrivalTime = gmailInbox.getEmailArrivalTime();
         return emailArrivalTime;
-    }
+    }*/
 
     public void refreshInbox () {
-//        gmailInbox = new GmailInboxComponentsObject(driver);
         WebElement refreshButton = driver.findElement(REFRESH);
         refreshButton.click();
         try {
@@ -160,7 +158,6 @@ public class GmailObject extends BaseSeleniumTest {
     }
 
     public String waitForEmailTimestamp(String emailTime) {
-//        gmailInbox = new GmailInboxComponentsObject(driver);
         for (int i = 0; i < 3; i++) {
             if (!emailTime.contains("am")) {
                 if (!emailTime.contains("pm")) {
@@ -256,8 +253,8 @@ public class GmailObject extends BaseSeleniumTest {
             minThreshold = 59;
         }
 //        System.out.println("Minutes threshold = " + minThreshold);
-        String tollFreeLabel_Simple = getSimpleSchedulerEmailTollFreeLabel();
-        String tollFreeLabel_Old = getOldSchedulerEmailTollFreeLabel();
+        String tollFreeLabel_Simple = oldScheduler.EMAIL_TOLL_FREE;
+        String tollFreeLabel_Old = oldScheduler.EMAIL_TOLL_FREE;
         String tollFreeNum = null;
         String modPasscode = null;
         for (WebElement element : emailBodyTable) {
@@ -268,7 +265,14 @@ public class GmailObject extends BaseSeleniumTest {
                 elementCounter += 1;
                 System.out.println("Line " + elementCounter + ":");
                 System.out.println(line);
-                if (line.contains("(0 minutes ago)")) {
+/*                if (line.contains("minute")) {
+                    String[] lineFrags = line.split(" ");
+                    for (String fragment : lineFrags) {
+                        CharArray charArray = fragment.toCharArray();
+                        }
+                    }
+                }*/
+                if (line.contains("(0 minutes ago)") || line.contains("(1 minute ago)")) {
 //                    System.out.println("Found newest email");
                     isNewEmail = true;
                 }
