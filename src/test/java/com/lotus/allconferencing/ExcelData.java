@@ -19,7 +19,7 @@ public class ExcelData extends BaseSeleniumTest {
     private static Object excelObject;
     private static List<Object> dataList;
 
-    public enum Browser {FIREFOX, CHROME, IE, OPERA, SAUCELABS, HTMLUNIT, PHANTOMJS}
+    public enum Browser {FIREFOX, CHROME, IE, OPERA, SAFARI, SAUCELABS, HTMLUNIT, PHANTOMJS, GRID}
     public static AccountType.LoginType loginType;
     public static AccountType.AcctType accountType;
     public static LoginPageObject.AccessType accessType;
@@ -63,6 +63,9 @@ public class ExcelData extends BaseSeleniumTest {
                         case "OPERA":
                             browser = Browser.OPERA;
                             break;
+                        case "SAFARI":
+                            browser = Browser.SAFARI;
+                            break;
                         case "SAUCELABS":
                             browser = Browser.SAUCELABS;
                             break;
@@ -71,6 +74,9 @@ public class ExcelData extends BaseSeleniumTest {
                             break;
                         case "PHANTOMJS":
                             browser = Browser.PHANTOMJS;
+                            break;
+                        case "GRID":
+                            browser = Browser.GRID;
                             break;
                     }
                 case 1:

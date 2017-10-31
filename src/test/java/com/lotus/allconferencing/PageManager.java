@@ -2,7 +2,7 @@ package com.lotus.allconferencing;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +22,21 @@ import java.util.concurrent.TimeUnit;
 public abstract class PageManager {
     private static WebDriver driver;
     private static Boolean isInvalid;
+    private ReadPropertyFile readProps;
+
+    public PageManager(WebDriver newDriver) {
+
+        driver = newDriver;
+
+        try {
+            readProps = new ReadPropertyFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public PageManager() {
+
     }
 
     public static String getNewWindow(WebDriver winMgrDriver, Set<String> windowHandles) {
@@ -43,11 +58,22 @@ public abstract class PageManager {
         return huc.getResponseCode();
     }
 
-    public static Alert getSeleniumAlert(WebDriver driver) {
+    public static void getSeleniumAlert(WebDriver driver, Integer version, String modPass) {
         //When using PhantomJS, don't us switchTo() to handle alears
-        try {
-            if (ExcelData.browser == ExcelData.Browser.valueOf("PHANTOMJS")) {
-
+        //Get ConfID of scheduled conference
+        WebElement deleteButton = driver.findElement(By.cssSelector("input[name='cmdRemove']"));
+        String onClickValue = deleteButton.getAttribute("onclick");
+        System.out.println("This is the onclick() value for the Delete Button: " + onClickValue);
+        List<String> onClickList = Arrays.asList(onClickValue.split(","));
+//        onClickList.toArray();
+        String confIDStr = onClickList.get(2);
+        System.out.println("The ConfID part of the onclick() value is:" + confIDStr);
+        String confID = confIDStr.replace("\"", "");
+        System.out.println("The stripped-down ConfID is:" + confID);
+        if (ExcelData.browser == ExcelData.Browser.valueOf("PHANTOMJS")) {
+            try {
+                System.out.println("Inside getSeleniumAlert()!");
+                /*
                 JavascriptExecutor js1 = (JavascriptExecutor) driver;
                 js1.executeScript("var page = this;" +
                         "page.onError = function(msg, trace) {" +
@@ -56,28 +82,61 @@ public abstract class PageManager {
                         "console.log(' ', item.file, ':', item.line);" +
                         "});" +
                         "};");
+                System.out.println("JavascriptExecutor executed.");
+                */
             /*JavascriptExecutor js = (JavascriptExecutor)driver;
             js.executeScript("window.confirm = function(){return true;}");*/
+                if (version == 2) {
+//                    ((PhantomJSDriver)driver).executePhantomJS("document.frmEdit.txtConfID.value = \"" + confID + "\";" +
+                    JavascriptExecutor js = (JavascriptExecutor)driver;
+                    js.executeScript("document.frmEdit.txtConfID.value = \"" + confID + "\";" +
+                            "document.frmEdit.txtID.value = \"4608\";" +
+                            "document.frmEdit.txtTZ.value = \"PACIFIC\";" +
+                            "document.frmEdit.txtMPassCode.value = \"" + modPass + "\";" +
+                            "document.frmEdit.txtConfName.value = \"v2+Test+Meeting+%2D+Old+Scheduler\";" +
+                            "document.frmEdit.txtRecc.value = \"F\";" +
+                            "var doc = document.forms[\"frmEdit\"];" +
+                            "doc.action = \"Conference_delete_do.asp?ver=2\";" +
+                            "doc.submit();");
+//                    System.out.println("PhantomJSJavascriptExecutor executed.");
+                    System.out.println("JavascriptExecutor executed.");
+                } else {
+                    System.out.println("The wrong version was passed to getSeleniumAlert().");
+                }
+
+
+                /*
                 ((PhantomJSDriver) driver).executePhantomJS("var page = this;" +
                         "page.onConfirm = function(msg) {" +
                         "console.log('CONFIRM: ' + msg);return true;" +
                         "};");
-                System.out.println("Inside getSeleniumAlert()!");
+                */
 
-            } else {
-                try {
-                    System.out.println("Inside getSeleniumAlert(). The browser is not PhantomJS.");
-                    return driver.switchTo().alert();
-                } catch (NoAlertPresentException nape) {
-                    return null;
+            } catch (Exception e) {
+                LogEntries logs = driver.manage().logs().get("browser");
+                logs.getAll();
+                for (Object log : logs) {
+                    System.out.println(log.toString());
                 }
+                System.out.println("Inside getSeleniumAlert() - Exception caught.");
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            LogEntries logs = driver.manage().logs().get("browser");
-            logs.getAll();
-            System.out.print(logs);
+
+        } else {
+            try {
+                    System.out.println("Inside getSeleniumAlert() . The browser is not PhantomJS.");
+            } catch (NoAlertPresentException nape) {
+                    System.out.println("Inside getSeleniumAlert() - NoAlertPresentException caught.");
+            }
+
         }
-        return null;
+        /*
+        if (pageManagerAlert != null) {
+            return pageManagerAlert;
+        } else {
+            return null;
+        }
+        */
     }
 
     public static void confirmSeleniumAlert() {
@@ -92,18 +151,84 @@ public abstract class PageManager {
     CUSTOM SYNCHRONIZATION----------------------------------------------------------------------------
     =================================================================================================*/
 
-    public static WebDriverWait waitForTitle(WebDriver pgMgrDriver) /*throws WebDriverException*/ {
+    public static WebDriverWait waitForTitle(WebDriver pgMgrDriver/*, AccountType.AcctType acctType*/) /*throws WebDriverException*/ {
         WebDriver driver = pgMgrDriver;
-        WebDriverWait waitForTitle = new WebDriverWait(driver, 10);
-        waitForTitle.until(
-                ExpectedConditions.presenceOfElementLocated(By.tagName("title"))
+        String expectedURL = new String("");
+        String newTitle = new String("");
+        WebDriverWait waitForURL = new WebDriverWait(driver, 10);
+        WebDriverWait waitForTitleChange = new WebDriverWait(driver, 10);
+/*
+        switch(acctType) {
+            case STANDARD_OLD:
+                expectedURL = "https://www.allconferencing.com/pages-conference-calls/account_services.asp?Rights=0";
+                break;
+            case STANDARD_NEW:
+                expectedURL = "https://www.allconferencing.com/pages-conference-calls/welcome.asp?Rights=0";
+                break;
+            case STANDARD_SIMPLE:
+                expectedURL = "https://www.allconferencing.com/pages-conference-calls/services.asp?Rights=0";
+                break;
+            case CORPORATE:
+                expectedURL = "https://www.allconferencing.com/CBM/(cucryenrk43f0w55vgg50a45)/CBMUI/ASPPages/DisplayAccountList.aspx";
+                break;
+        }
+
+        waitForURL.until(
+                ExpectedConditions.urlToBe(expectedURL)
+        );
+*/
+        final String originalPageTitle = driver.getTitle();
+        waitForTitleChange.until(
+                new ExpectedCondition<Boolean>() {
+                    @Override
+                    public Boolean apply(WebDriver webDriver) {
+                        Boolean driverResult = false;
+                        if(webDriver.getTitle() != null) {
+                            if(webDriver.getTitle() != originalPageTitle) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+                }
         );
 
-        return waitForTitle;
+        return waitForTitleChange;
+    }
+
+    public ExpectedCondition<Boolean> titleIsNot(final String titleText) {
+
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver webDriver) {
+                Boolean driverResult = false;
+                if(driver.getTitle() != null) {
+                    if(driver.getTitle() != titleText) {
+                        driverResult = true;
+                    } else {
+                        driverResult = false;
+                    }
+                } else {
+                    driverResult = false;
+                }
+                return driverResult;
+            }
+        };
     }
 
     public static FluentWait waitForTitleFluently(WebDriver pgMgrDriver) /*throws WebDriverException*/ {
         WebDriver driver = pgMgrDriver;
+        FluentWait waitForTitleDisappearance = new WebDriverWait(driver, 30);
+        waitForTitleDisappearance
+                .pollingEvery(10, TimeUnit.MILLISECONDS)
+                .withTimeout(20, TimeUnit.SECONDS)
+                .until(
+                        ExpectedConditions.invisibilityOfElementLocated(By.tagName("title"))
+                );
+
         FluentWait waitForTitleFluently = new WebDriverWait(driver, 10);
         waitForTitleFluently.
                 pollingEvery(100, TimeUnit.MILLISECONDS).
@@ -112,14 +237,17 @@ public abstract class PageManager {
                         ExpectedConditions.presenceOfElementLocated(By.tagName("title"))
                 );
 
-        return waitForTitleFluently;
+        return waitForTitleDisappearance;
     }
 
-    public static WebDriverWait waitForPageChange(WebDriver pgMgrDriver) {
+    public static WebDriverWait waitForPageToChange(WebDriver pgMgrDriver, String oldTitle) {
         WebDriver driver = pgMgrDriver;
+        String prevPageTitle = oldTitle;
         WebDriverWait waitForPageChange = new WebDriverWait(driver, 10);
         waitForPageChange.until(
-                ExpectedConditions.invisibilityOfElementLocated(By.tagName("title"))
+                ExpectedConditions.not(
+                        ExpectedConditions.titleIs(prevPageTitle)
+                )
         );
         return waitForPageChange;
     }

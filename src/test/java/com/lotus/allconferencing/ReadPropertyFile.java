@@ -8,11 +8,18 @@ import java.util.Properties;
  */
 public class ReadPropertyFile {
     private static String resourceName = "config.properties";
+    private static String gridResourceName = "config_grid.properties";
     private static ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private static Properties props = new Properties();
 
     public ReadPropertyFile() throws Exception {
         try (InputStream resourceStream = classLoader.getResourceAsStream(resourceName)) {
+            props.load(resourceStream);
+        }
+    }
+
+    public ReadPropertyFile(String config) throws Exception {
+        try (InputStream resourceStream = classLoader.getResourceAsStream(gridResourceName)) {
             props.load(resourceStream);
         }
     }

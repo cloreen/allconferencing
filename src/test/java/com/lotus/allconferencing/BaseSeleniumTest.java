@@ -8,7 +8,9 @@ import org.junit.runners.Parameterized;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
@@ -18,40 +20,73 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Ben on 9/3/2015.
  */
+
+/***********************************************************************************************************************
+ * TODO - Add Columns to Excel Test Data sheet (ENVIRONMENT, PLATFORM)
+ * TODO - Modify Excel method logic to properly pass data
+ * TODO - Add ENUM "ENVIRONMENT" (LOCAL, GRID, SAUCELABS, ?)
+ * TODO - Add ENUM "PLATFORM" (WINXP, WINVISTA, WIN7, WIN8_1, WIN10, MAC, YOSEMITE, ?)
+ * TODO - Modify ExcelData class to properly handle new options
+ * TODO - Modify OldScheduler_v2a_Invite_Test classes to properly use new test data arguments
+ ***********************************************************************************************************************/
 public abstract class BaseSeleniumTest {
     private static WebDriver driver;
+    private static RemoteWebDriver remoteDriver;
     private static ReadPropertyFile readProps = null;
     private static Integer minWindowWidth = 1365;
     private static Integer minWindowHeight = 768;
+    private static String gridHubPort = null;
+    private static String gridHubPID = null;
+    private static String gridURL = "http://localhost:4444/wd/hub";
+    private static Boolean testInParallel = false;
 
     private static ChromeDriverFactory chromeDriverFactory = new ChromeDriverFactory();
 
-    public enum BrowserName {FIREFOX, CHROME, IE, OPERA, SAFARI, SAUCELABS, HTMLUNIT, PHANTOMJS}
 
-    public static WebDriver setDriver(BrowserName browser) {
+    /*******************************************************************************************************************
+     * Here we define the type of driver as well as its properties
+     ******************************************************************************************************************/
+    //------------------------------------------------------------------------------------------------------------------
+
+    public enum BrowserName {FIREFOX, CHROME, IE, OPERA, SAFARI, SAUCELABS, HTMLUNIT, PHANTOMJS, GRID}
+
+    public static WebDriver setDriver(BrowserName browser, Boolean multiDriver) {
+        testInParallel = multiDriver;
+
 
         switch (browser) {
             case FIREFOX:
-                driver = new FirefoxDriver();
+                FirefoxBinary ffbinary = new FirefoxBinary(new File("D:\\testing\\browsers\\firefox\\releases\\win32\\42_0\\firefox.exe"));
+                FirefoxProfile ffprofile = new FirefoxProfile();
+                driver = new FirefoxDriver(ffbinary, ffprofile);
+                /*
+                if (testInParallel = false) {
+                    //System.setProperty("webdriver.gecko.driver", "D:\\testing\\browsers\\geckodriver\\releases\\win32\\0_14_0\\geckodriver.exe");
+                    FirefoxBinary ffbinary = new FirefoxBinary(new File("D:\\testing\\browsers\\firefox\\releases\\win32\\46_0\\firefox.exe"));
+                    FirefoxProfile ffprofile = new FirefoxProfile();
+                    driver = new FirefoxDriver(ffprofile);
+                } else {
+                    System.setProperty("webdriver.gecko.driver", "D:\\testing\\browsers\\geckodriver\\releases\\win32\\0_14_0\\geckodriver.exe");
+                    System.setProperty("webdriver.gecko.port", "4445");
+                    FirefoxProfile ffprofile = new FirefoxProfile();
+                    driver = new FirefoxDriver(ffprofile);
+                }
+                */
                 break;
 
             case CHROME:
+//                setDriverPropertyIfNecessary("webdriver.chrome.driver", "../chromedriver.exe", "C:\\IntelliJ_Projects\\allconferencing\\chromedriver.exe");
+//                driver = new ChromeDriver();
                 try {
-                    driver = chromeDriverFactory.getChromeDriver();
+                    driver = chromeDriverFactory.getChromeDriver("C:\\IntelliJ_Projects\\allconferencing\\chromedriver.exe");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ZipException e) {
@@ -73,10 +108,17 @@ public abstract class BaseSeleniumTest {
                 break;
 
             case OPERA:
+                setDriverPropertyIfNecessary("webdriver.opera.driver", "/../tools/operadriver_32/operadriver.exe", "C://Users/Ben/Downloads/operadriver_win32/operadriver.exe");
                 driver = new OperaDriver();
                 break;
 
             case SAFARI:
+                DesiredCapabilities safariCapabilities = DesiredCapabilities.safari();
+                safariCapabilities.setCapability("version", "8.0.3");
+                safariCapabilities.setCapability("platform", Platform.MAC);
+                safariCapabilities.setCapability("os_version", Platform.YOSEMITE);
+
+                safariCapabilities.setCapability("ensureCleanSession", true);
                 driver = new SafariDriver();
                 break;
 
@@ -86,7 +128,7 @@ public abstract class BaseSeleniumTest {
                 sauceCapabilities.setCapability("platform", Platform.XP);
                 try {
                     // add url to environment variables to avoid releasing with source
-                    String sauceURL = System.getenv("SAUCELABS_URL");
+                    String sauceURL = System.getenv("SAUCE_URL");
                     driver = new RemoteWebDriver(
                             new URL(sauceURL),
                             sauceCapabilities);
@@ -112,20 +154,93 @@ public abstract class BaseSeleniumTest {
 //                driver.manage().window().maximize();
                 Dimension windowSize = driver.manage().window().getSize();
                 driver.manage().window().setSize(setWindowSize(windowSize));
-
-
                 break;
+
+            case GRID:
+                // Start Grid Hub
+                List hubCmdAndArgs = Arrays.asList("cmd.exe", "/c", "starthub.bat");
+                File hubCmdDir = new File("C:\\IntelliJ_Projects\\allconferencing\\src\\test\\resources");
+
+                ProcessBuilder hubProcessBuilder = new ProcessBuilder(hubCmdAndArgs);
+                hubProcessBuilder.directory(hubCmdDir);
+                try {
+                    Process hubProcess = hubProcessBuilder.start();
+                    System.out.println("The hub should have started.");
+                    Thread.sleep(5000);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // Start Node Hub
+                List nodeCmdAndArgs = Arrays.asList("cmd.exe", "/c", "startnode.bat");
+                File nodeCmdDir = new File("C:\\IntelliJ_Projects\\allconferencing\\src\\test\\resources");
+
+                ProcessBuilder nodeProcessBuilder = new ProcessBuilder(nodeCmdAndArgs);
+                nodeProcessBuilder.directory(nodeCmdDir);
+                try{
+                    Process nodeProcess = nodeProcessBuilder.start();
+                    Thread.sleep(5000);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // Setup driver
+                FirefoxBinary ffGridBinary = new FirefoxBinary(new File("D:\\testing\\browsers\\firefox\\releases\\win32\\46_0\\firefox.exe"));
+                FirefoxProfile ffGridProfile = new FirefoxProfile();
+//                System.setProperty("webdriver.firefox.bin", "D:\\testing\\browsers\\firefox\\releases\\win32\\46_0\\firefox.exe");
+                DesiredCapabilities gridCaps = new DesiredCapabilities();
+                gridCaps.setBrowserName("firefox");
+//                gridCaps.setVersion("35");
+                gridCaps.setPlatform(Platform.WIN8_1);
+                gridCaps.setCapability(FirefoxDriver.BINARY, "D:\\testing\\browsers\\firefox\\releases\\win32\\46_0\\firefox.exe");
+                try {
+                    // add url to environment variables to avoid releasing with source
+//                    String gridURL = System.getenv("GRID_URL");
+                    driver = new RemoteWebDriver(new URL(gridURL), gridCaps);
+                    if(testInParallel==true)
+                        setDriverForParallelExec((RemoteWebDriver) driver);
+                } catch (MalformedURLException e) {
+                    System.out.println("The malformed URL is: " + gridURL);
+                    e.printStackTrace();
+                } /*finally {
+                    Boolean isHubActive = true;
+                    Boolean isNodeActive = true;
+                    while (isNodeActive != false) {
+                        isNodeActive = getNodeStatus();
+                        while(isNodeActive) {
+                            shutDownNode();
+                            isNodeActive = getNodeStatus();
+                        }
+                        if(isNodeActive == false)
+                            System.out.println("Node has been shut down!");
+                    }
+                    while (isHubActive != false) {
+                        isHubActive = getHubStatus();
+                        while(isHubActive) {
+                            shutDownHub();
+                            isHubActive = getHubStatus();
+                        }
+                        if(isHubActive == false)
+                            System.out.println("Hub has been shut down!");
+                    }
+                }*/
+
+
         }
         return driver;
     }
+    //==================================================================================================================
 
-    private static Dimension setWindowSize(Dimension windowDimension) {
-        int newWindowWidth = Math.max(windowDimension.width, minWindowWidth);
-        int newWindowHeight = Math.max(windowDimension.height, minWindowHeight);
-        Dimension newWindowDimension = new Dimension(newWindowWidth, newWindowHeight);
-        return newWindowDimension;
-    }
 
+
+    /*******************************************************************************************************************
+     * Helper methods for setting the driver
+     ******************************************************************************************************************/
+     //-----------------------------------------------------------------------------------------------------------------
     private static void setDriverPropertyIfNecessary(String propertyKey, String relativeToUserPath, String absolutePath) {
         // http://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html
 
@@ -155,6 +270,165 @@ public abstract class BaseSeleniumTest {
 
         return new FirefoxDriver();
     }
+    //==================================================================================================================
+
+
+    /*******************************************************************************************************************
+    * Methods to manage hub and nodes
+     *******************************************************************************************************************/
+    //------------------------------------------------------------------------------------------------------------------
+    private static void shutDownHub() {
+
+        List hubShutDownCmdAndArgs = Arrays.asList("cmd.exe", "/c", "TASKKILL /F /PID " + gridHubPID);
+//        File hubShutDownCmdDir = new File("C:\\IntelliJ_Projects\\allconferencing\\src\\test\\resources");
+        ProcessBuilder hubShutDownProcessBuilder = new ProcessBuilder(hubShutDownCmdAndArgs);
+//        hubShutDownProcessBuilder.directory(hubShutDownCmdDir);
+        try {
+            Process hubShutDownProcess = hubShutDownProcessBuilder.start();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    private static void shutDownNode() {
+        WebDriver tempDriver;
+        tempDriver = new FirefoxDriver();
+        tempDriver.get("http://localhost:5555/selenium-server/driver/?cmd=shutDownSeleniumServer");
+        tempDriver.quit();
+    }
+
+    private static Boolean getNodeStatus() {
+        // Check for status of node
+        List nodeStatusCmdAndArgs = Arrays.asList("cmd.exe", "/c", "node_status.bat");
+        File nodeStatusCmdDir = new File("C:\\IntelliJ_Projects\\allconferencing\\src\\test\\resources");
+        ProcessBuilder nodeStatusProcessBuilder = new ProcessBuilder(nodeStatusCmdAndArgs);
+        nodeStatusProcessBuilder.directory(nodeStatusCmdDir);
+        try{
+            Process nodeStatusProcess = nodeStatusProcessBuilder.start();
+            Thread.sleep(2000);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Check output of netstat for hub process
+        String nodeStatusFile = "C:\\temp\\netstat_node.txt";
+        String line = null;
+        Boolean isActive = false;
+        try {
+            FileReader reader = new FileReader(nodeStatusFile);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            int index = 0;
+            while ((index != 1) && ((line = bufferedReader.readLine()) != null)) {
+                System.out.println(line);
+                String[] lineFrags = line.split("\\s+");
+                for (String fragment : lineFrags) {
+                    if (fragment.contains("5555")) {
+                        System.out.println("Node is active!");
+                        isActive = true;
+                        break;
+                    }
+                }
+                index++;
+            }
+            bufferedReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return isActive;
+    }
+
+    private static Boolean getHubStatus() {
+        // Check for status of hub
+        List hubStatusCmdAndArgs = Arrays.asList("cmd.exe", "/c", "hub_status.bat");
+        File hubStatusCmdDir = new File("C:\\IntelliJ_Projects\\allconferencing\\src\\test\\resources");
+        ProcessBuilder hubStatusProcessBuilder = new ProcessBuilder(hubStatusCmdAndArgs);
+        hubStatusProcessBuilder.directory(hubStatusCmdDir);
+        try{
+            Process hubStatusProcess = hubStatusProcessBuilder.start();
+            Thread.sleep(2000);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Check output of netstat for hub process
+        String hubStatusFile = "C:\\temp\\netstat_hub.txt";
+        String line = null;
+        Boolean isActive = false;
+        try {
+            FileReader reader = new FileReader(hubStatusFile);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            int index = 0;
+            while ((index != 1) && ((line = bufferedReader.readLine()) != null)) {
+                System.out.println(line);
+                String[] lineFrags = line.split("\\s+");
+                for (String fragment : lineFrags) {
+                    if (isActive == true) {
+                        gridHubPID = lineFrags[lineFrags.length-1];
+                        System.out.println("The PID of the hub is: " + gridHubPID);
+                    }
+                    if (fragment.contains("4444")) {
+                        System.out.println("Hub is active!");
+                        isActive = true;
+                        gridHubPort = fragment;
+                    }
+                    if (gridHubPID != null && gridHubPort != null) {
+                        break;
+                    }
+                }
+                index++;
+            }
+            bufferedReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return isActive;
+    }
+    //==================================================================================================================
+
+    /*******************************************************************************************************************
+     * For running Grid tests in parallel
+     * ****************************************************************************************************************/
+    //------------------------------------------------------------------------------------------------------------------
+    public static ThreadLocal<RemoteWebDriver> remoteWebDriverThreadLocal = new ThreadLocal<RemoteWebDriver>();
+    public static void setDriverForParallelExec(RemoteWebDriver remoteDriver) {
+        remoteWebDriverThreadLocal.set(remoteDriver);
+    }
+
+    /*******************************************************************************************************************
+     * Browser window helper methods
+     * ****************************************************************************************************************/
+    //------------------------------------------------------------------------------------------------------------------
+
+    private static Dimension setWindowSize(Dimension windowDimension) {
+        int newWindowWidth = Math.max(windowDimension.width, minWindowWidth);
+        int newWindowHeight = Math.max(windowDimension.height, minWindowHeight);
+        Dimension newWindowDimension = new Dimension(newWindowWidth, newWindowHeight);
+        return newWindowDimension;
+    }
+    //==================================================================================================================
+
+
+    /*******************************************************************************************************************
+     * Initialize the properties file for reading test data from it
+     * ****************************************************************************************************************/
+    //------------------------------------------------------------------------------------------------------------------
+
+    public static ReadPropertyFile getGridSettings() {
+        try {
+            readProps = new ReadPropertyFile("GRID");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return readProps;
+    }
 
     public static ReadPropertyFile getSettings() {
         try {
@@ -164,6 +438,14 @@ public abstract class BaseSeleniumTest {
         }
         return readProps;
     }
+
+    //==================================================================================================================
+
+
+    /*******************************************************************************************************************
+     * Gets test data from Excel spreadsheet
+     * ****************************************************************************************************************/
+    //------------------------------------------------------------------------------------------------------------------
 
     @Parameterized.Parameters
     public static Collection dataFromExcel(Integer rowNum) throws IOException {
