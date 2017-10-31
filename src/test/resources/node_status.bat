@@ -1,0 +1,1 @@
+netstat -a -n -o | find /I "listening" | find /I "5555" > c:\temp\netstat_node.txt

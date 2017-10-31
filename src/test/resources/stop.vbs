@@ -1,0 +1,1 @@
+http://hubhost:4444/lifecycle-manager?action=shutdown
