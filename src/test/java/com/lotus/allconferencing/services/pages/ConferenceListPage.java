@@ -1,12 +1,11 @@
 package com.lotus.allconferencing.services.pages;
 
-import com.lotus.allconferencing.BaseSeleniumTest;
-import com.lotus.allconferencing.PageManager;
-import com.lotus.allconferencing.ReadPropertyFile;
-import com.lotus.allconferencing.Utility;
+import com.lotus.allconferencing.*;
 import com.lotus.allconferencing.services.components.ConferenceListComponents;
-import org.openqa.selenium.*;
-import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -23,6 +22,7 @@ import static junit.framework.TestCase.assertTrue;
 public class ConferenceListPage extends BaseSeleniumTest {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
+    private static WebElement newConferencePasscode;
 
     // Selectors for Old Account Services Page------------------------------------------------------
     private static final String EXPECTED_TITLE = "List/Edit/Delete Conference";
@@ -37,7 +37,7 @@ public class ConferenceListPage extends BaseSeleniumTest {
     public ConferenceListPage(WebDriver newDriver) {
 
         driver = newDriver;
-        LogEntries logs = driver.manage().logs().get("browser");
+//        LogEntries logs = driver.manage().logs().get("browser");
 
         try {
             readProps = new ReadPropertyFile();
@@ -100,12 +100,23 @@ public class ConferenceListPage extends BaseSeleniumTest {
         return conferenceDisplays;
     }
 
-    public void removeConferenceFromList() {
+    public void removeConferenceFromList(Integer version) {
 //        conferenceListComponents = new ConferenceListComponents(driver);
 //        WebElement deleteButton = conferenceListComponents.getDeleteButtonForLatestConference();
+        switch(version) {
+            case 1:
+                newConferencePasscode = driver.findElement(LATEST_V1_CONFERENCE_PASSCODE);
+                break;
+            case 2:
+                newConferencePasscode = driver.findElement(LATEST_V2_CONFERENCE_PASSCODE);
+                break;
+        }
+
+        String modPass = newConferencePasscode.getText();
         WebElement deleteButton = driver.findElement(LATEST_CONFERENCE_DELETE);
-        Utility.captureScreenshot(driver, "ConferenceList");
+//        Utility.captureScreenshot(driver, "ConferenceList");  // This needs to be commented out if using custom Driver class
         deleteButton.click();
+        /*
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -130,6 +141,19 @@ public class ConferenceListPage extends BaseSeleniumTest {
         } else {
             System.out.println("Alert was null.");
         }
+        */
+//        PageManager.getSeleniumAlert(driver, version, modPass);
+        if (ExcelData.browser == ExcelData.Browser.valueOf("PHANTOMJS")) {
+            PageManager.getSeleniumAlert(driver, version, modPass);
+        } else {
+            WebDriverWait waitForAlert = new WebDriverWait(driver, 10);
+            waitForAlert.until(
+                    ExpectedConditions.alertIsPresent()
+            );
+            Alert alert = driver.switchTo().alert();
+            alert.accept();
+        }
+
 //        WebDriverWait waitForConfirmAlert = new WebDriverWait(driver, 10);
 //        waitForConfirmAlert.until(
 //                ExpectedConditions.alertIsPresent()+
@@ -141,7 +165,8 @@ public class ConferenceListPage extends BaseSeleniumTest {
 //                ExpectedConditions.titleIs(conferenceListComponents.getDeletionExpectedTitle())
                 ExpectedConditions.titleIs(DELETION_PAGE_EXPECTED_TITLE)
         );
-        Utility.captureScreenshot(driver, "Post-ConfDeletionPage");
+//        Utility.captureScreenshot(driver, "Post-ConfDeletionPage");   // TakesScreenshot doesn't work with custom Driver class.
+        System.out.println("Conference should be deleted!");
     }
 
     public Boolean verifyNewMeetingDisplaysInConferenceList(String expectedPasscode, String actualPasscode, Boolean conferenceDisplays) {

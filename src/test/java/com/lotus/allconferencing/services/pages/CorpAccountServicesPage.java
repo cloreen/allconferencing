@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 public class CorpAccountServicesPage extends PageManager {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
+    boolean logout = false;
 
     private CorpAccountServicesComponents corpAccountServicesComponents = new CorpAccountServicesComponents(driver);
 

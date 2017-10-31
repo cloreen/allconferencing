@@ -20,6 +20,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class OldAccountServicesPage extends PageManager {
     private static WebDriver driver;
     private ReadPropertyFile readProps = null;
+    private static Integer version = null;
 
     // Selectors for Old Account Services Page Components--------------------------------------------
     private static final By SCHEDULE_V2_MEETING = By.cssSelector("a[href='schedule_v2.asp?Rights=0']");
@@ -35,9 +36,9 @@ public class OldAccountServicesPage extends PageManager {
     //-----------------------------------------------------------------------------------------------
 
 
-    public OldAccountServicesPage(WebDriver newDriver) {
-
+    public OldAccountServicesPage(WebDriver newDriver, Integer inVersion) {
         driver = newDriver;
+        version = inVersion;
 
         try {
             readProps = new ReadPropertyFile();
@@ -214,12 +215,19 @@ public class OldAccountServicesPage extends PageManager {
     }
 */
     public OldSchedulerPageObject openScheduler(int inVersion) {
+        WebDriverWait waitForPageToLoad = new WebDriverWait(driver, 10);
         switch (inVersion) {
             case 1:
-                driver.findElement(SCHEDULE_V1_MEETING).click();
+                waitForPageToLoad.until(
+                        ExpectedConditions.presenceOfElementLocated(SCHEDULE_V1_MEETING)
+                ).click();
+//                driver.findElement(SCHEDULE_V1_MEETING).click();
                 break;
             case 2:
-                driver.findElement(SCHEDULE_V2_MEETING).click();
+                waitForPageToLoad.until(
+                        ExpectedConditions.presenceOfElementLocated(SCHEDULE_V2_MEETING)
+                ).click();
+//                driver.findElement(SCHEDULE_V2_MEETING).click();
                 break;
             default:
                 System.out.println("Version not specified. Permitted values are 1 or 2.");
