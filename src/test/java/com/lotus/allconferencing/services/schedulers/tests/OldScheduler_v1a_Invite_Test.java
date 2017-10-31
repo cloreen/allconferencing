@@ -1,6 +1,8 @@
 package com.lotus.allconferencing.services.schedulers.tests;
 
 import com.lotus.allconferencing.BaseSeleniumTest;
+import com.lotus.allconferencing.Driver;
+import com.lotus.allconferencing.PageManager;
 import com.lotus.allconferencing.ReadPropertyFile;
 import com.lotus.allconferencing.services.pages.ConferenceListPage;
 import com.lotus.allconferencing.services.pages.OldAccountServicesPage;
@@ -49,11 +51,19 @@ public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
     private static String timeOfDay = "";
     private static Integer version = 1; // Version is used to specify whether v1 or v2 scheduler is used.
 
-    HomePage homePage = new HomePage(driver);
+    HomePage homePage = new HomePage(customDriver);
+//    HomePage homePage = new HomePage(driver);
     GmailObject gmail = new GmailObject(driver2);
+    OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(customDriver);
+    OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(customDriver, version);
+    ConferenceListPage conferenceListPage = new ConferenceListPage(customDriver);
+/*
     OldSchedulerPageObject oldScheduler = new  OldSchedulerPageObject(driver);
-    OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver);
+    OldAccountServicesPage oldAccountServicesPage = new OldAccountServicesPage(driver, version);
     ConferenceListPage conferenceListPage = new ConferenceListPage(driver);
+*/
+    PageManager pageManager;
+    private static Driver customDriver;
 
     static AccountType.LoginType loginType;
     static AccountType.AcctType accountType;
@@ -66,7 +76,9 @@ public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
     public static void setup() {
         readProps = getSettings();
         getDataFromExcel();
-        driver = openBrowser(browser);
+        String browserName = getParameter("browser");   // used to get parameters from command-line
+        customDriver = new Driver(browserName);     // custom Driver class is necessary to specify tests and browsers from command-line
+        //openBrowser(browser, false);
     }
 
     @Test
@@ -74,11 +86,13 @@ public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
         //Login and schedule meeting
 //        homePage.login(AccountType.LoginType.STANDARD, AccountType.AcctType.STANDARD_OLD, LoginPageObject.AccessType.LOGIN);
         homePage.login(loginType, accountType, accessType);
+        pageManager.waitForTitle(customDriver);
+//        pageManager.waitForTitle(driver);
         oldAccountServicesPage.openScheduler(version);
         oldScheduler.setupMeeting(timeOfDay, version);
 
         //Get passcode from email
-        driver2 = openBrowser(browser);
+        driver2 = openBrowser(browser, true);
         partPasscode = getParticipantPasscodeFromEmail();
         closeEmailWindow();
 
@@ -90,30 +104,29 @@ public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
         assertThat("Assert conference displays in account", conferenceDisplays);
         // Remove conference from list once it's found
         if(conferenceDisplays) {
-            conferenceListPage.removeConferenceFromList();
+            conferenceListPage.removeConferenceFromList(version);
         }
 
     }
 
     @AfterClass
-    public static void tearDown() {
-        driver.quit();
-    }
+    public static void tearDown() { customDriver.quit(); }
 
 
     // Verifications ---------------------------------------------------------------------------------------------------
 
     public void verifyEmailReceived(String emailSubject) {
-        assertThat("Appropriate email is received", emailSubject.contentEquals(readProps.getInviteEmailSubject()));
+        assertThat("Appropriate email is received", emailSubject.contains(readProps.getInviteEmailSubject()));
+        System.out.println("Email Subject matches conference invitation email!");
     }
 
     // End Verifications -----------------------------------------------------------------------------------------------
 
     // Helper methods --------------------------------------------------------------------------------------------------
 
-    public static WebDriver openBrowser(Browser inBrowser) {
+    public static WebDriver openBrowser(Browser inBrowser, Boolean multiDriver) {
         String browser = inBrowser.toString();
-        inDriver = setDriver(BrowserName.valueOf(browser));
+        inDriver = setDriver(BrowserName.valueOf(browser), multiDriver);
         return inDriver;
     }
 
@@ -196,6 +209,18 @@ public class OldScheduler_v1a_Invite_Test extends BaseSeleniumTest {
             }
             i++;
         }
+    }
+
+    // This is necessary to get arguments from command line
+    private static String getParameter(String name) {
+        String value = System.getProperty(name);
+        if (value == null)
+            throw new RuntimeException(name + " is not a parameter!");
+
+        if (value.isEmpty())
+            throw new RuntimeException(name + " is empty!");
+
+        return value;
     }
 
     // checkEmailIsReceived(), checkInviteEmail(), and checkEmailContentForNewInfo should be condensed into one method.
